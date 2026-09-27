@@ -1,0 +1,178 @@
+---
+layout: base.njk
+title: Prakriti Srimal / Spatial Intelligence
+description: Spatial data science, geospatial intelligence and urban sensing. An atlas of investigations across Bengaluru, London, Dubai and four more Indian cities.
+---
+<a class="skip" href="#atlas">Skip to the atlas</a>
+
+<header class="chrome">
+  <div class="shell chrome-in">
+    <a class="mark" href="#top"><b>P/S</b><span>PRAKRITI<br>SPATIAL INTELLIGENCE</span></a>
+    <nav class="links">
+      <a href="#atlas">ATLAS</a>
+      <a href="#investigation">INVESTIGATION</a>
+      <a href="#lab">LAB</a>
+      <a href="#about">ABOUT</a>
+    </nav>
+    <button class="search-btn" id="openSearch" aria-haspopup="dialog">SEARCH ATLAS <kbd>⌘K</kbd></button>
+  </div>
+</header>
+
+<main id="top">
+
+<section class="hero">
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+  <div class="shell">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow" id="bootLine">OBSERVE / 001</p>
+        <h1 class="display">One planet.<br><span class="dim">Many signals.</span></h1>
+        <p class="hero-sub">I read cities as data. Street networks, sound, air, movement and pace, measured where I can measure them and named as unmeasured where I cannot.</p>
+        <div class="hero-actions">
+          <a class="btn solid" href="#atlas">Open the atlas</a>
+          <a class="btn" href="#about">About Prakriti</a>
+        </div>
+        <div class="tier-key">
+          <span><i style="background:var(--active)"></i>STUDY CITY / BENGALURU</span>
+          <span><i style="background:var(--network)"></i>RESEARCH / LONDON</span>
+          <span><i style="background:var(--form)"></i>COMPARISON SET / DELHI, MUMBAI, KOLKATA, CHENNAI</span>
+          <span><i style="background:var(--water)"></i>WRITING / DUBAI</span>
+        </div>
+      </div>
+      <div></div>
+    </div>
+  </div>
+</section>
+
+<section class="descent" aria-label="Change of scale">
+  <div class="descent-sticky">
+    <canvas id="scaleCanvas" aria-hidden="true"></canvas>
+    <div class="descent-copy">
+      <h2 id="descentTitle">From the planet<br>to the street.</h2>
+      <p id="descentBody">Seven cities carry work on this site. One is the subject, one is where the research was done, four are the comparison set, and one turns up in an essay about pace.</p>
+    </div>
+    <div class="scale-readout" aria-live="polite">
+      <div>VIEW / <b id="scaleName">EARTH</b></div>
+      <div>SCALE / <b id="scaleValue">1:40,000,000</b></div>
+      <div>STATE / <b id="scaleState">MARKERS FROM VERIFIED WORK</b></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="atlas">
+  <div class="shell">
+    <div class="band-head">
+      <h2>The atlas</h2>
+      <p>Six questions. One is measured, one is awarded, one is being built, one is an essay, one is a nomination and one is still only a question.</p>
+    </div>
+
+    <div class="atlas">
+      <div class="map-wrap" id="mapWrap">
+        <canvas id="atlasCanvas" aria-hidden="true"></canvas>
+        <div class="map-hud tl"><span class="dot"></span> BENGALURU / STUDY AREA <span>12.9716 N, 77.5946 E</span></div>
+        <div class="map-hud bl">SCHEMATIC SPATIAL STUDY / NOT A MEASURED MAP</div>
+        <div class="map-hud br">0 <span class="bar"></span> 5 km</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-top"><span>LAYER CONTROL</span><span id="signalCount">{{ projects | length }} SIGNALS</span></div>
+        <div class="filters" id="filters" role="group" aria-label="Filter investigations by domain"></div>
+        <div class="rows" id="rows">
+          {%- for p in projects %}
+          <button class="row" data-id="{{ p.id }}" aria-pressed="{{ 'true' if loop.first else 'false' }}" style="color:var(--{{ p.color }})">
+            <span class="row-meta">
+              <span>{{ p.num }} / {{ p.domain }} / {{ p.place }}</span>
+              <span class="status">{{ p.maturity }}</span>
+            </span>
+            <h3>{{ p.question }}</h3>
+            <p>{{ p.blurb }}</p>
+            {%- if p.href %}<span class="open">FULL PROJECT PAGE</span>{% endif %}
+          </button>
+          {%- endfor %}
+        </div>
+        <div class="panel-foot"><span>SELECT A SIGNAL TO OPEN IT</span><button class="chip" id="resetAtlas" style="min-height:0;padding:4px 8px">RESET</button></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="investigation">
+  <div class="shell">
+    <div class="inv-head">
+      <div>
+        <p class="eyebrow" id="invLabel"></p>
+        <h2 id="invQuestion"></h2>
+      </div>
+      <p class="inv-note" id="invNote"></p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Investigation views" id="tabs"></div>
+    <div id="panels"></div>
+  </div>
+</section>
+
+<section class="band" id="lab">
+  <div class="shell">
+    <div class="band-head">
+      <h2>The lab</h2>
+      <p>How a question becomes a finding, and where each of the six above currently stops.</p>
+    </div>
+    <div class="lab">
+      <div><p class="n">STAGE 01</p><h3>Data</h3><p>Sources named, licensed, dated and bounded. If a layer has no source it is labelled a concept, not a result.</p></div>
+      <div><p class="n">STAGE 02</p><h3>Process</h3><p>Cleaning, topology, projection and joins. The boring part where most of the error lives.</p></div>
+      <div><p class="n">STAGE 03</p><h3>Model</h3><p>Deterministic graph analysis first. Anything predictive is separated out and validated on held out geography.</p></div>
+      <div><p class="n">STAGE 04</p><h3>Interpret</h3><p>A finding needs a unit, a period, a place and a limit. The morphology study ends with three pages of what the data cannot say.</p></div>
+    </div>
+    <div class="toolkit">
+      <span>PYTHON</span><span>OSMNX</span><span>PYROSM</span><span>NETWORKX</span><span>GEOPANDAS</span><span>QGIS</span><span>SPACE SYNTAX</span><span>PCA / K-MEANS</span><span>CNN</span><span>JETSON ORIN</span><span>GRASSHOPPER</span><span>REVIT / PYREVIT</span>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="about">
+  <div class="shell">
+    <div class="about">
+      <div>
+        <div class="band-head" style="margin-bottom:var(--s5)"><h2>About</h2></div>
+        <p>I trained as an architect and stopped drawing buildings when I realised the questions I cared about were about the space between them. Now I work as a spatial data scientist, mostly on cities, mostly with street networks, sensors and whatever the city will let me measure.</p>
+        <p>Bengaluru is where I live and the place most of this work tests itself against. London is where the thesis was done. Delhi, Mumbai, Kolkata and Chennai appear because a comparison is only fair if every city is cut the same way.</p>
+        <p>My pattern, for better and worse, is saying yes to something before I fully understand it and then refusing to put it down until I do. That is how a person who had never touched a breadboard ended up building a sensor.</p>
+        <div class="contact">
+          <a class="btn" href="mailto:prakritisrimal@gmail.com">Email</a>
+          <a class="btn" href="https://github.com/psrimal" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn" href="https://www.linkedin.com/in/prakriti-srimal-7390ab1a5/" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+      <dl class="facts">
+        <div class="fact"><dt>ROLE</dt><dd>Senior Urban Data Scientist, Urban Intelligence Lab, Bengaluru</dd></div>
+        <div class="fact"><dt>EDUCATION</dt><dd>MArch Urban Design, UCL Bartlett B-Pro, RC14 Machine Thinking Urbanism, 2023. Architecture, BMS College of Engineering</dd></div>
+        <div class="fact"><dt>2026</dt><dd>Nominated for the Sidara Endeavour Program for Scenario Simulator</dd></div>
+        <div class="fact"><dt>AWARDS</dt><dd>SEED Chairman Award for Sounds of the City. Gold medal, World Architecture Student Awards 2022. Student Award, Media Architecture Biennale 2023</dd></div>
+        <div class="fact"><dt>PUBLISHED IN</dt><dd>ArchDaily, Arch Hive, ArchiDiaries, Inspireli, UCL Bartlett</dd></div>
+        <div class="fact"><dt>BASED</dt><dd>Bengaluru, India</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="closing">
+  <canvas id="closeCanvas" aria-hidden="true"></canvas>
+  <div class="shell">
+    <p class="eyebrow">RETURN / EARTH</p>
+    <h2>Every city leaves evidence.</h2>
+    <p>I am still collecting it.</p>
+    <div class="hero-actions"><a class="btn" href="#atlas">Return to the atlas</a></div>
+  </div>
+</section>
+
+<div class="shell"><footer>
+  <span>PRAKRITI SRIMAL / SPATIAL INTELLIGENCE</span>
+  <span>ATLAS GEOMETRY IS SCHEMATIC / MEASURED VALUES APPEAR ONLY WHERE SOURCED</span>
+</footer></div>
+
+</main>
+
+<dialog class="cmd" id="cmd" aria-label="Search the atlas">
+  <input id="cmdInput" type="search" placeholder="Search: access, form, sound, pace, scenario, water" autocomplete="off">
+  <ul id="cmdList"></ul>
+  <div class="foot">ENTER OPENS / ESC CLOSES / SEARCH COVERS THE LISTED INVESTIGATIONS ONLY</div>
+</dialog>

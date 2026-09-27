@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Social Geometry of Indian Cities</title>
+<meta name="description" content="What five street networks can, and cannot, tell us about the way cities shape everyday encounters.">
+<meta property="og:title" content="The Social Geometry of Indian Cities">
+<meta property="og:description" content="What five street networks can, and cannot, tell us about the way cities shape everyday encounters.">
+<meta property="og:type" content="article">
+<meta property="og:image" content="/assets/socialgeometry/09_networks_hero.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#050a07;
+  --ink:#f0ede4;
+  --muted:#7f8c83;
+  --line:#1a241d;
+  --accent:#2db354;
+  --delhi:#e0603a;
+  --mumbai:#e8b84b;
+  --kolkata:#2db354;
+  --chennai:#4aa8d8;
+  --blr:#b07de0;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:5rem}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--sans);font-weight:300;
+  font-size:1.0625rem;line-height:1.8;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* one measure for everything: heading, body, figures */
+.wrap{width:75%;max-width:1080px;margin:0 auto}
+@media (max-width:900px){ .wrap{width:88%} }
+@media (max-width:600px){ .wrap{width:100%;padding:0 1.25rem} }
+
+/* masthead */
+.top{position:sticky;top:0;z-index:60;background:var(--bg)}
+.top .bar{
+  width:75%;max-width:1080px;margin:0 auto;
+  display:flex;align-items:center;height:3.25rem;
+}
+.top a{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);text-decoration:none;
+}
+.top a:hover{color:var(--accent)}
+@media (max-width:900px){ .top .bar{width:88%} }
+@media (max-width:600px){ .top .bar{width:100%;padding:0 1.25rem} }
+
+/* right rail */
+#toc{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:40}
+#toc ol{list-style:none;margin:0;padding:0;text-align:right}
+#toc a{
+  display:block;white-space:nowrap;
+  font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;
+  text-transform:uppercase;color:#46514a;
+  text-decoration:none;padding:.4rem 0;line-height:1;
+  transition:color .2s ease;
+}
+#toc a:hover{color:var(--ink)}
+#toc a.on{color:var(--accent)}
+@media (max-width:1300px){ #toc{display:none} }
+
+/* hero */
+.hero{padding:5.5rem 0 3.5rem}
+h1{
+  font-family:var(--mono);font-weight:700;
+  font-size:clamp(2rem,5.2vw,3.5rem);
+  line-height:1.08;letter-spacing:-.03em;margin:0 0 1.5rem;
+}
+.standfirst{
+  font-size:1.2rem;line-height:1.6;color:var(--muted);
+  font-weight:300;margin:0 0 3rem;max-width:40rem;
+}
+.byline{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--muted);
+  padding-top:1.5rem;border-top:1px solid var(--line);
+}
+.byline span{color:var(--ink)}
+
+/* type */
+section{padding:2rem 0}
+
+/* one heading system: all JetBrains Mono, all cream.
+   levels are separated by size and space, nothing else.
+   h2 section    : Method, Findings, Conclusion
+   h3 subsection : Network Intensity, The Shape of a Junction, Direction, Load
+   h4 statement  : the three findings, sentence case
+   green is used for links and the active nav item. nowhere else. */
+h2{
+  font-family:var(--mono);font-weight:500;color:var(--ink);
+  font-size:clamp(1.55rem,3.4vw,2.15rem);
+  line-height:1.15;letter-spacing:-.022em;
+  margin:4.5rem 0 1.75rem;
+}
+section:first-of-type h2{margin-top:2.5rem}
+
+/* subheadings carry the green accent. level is set by size, not colour. */
+h3{
+  font-family:var(--mono);font-weight:500;color:var(--accent);
+  font-size:clamp(1.15rem,2.3vw,1.4rem);
+  line-height:1.3;letter-spacing:-.01em;
+  margin:3.5rem 0 1.4rem;
+}
+
+h4{
+  font-family:var(--mono);font-weight:500;color:var(--accent);
+  font-size:1.02rem;
+  line-height:1.45;letter-spacing:0;
+  margin:2.5rem 0 .8rem;
+}
+h4 + p{margin-top:0}
+p{margin:0 0 1.4rem}
+a{color:var(--accent)}
+strong{font-weight:600;color:#fff}
+.lead{font-size:1.15rem}
+em{font-style:italic}
+
+.pull{
+  font-family:var(--mono);font-style:italic;font-weight:300;
+  font-size:1.05rem;line-height:1.8;color:var(--ink);
+  margin:2.5rem 0;padding-left:1.5rem;
+  border-left:2px solid var(--accent);
+}
+.pull p{margin:0}
+.pull cite{
+  display:block;font-style:normal;font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-top:1rem;
+}
+.pull cite a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--line)}
+.pull cite a:hover{color:var(--accent)}
+
+/* definition block */
+.defs{margin:2rem 0 2.5rem;border-top:1px solid var(--line)}
+.defs .row{
+  display:grid;grid-template-columns:9rem 1fr;gap:1.5rem;
+  padding:1rem 0;border-bottom:1px solid var(--line);
+}
+.defs dt{font-family:var(--mono);font-size:.82rem;color:var(--accent);margin:0;line-height:1.7}
+.defs dd{margin:0;font-size:.98rem;color:var(--muted);line-height:1.7}
+@media (max-width:600px){
+  .defs .row{grid-template-columns:1fr;gap:.35rem}
+}
+
+.aside{
+  border-left:1px solid var(--line);
+  padding:.25rem 0 .25rem 1.5rem;margin:2.25rem 0;
+  font-size:.98rem;color:var(--muted);
+}
+.aside b{
+  display:block;font-family:var(--mono);font-weight:500;
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:.75rem;
+}
+.aside p{margin:0}
+
+ul{padding-left:1.1rem;margin:0 0 1.4rem}
+li{margin-bottom:.9rem}
+li::marker{color:var(--accent)}
+
+/* inline green caps label, same token as h3 */
+.tag{
+  font-family:var(--mono);font-weight:500;
+  font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;
+  color:var(--accent);margin-right:.6rem;
+}
+
+/* figures at full measure */
+figure{margin:3rem 0}
+figure img{display:block;width:100%;height:auto;background:transparent}
+figcaption{
+  font-family:var(--mono);font-size:.72rem;line-height:1.65;
+  color:var(--muted);margin-top:.9rem;
+}
+figcaption b{
+  color:var(--accent);font-weight:500;letter-spacing:.18em;
+  text-transform:uppercase;font-size:.68rem;margin-right:.75rem;
+}
+
+/* table */
+.tablewrap{overflow-x:auto;margin:2.5rem 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:40rem;font-family:var(--mono);font-size:.78rem}
+th,td{padding:.6rem .7rem;text-align:right;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:400;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--muted)}
+td:first-child,th:first-child{text-align:left}
+.c-delhi{color:var(--delhi)}.c-mumbai{color:var(--mumbai)}.c-kolkata{color:var(--kolkata)}
+.c-chennai{color:var(--chennai)}.c-blr{color:var(--blr)}
+.hi{color:#fff;font-weight:500}
+.tnote{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.75rem}
+
+footer{
+  border-top:1px solid var(--line);margin-top:4rem;padding:2.5rem 0 5rem;
+  font-family:var(--mono);font-size:.72rem;line-height:1.9;color:var(--muted);
+}
+footer ul{padding-left:1rem}
+footer a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--line)}
+footer a:hover{color:var(--accent)}
+
+@media (max-width:640px){
+  .hero{padding:3.5rem 0 2.5rem}
+  figure{margin:2.25rem 0}
+  body{font-size:1rem}
+}
+</style>
+</head>
+<body>
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#method">Method</a></li>
+    <li><a href="#findings">Findings</a></li>
+    <li><a href="#junction">Junctions</a></li>
+    <li><a href="#direction">Direction</a></li>
+    <li><a href="#load">Load</a></li>
+    <li><a href="#conclusion">Conclusion</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>The Social Geometry of Indian Cities</h1>
+    <p class="standfirst">What five street networks can, and cannot, tell us about the way cities shape everyday encounters.</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>Delhi &#183; Mumbai &#183; Kolkata &#183; Chennai &#183; Bengaluru</span></p>
+  </div>
+</header>
+
+<section id="intro">
+  <div class="wrap">
+    <p class="lead">A week ago, my friend and I were discussing people from different parts of the world. How there are definitions of people from certain geographic locations, how people, all wired the same, all with the same composition, have different outlooks, converse differently, and seem to carry different personalities. That's when I remembered something my professor said during my undergraduate days: cities don't just move people, they also design encounters, shape the way we think, and quietly influence the conditions in which personalities are formed.</p>
+
+    <p>That stayed with me. I started looking for evidence. How does urban morphology affect humans? The more I read, the more I realised the relationship is intangible. Much like the environment around you affects your physical and mental health, the city shapes everyday life in ways that are difficult to isolate. But how does one begin to approach that question through data?</p>
+
+    <p>This is where I took a step in that direction and tried understanding how a city orchestrates encounters.</p>
+
+    <p>There is the built environment, but something comes before the buildings. It's the street network. The street network slowly scripts our everyday decisions. Where do we turn left? Where do we turn right? Why do we take one route to work instead of another?</p>
+
+    <p>This idea sits close to Bill Hillier's movement economy theory. As he argues in Space is the Machine (1996), the arrangement of streets influences how movement concentrates through a city, and repeated movement creates repeated opportunities for encounter.</p>
+
+    <blockquote class="pull">
+      <p>&#8230; the structure of the urban grid &#8230; is the most powerful single factor determining movement.</p>
+      <cite>Bill Hillier, <a href="https://discovery.ucl.ac.uk/id/eprint/1403/" target="_blank" rel="noopener">Cities as Movement Economies</a>, Urban Design International 1(1), 1996, later a chapter of Space is the Machine</cite>
+    </blockquote>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <h2>Method</h2>
+
+    <p>This analysis looks at five Indian cities: Delhi, Kolkata, Mumbai, Chennai and Bengaluru. The goal is not to rank cities, but to ask whether streets themselves can serve as a measurable fingerprint for understanding the conditions under which behaviour is shaped.</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/01_footprints.png" alt="Network footprints against a nominal 10 km ball for five cities.">
+      <figcaption><b>Fig 01</b> Network footprint.</figcaption>
+    </figure>
+
+    <p>Now how does one decide the boundary for a fair comparison? Municipal Boundaries? One is going to be bigger/smaller than the other.. draw a circle? The coastal cities are going to lose half in the sea. Again, streets. The boundary was formed by a network distance of 10km starting from each of their historic center. For Bangalore it was the pete ; for Delhi it was the red fort, for Mumbai it's the Fort, for Kolkata it's the BBD Bagh and for Chennai it's the Fort St George</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/10_crop_sensitivity_map.png" alt="Bengaluru at four network radii.">
+      <figcaption><b>Fig 02</b> Bengaluru at 4 radii</figcaption>
+    </figure>
+
+    <figure>
+      <img src="/assets/socialgeometry/07_sensitivity_radius.png" alt="Every metric recomputed at four network radii.">
+      <figcaption><b>Fig 03</b> Metrics computed at every radius.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="/assets/socialgeometry/08_rank_stability.png" alt="Spearman rank stability of each metric between adjacent radii.">
+      <figcaption><b>Fig 04</b> Spearman stability across radii.</figcaption>
+    </figure>
+
+    <p>Next Question. 10km, how did I reach at that conclusion? I didn't. I tested multiple radii.. 3,6,10 and 15.. and found that and checked whether the ranking between cities survived. Below 6 km it does not. At 3 km the orderings scramble, and in one case invert completely. Chennai's 3 km ball contains 156 junctions, because Fort St George sits on the water.</p>
+
+    <p>From 6 km outward, the rankings lock. Everything reported below is drawn at 10 km and holds at 15 km too.</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/09_networks_hero.png" alt="Drive networks of five Indian cities plotted at identical scale.">
+      <figcaption><b>Fig 05</b> Drive networks within 10 km</figcaption>
+    </figure>
+
+    <p>The 5 cities also reveal a different movement profile: Mumbai narrows into a peninsula; Delhi spreads; Kolkata fills its footprint; Bengaluru blooms outward and Chennai stretches along a coastal spine.</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/02_metric_rankings.png" alt="Five morphology metrics ranked across the five cities.">
+      <figcaption><b>Fig 06</b> Morphology metrics.</figcaption>
+    </figure>
+
+    <p>Each morphologic finding is kept separate on intention, to really understand what the data is trying to tell us.</p>
+
+    <p>We are trying to understand five things, and each one is a different question about how a city is cut up.</p>
+
+    <dl class="defs">
+      <div class="row">
+        <dt>Grain</dt>
+        <dd>How finely the ground is divided. Measured as the number of intersections per square kilometre, after merging junctions that sit close enough together to really be one. A fine grain means more decision points in the same amount of space.</dd>
+      </div>
+      <div class="row">
+        <dt>Block scale</dt>
+        <dd>How far you go before the next junction. Measured as the mean length of a street segment. Short segments mean you are choosing constantly. Long ones mean you are committed to a direction for a while.</dd>
+      </div>
+      <div class="row">
+        <dt>Connectivity</dt>
+        <dd>How many streets meet where they meet. Measured as the average number of streets arriving at a node. A pure four way grid tends toward 4, a suburb of loops and dead ends toward 2.5 or lower. This is the measure of how many ways there are to get anywhere.</dd>
+      </div>
+      <div class="row">
+        <dt>Cul de sac</dt>
+        <dd>The share of all nodes that are dead ends. This is the direct measure of how much of a network leads nowhere, and how much circulation is forced back out the way it came.</dd>
+      </div>
+      <div class="row">
+        <dt>Detour</dt>
+        <dd>How much further the street takes you than the crow flies. Measured as circuity, the network distance between two points divided by the straight line distance. A value of 1.0 would be a perfectly direct city. Rivers, railways and dead ends all push it up.</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<section id="findings">
+  <div class="wrap">
+    <h2>Findings</h2>
+
+    <h3>Network Intensity</h3>
+
+    <h4>Bengaluru has a finer grain street network than the rest.</h4>
+    <p>136 intersections per square kilometre, against Delhi's 74 and Mumbai's 58. Its streets are also the shortest, averaging 59 metres, and its routes the most direct.</p>
+
+    <h4>Mumbai is constrained.</h4>
+    <p>The peninsula changes the problem. Mumbai has the coarsest grain, the longest streets, and 21 percent of its total network length sitting in segments over 300 metres, against Bengaluru's 5 percent.</p>
+
+    <h4>Delhi is coarse-grained, yet highly connected.</h4>
+    <p>Delhi's grain is coarse, closer to Mumbai than to Bengaluru. Yet its network is the most permeable of the five: the fewest dead ends, the most four-way junctions, the highest number of streets meeting at an average node.</p>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>City</th><th>Int / km&sup2;</th><th>Segment m</th><th>Streets / node</th><th>Dead ends</th><th>4-way+</th><th>Circuity</th><th>Phi</th><th>Gini</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="c-delhi">Delhi</td><td>74.2</td><td>65.4</td><td class="hi">2.94</td><td class="hi">12.0%</td><td class="hi">18.1%</td><td>1.034</td><td>0.044</td><td class="hi">0.756</td></tr>
+          <tr><td class="c-mumbai">Mumbai</td><td>57.9</td><td class="hi">84.3</td><td>2.86</td><td>15.3%</td><td>17.0%</td><td>1.049</td><td>0.061</td><td>0.654</td></tr>
+          <tr><td class="c-kolkata">Kolkata</td><td>81.8</td><td>70.8</td><td>2.66</td><td>21.5%</td><td>8.7%</td><td class="hi">1.054</td><td>0.177</td><td>0.748</td></tr>
+          <tr><td class="c-chennai">Chennai</td><td>90.4</td><td>71.8</td><td>2.79</td><td>17.4%</td><td>13.4%</td><td>1.038</td><td class="hi">0.333</td><td>0.709</td></tr>
+          <tr><td class="c-blr">Bengaluru</td><td class="hi">135.6</td><td>59.2</td><td>2.81</td><td>17.9%</td><td>17.2%</td><td>1.023</td><td>0.255</td><td>0.740</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tnote">All values at a 10 km network-distance ball from the historic core. Drive network, OpenStreetMap.</p>
+  </div>
+</section>
+
+<section id="junction">
+  <div class="wrap">
+    <h3>The Shape of a Junction</h3>
+
+    <figure>
+      <img src="/assets/socialgeometry/03_junction_composition.png" alt="Junction composition by city: dead ends, three-way and four-way-or-more.">
+      <figcaption><b>Fig 07</b> Junction composition by city.</figcaption>
+    </figure>
+
+    <p>I expected Kolkata to be the most continuous network of the five. The standard account of adda culture leans on exactly that: a fine connected grid, neighbourhoods flowing into one another, streets that invite you to stay rather than pass through. It is a satisfying story and I believed it before I ran anything.</p>
+
+    <p>Whats surprising is, Kolkata is the least connected of the five. It has the highest share of dead ends, at 21.5 percent. It has the fewest four-way junctions, 8.7 percent against Delhi's 18.1. It has the lowest number of streets meeting at a typical node, and the highest circuity, meaning routes there detour more than anywhere else in the set.</p>
+
+    <p>Delhi, the city usually cast as the car-dominated opposite of all this, has the most permeable network of the five.</p>
+
+    <p>So the morphological explanation commonly given for Kolkata's street life is, at this scale and on this network, close to backwards. Either the causal story is wrong, or the thing doing the work is not the drive network.</p>
+
+    <div class="aside">
+      <b>Caveat</b>
+      <p>This analysis uses the drive network. Kolkata's galis, the narrow lanes that a great deal of its street life actually happens in, are largely excluded by that filter. It is entirely possible that Kolkata's pedestrian network tells the opposite story to its vehicular one, and that the discrepancy is itself the finding.</p>
+    </div>
+  </div>
+</section>
+
+<section id="direction">
+  <div class="wrap">
+    <h3>Direction</h3>
+
+    <figure>
+      <img src="/assets/socialgeometry/04_orientation_roses.png" alt="Length-weighted street bearing distributions for five cities.">
+      <figcaption><b>Fig 08</b> Length-weighted street bearing distributions.</figcaption>
+    </figure>
+
+    <p>Every street has a direction. All directions taken together become a signature.</p>
+
+    <p>To turn that into a number, every street segment is sorted by its compass bearing into one of 36 bins, each bin ten degrees wide, and weighted by how long the street is, so a main road counts for more than a lane. Then you take the Shannon entropy of that distribution, which is a measure of how evenly spread it is. A city where every street runs in one of two perpendicular directions puts all its length into a few bins and scores low. A city where streets point every which way fills all 36 bins evenly and scores near the maximum.</p>
+
+    <p>Phi is that entropy rescaled so it reads the right way round. Phi of 1 is a perfect single-orientation grid. Phi of 0 is maximum disorder, bearings spread evenly around the compass. The method follows Geoff Boeing's work on street network orientation and entropy.</p>
+
+    <p>Chennai is the most directionally ordered city in the set, phi 0.33, its grid pinned to the coastline running north to south. Bengaluru carries visible traces of more than one planning history. Kolkata sits between order and adaptation.</p>
+
+    <p>Delhi scores lowest, at 0.04, which needs care rather than a punchline.</p>
+
+    <p>A low score here does not mean unplanned. It means not aligned to a single axis. Lutyens' geometry is radial and hexagonal, and it sits on top of Shahjahanabad and beside gridded colonies, so within a 10 km ball the bearings spread almost evenly around the compass. This measure cannot distinguish an accreted organic fabric from a deliberately polycentric one.</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/05_order_vs_grain.png" alt="Orientation order plotted against intersection density.">
+      <figcaption><b>Fig 09</b> Orientation order against intersection density.</figcaption>
+    </figure>
+
+    <p>Placed together, the cities stop resembling stereotypes and start looking like distinct spatial systems.</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/06_segment_lengths.png" alt="Street segment length distributions across five cities.">
+      <figcaption><b>Fig 10</b> Segment length distributions and long-segment share.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="load">
+  <div class="wrap">
+    <h3>Streets That Carry Most of the Load</h3>
+
+    <figure>
+      <img src="/assets/socialgeometry/11_metric_betweenness.png" alt="Street networks shaded by metric betweenness centrality.">
+      <figcaption><b>Fig 11</b> Rank-normalised metric betweenness centrality.</figcaption>
+    </figure>
+
+    <p>One of Hillier's most useful ideas is the split between a foreground network that carries through-movement and a background network that holds local life. The foreground is the smaller set of streets that most journeys end up passing along, and the ones that attract the uses wanting to be found, shops and commerce. The background is the quieter residential fabric those centres sit inside. In Hillier's account the two make each other: movement concentrates on certain streets, uses follow the movement, and those uses pull in more movement again. He sets it out in <a href="https://discovery.ucl.ac.uk/id/eprint/1029/1/hillier_city2001.pdf" target="_blank" rel="noopener">A Theory of the City as Object</a>. I approximated it with metric betweenness centrality, which is a cousin of the real measure rather than the thing itself.</p>
+
+    <div class="aside">
+      <b>Caveat</b>
+      <p>Here I have tried to use a shortest-path model on a graph, which shows where paths would concentrate if everyone took the shortest route. That is not the same as where people actually go. Space syntax uses angular cost, on the argument that people navigate by minimising turns rather than metres, and checks the result against counted pedestrians. I have done neither.</p>
+    </div>
+
+    <p>If any city in this set should funnel movement through a handful of corridors, it is Mumbai. The peninsula makes the argument for you. But Mumbai has the least concentrated through-movement of the five, Gini 0.654, its top decile of streets carrying 47 percent. Delhi has the most, 0.756, with a top decile carrying 61 percent.</p>
+
+    <p>Gini here is the same inequality measure economists use for income, pointed at streets instead. A Gini of 0 would mean every metre of street carries exactly the same amount of through-movement. A Gini of 1 would mean a single street carries all of it. The higher the number, the more a city's movement depends on a small number of roads.</p>
+
+    <p>The reason, I think, is that constraint and hierarchy are different things. Mumbai's geography leaves so little redundant network that almost every street ends up doing real work. Delhi has room for a clear order of rank: a small set of arterials carrying the load, and a large quiet background behind them. Delhi has the strongest street hierarchy in the set.</p>
+
+    <figure>
+      <img src="/assets/socialgeometry/12_foreground_concentration.png" alt="Lorenz curves of betweenness concentration for five cities.">
+      <figcaption><b>Fig 12</b> Lorenz curve of metric betweenness against street length.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="conclusion">
+  <div class="wrap">
+    <h2>Conclusion</h2>
+
+    <p>The street network cannot tell us why people living in a city have the personality they have. Those are claims about people. What it can tell us is where movement concentrates, how permeable a fabric is, how often routes intersect and how much local circulation detours.</p>
+
+    <ul>
+      <li><b class="tag">Self-selection</b> People choose where they live.</li>
+      <li><b class="tag">Composition</b> History and migration plausibly explain more about behaviour than geometry alone.</li>
+      <li><b class="tag">Mapping bias</b> OpenStreetMap is not equally complete everywhere.</li>
+    </ul>
+
+    <p>I began this wanting to find out whether the streets explained the people. I finished with a smaller conclusion that I trust more. Streets do not determine personality. But they do shape where movement concentrates, how often paths cross, how much detour becomes normal, and how many opportunities strangers have to become familiar.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Networks cut as a fixed ball of network distance from each historic core, not by municipal boundary and not by Euclidean buffer.</li>
+      <li>Densities normalised by a concave hull of the node cloud, so coastal cities are not penalised for water.</li>
+      <li>Drive network extracted from an OpenStreetMap PBF extract using pyrosm, analysed with OSMnx, GeoPandas and NetworkX.</li>
+      <li>Orientation entropy and the derived order parameter follow Geoff Boeing, <em>Urban spatial order: street network orientation, configuration, and entropy</em>, Applied Network Science, 2019.</li>
+      <li>Through-movement approximated with metric betweenness centrality. This is not space syntax angular choice and should not be read as such.</li>
+      <li>Street network data &#169; OpenStreetMap contributors, ODbL.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+
+</body>
+</html>

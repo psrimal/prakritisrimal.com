@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real Time Sensing | Prakriti Srimal</title>
+<meta name="description" content="Building a multi-sensor instrument to measure what a street sounds, feels and breathes like. Noise, air, heat and vision on an NVIDIA Jetson Orin Nano Super. A Dar SEED Innovation project.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --body: 'DM Sans', system-ui, sans-serif;
+  --bg: #060807; --ink: #f0ede4; --ink-mid: #929e96; --ink-dim: #7d8c83;
+  --accent: #2db354; --rule: #171d19; --edge: #5c6a62;
+  --gut: clamp(20px, 6vw, 90px);
+}
+html { scroll-behavior: smooth; background: var(--bg); }
+body { font-family: var(--body); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+img { display: block; width: 100%; height: auto; }
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 99;
+  background: var(--ink); color: var(--bg); padding: 12px 18px;
+  font-family: var(--mono); font-size: 12px;
+}
+.skip:focus { left: 12px; top: 12px; }
+
+nav {
+  position: sticky; top: 0; z-index: 50; background: rgba(6,8,7,0.92);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--gut); height: 56px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+}
+nav a { text-decoration: none; color: var(--ink-mid); transition: color 160ms; }
+nav a:hover { color: var(--accent); }
+nav .back { color: var(--ink); }
+
+/* ---------- hero ---------- */
+header.hero { padding: clamp(52px, 8vw, 110px) var(--gut) clamp(40px, 5vw, 64px); }
+.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+h1 {
+  font-family: var(--mono); font-weight: 700;
+  font-size: clamp(2.1rem, 7.6vw, 5.2rem); line-height: 0.96;
+  letter-spacing: -0.045em; text-transform: uppercase;
+}
+.standfirst {
+  margin-top: clamp(22px, 3vw, 32px); max-width: 52ch;
+  font-family: var(--mono); font-size: clamp(0.84rem, 1.5vw, 1.02rem);
+  line-height: 1.62; color: var(--ink-mid);
+}
+.credit-grid {
+  margin-top: clamp(30px, 4vw, 48px);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px 32px; border-top: 1px solid var(--rule); padding-top: 26px;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.7;
+}
+.credit-grid dt { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 7px; }
+.credit-grid dd { color: var(--ink-mid); }
+.credit-grid .live { color: var(--accent); }
+
+/* ---------- media slots ---------- */
+.slot {
+  position: relative; background: #0b100d; border: 1px solid var(--rule);
+  aspect-ratio: 16 / 9; overflow: hidden;
+}
+.slot img, .slot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.slot::after {
+  content: attr(data-slot); position: absolute; left: 12px; bottom: 10px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-dim); pointer-events: none;
+}
+.slot.has-img::after { display: none; }
+.slot.tall { aspect-ratio: 3 / 4; }
+.slot.wide { aspect-ratio: 21 / 9; }
+.slot.contain { background: #0b100d; }
+.slot.contain img { object-fit: contain; padding: clamp(14px, 3vw, 34px); }
+.hero-figure { padding: 0 var(--gut); }
+.hero-figure .slot { aspect-ratio: 21 / 9; }
+
+section { padding: clamp(56px, 8vw, 104px) var(--gut); }
+h2 {
+  font-family: var(--mono); font-weight: 700;
+  font-size: clamp(1.4rem, 3.6vw, 2.4rem); line-height: 1.1;
+  letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 26px;
+}
+.prose { max-width: 66ch; }
+.prose p { font-size: clamp(0.98rem, 1.5vw, 1.09rem); line-height: 1.78; color: var(--ink-mid); }
+.prose p + p { margin-top: 1.4em; }
+.prose strong { color: var(--ink); font-weight: 500; }
+.prose.cols {
+  max-width: none; columns: 2; column-gap: clamp(30px, 5vw, 76px);
+  orphans: 3; widows: 3;
+}
+.prose.cols p { break-inside: avoid; }
+.prose.cols p:first-child { margin-top: 0; }
+@media (max-width: 900px) { .prose.cols { columns: 1; max-width: 66ch; } }
+
+/* ---------- award ---------- */
+#award { border-top: 1px solid var(--rule); }
+.award-row {
+  display: grid; grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: clamp(24px, 4vw, 56px); align-items: start;
+}
+.award-row .slot { aspect-ratio: 3 / 4; }
+.award-name { font-family: var(--mono); font-weight: 700; font-size: clamp(1.05rem, 2vw, 1.35rem); letter-spacing: -0.02em; margin-bottom: 14px; }
+.credits {
+  margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px; line-height: 1.9; color: var(--ink-dim);
+}
+.credits b { display: block; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-mid); font-weight: 500; margin-bottom: 8px; }
+@media (max-width: 760px) { .award-row { grid-template-columns: 1fr; } .award-row .slot { max-width: 240px; } }
+
+/* ---------- build log ---------- */
+.log { border-top: 1px solid var(--rule); margin-top: clamp(30px, 4vw, 46px); }
+.entry { border-bottom: 1px solid var(--rule); padding: clamp(30px, 4.5vw, 56px) 0; }
+.entry-head { display: grid; grid-template-columns: 92px 1fr; gap: clamp(16px, 3vw, 34px); align-items: baseline; margin-bottom: clamp(20px, 3vw, 30px); }
+.entry-n { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
+.entry-t { font-family: var(--mono); font-weight: 700; font-size: clamp(1.05rem, 2.3vw, 1.5rem); line-height: 1.2; letter-spacing: -0.025em; }
+.entry-body {
+  display: grid; grid-template-columns: 92px minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(18px, 3vw, 34px); align-items: start;
+}
+.entry-body .txt { font-size: 14.5px; line-height: 1.74; color: var(--ink-mid); }
+.entry-body .txt p + p { margin-top: 1.2em; }
+.entry-body .txt strong { color: var(--ink); font-weight: 500; }
+.spec {
+  margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--rule);
+  font-family: var(--mono); font-size: 11px; line-height: 1.95; color: var(--ink-dim);
+}
+.spec span { color: var(--accent); }
+.entry-fig figcaption {
+  margin-top: 11px; font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.05em; line-height: 1.7; color: var(--ink-dim);
+}
+.open {
+  margin-top: 18px; border-left: 2px solid #ffa023; padding: 4px 0 4px 14px;
+  font-family: var(--mono); font-size: 11px; line-height: 1.8; color: var(--ink-mid);
+}
+.open b { color: #ffa023; display: block; letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 6px; font-weight: 500; }
+@media (max-width: 900px) {
+  .entry-head, .entry-body { grid-template-columns: 1fr; gap: 14px; }
+  .entry-n { order: -1; }
+}
+
+/* ---------- now ---------- */
+#now { border-top: 1px solid var(--rule); }
+.now-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; margin-top: clamp(28px, 4vw, 44px); }
+.now-card { border: 1px solid var(--rule); padding: clamp(18px, 2.4vw, 26px); }
+.now-card b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; font-weight: 500; }
+.now-card p { font-size: 13.5px; line-height: 1.7; color: var(--ink-mid); }
+
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(34px, 4vw, 50px); }
+.btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  text-decoration: none; padding: 15px 24px; min-height: 44px;
+  display: inline-flex; align-items: center;
+  border: 1px solid var(--edge); color: var(--ink);
+  transition: border-color 160ms, color 160ms;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.solid { background: var(--accent); border-color: var(--accent); color: #050a07; font-weight: 500; }
+.btn.solid:hover { color: #050a07; }
+
+footer {
+  border-top: 1px solid var(--rule); padding: 34px var(--gut);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-dim); display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between;
+}
+footer a { text-decoration: none; }
+footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<a class="skip" href="#log">Skip to content</a>
+
+<nav>
+  <a class="back" href="/">&lsaquo; Prakriti Srimal</a>
+  <a href="#log">Build log</a>
+</nav>
+
+<header class="hero">
+  <div class="kicker">Ongoing &nbsp;/&nbsp; Dar SEED Innovation &nbsp;/&nbsp; Bangalore</div>
+  <h1>Real Time<br>Sensing</h1>
+  <p class="standfirst">Urban designers are trained to read the city through what we can see: form, density, movement, light. What we rarely capture is what the city sounds, feels, and breathes like in real time. That is the gap this project is trying to close.</p>
+
+  <dl class="credit-grid">
+    <div>
+      <dt>Platform</dt>
+      <dd>NVIDIA Jetson Orin Nano Super<br>Edge inference, on-device</dd>
+    </div>
+    <div>
+      <dt>Sensors</dt>
+      <dd>GPS · Temperature · Humidity<br>MEMS microphone · PM2.5 / PM10<br>IMX477 camera</dd>
+    </div>
+    <div>
+      <dt>Recognition</dt>
+      <dd>SEED Chairman Award<br>Sounds of the City</dd>
+    </div>
+    <div>
+      <dt>Status</dt>
+      <dd class="live">Five build updates published<br>Site selection under way</dd>
+    </div>
+  </dl>
+</header>
+
+<div class="hero-figure">
+  <figure class="slot" data-slot="01-breadboard.jpg" data-src="/assets/sensing/01-breadboard.jpg" data-alt="The instrument on a desk: Jetson Orin Nano wired to a breadboard of sensors"></figure>
+</div>
+
+<section>
+  <div class="prose cols">
+    <p>Urban designers shape cities without ever really knowing what a street feels like. They work from maps, simulations, and averaged datasets. None of that tells you whether a specific street is too loud, too hot, or why people avoid it.</p>
+    <p>This device is built to fill that gap. Five sensors, sound, temperature, humidity, air quality, and video, all tied to the same GPS coordinate and the same timestamp. <strong>Not five separate data streams. One synchronized observation of a place at a moment in time.</strong></p>
+    <p>The point is coverage density. Existing sensor infrastructure is real-time but sparse. The data exists but it does not exist where decisions actually need to be made.</p>
+    <p>Sound and video are not independent data points here. They contextualize everything else. High particulate matter means something different on a street choked with traffic than on one that looks empty. The camera and microphone explain the reading.</p>
+    <p><strong>The use case is diagnosis before design.</strong> Before an urban designer intervenes on a street, they need to know what is actually wrong with it and why. Right now that answer comes from simulation and intuition. This makes it measurable.</p>
+    <p>Coming from a background in architecture and urban design, with a specialisation in machine thinking urbanism, I have spent years thinking about how cities work, analysing spatial data, building models. But I had never built physical hardware before. Building the instrument that creates the dataset is a completely different discipline, and a humbling one.</p>
+  </div>
+</section>
+
+<section id="system">
+  <h2>The system</h2>
+  <div class="prose" style="margin-bottom: clamp(26px,4vw,40px)">
+    <p>Six inputs into one edge device, three classes of output. Everything writes timestamped to an SD card so the readings stay tied to each other.</p>
+  </div>
+  <figure class="slot contain wide" data-slot="system-diagram.png" data-src="/assets/sensing/system-diagram.png" data-alt="Diagram: sound, temperature, humidity, air quality, video and GPS feeding a Jetson Orin Nano, producing audio classification, environment readings and object detection"></figure>
+</section>
+
+<section id="award">
+  <h2>Selected for SEED</h2>
+  <div class="award-row">
+    <figure class="slot" data-slot="seed-award.jpg" data-src="/assets/sensing/seed-award.jpg" data-alt="The SEED Chairman Award trophy, engraved Sounds of the City, Prakriti Srimal"></figure>
+    <div>
+      <div class="award-name">SEED Chairman Award, Sounds of the City</div>
+      <div class="prose">
+        <p>Sound is a powerful yet overlooked layer of urban data. From the quiet hum of residential streets to the intensity of commercial corridors, Sounds of the City explores how we can capture, analyse, and interpret these soundscapes to better understand how cities function, feel, and evolve.</p>
+        <p>The project was selected for the incubation stage of Dar's SEED Innovation programme, and later received the SEED Chairman Award. The aim is to build high-resolution sound datasets that can inform urban design, planning decisions, and policy, opening up new ways of reading the city beyond what we can see.</p>
+      </div>
+      <div class="credits">
+        <b>With thanks to</b>
+        Mustapha Madi · Dan Horner · Tom Benson · Payel Mallick · Treveena Rofaeel · Noorhan Mustafa Hanafi · the SEED jury
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="log">
+  <h2>Build log</h2>
+  <div class="prose">
+    <p>Documenting every step. The wins and the walls. Because the goal is not just a dataset at the end. It is showing that people who understand cities can also build the tools to listen to them.</p>
+  </div>
+
+  <div class="log">
+
+    <article class="entry">
+      <div class="entry-head">
+        <div class="entry-n">Update 01</div>
+        <div class="entry-t">A breadboard and wires going in every direction</div>
+      </div>
+      <div class="entry-body">
+        <div></div>
+        <div class="txt">
+          <p>That is a breadboard. Those are jumper wires going in every direction. And yes, <strong>I had to look up what a jumper wire was.</strong></p>
+          <p>Three sensors working on the Jetson: the GPS module locking onto satellites and reading coordinates, temperature and humidity giving live readings, and a MEMS microphone capturing audio.</p>
+          <div class="spec">
+            GPS module <span>locking</span><br>
+            Temperature + humidity <span>live</span><br>
+            MEMS microphone <span>capturing</span>
+          </div>
+        </div>
+        <figure class="entry-fig">
+          <div class="slot tall" data-slot="01-breadboard.jpg" data-src="/assets/sensing/01-breadboard.jpg" data-alt="A breadboard wired to the Jetson with a GPS antenna alongside a keyboard"></div>
+          <figcaption>First working configuration. GPS, temperature, humidity and audio on one board.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <div class="entry-n">Update 02</div>
+        <div class="entry-t">Five senses, one coordinate, one timestamp</div>
+      </div>
+      <div class="entry-body">
+        <div></div>
+        <div class="txt">
+          <p>Sound, temperature, humidity, air quality, and video, all tied to the same GPS coordinate and the same timestamp. Not five separate data streams. One synchronized observation of a place at a moment in time.</p>
+          <p>Existing sensor infrastructure is real-time but sparse. The data exists but it does not exist where decisions actually need to be made.</p>
+        </div>
+        <div></div>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <div class="entry-n">Update 03</div>
+        <div class="entry-t">The device left the desk</div>
+      </div>
+      <div class="entry-body">
+        <div></div>
+        <div class="txt">
+          <p>A trial run right outside the office. A few weeks ago this was a breadboard with wires going in every direction. <strong>Now it is out on a street in Bangalore, reading it.</strong></p>
+          <p>Every detection is written to a CSV with a timestamp, object class, confidence score, bounding box coordinates, and GPS position. Temperature, humidity, and timestamp are overlaid directly on the video feed, all saved to the SD card.</p>
+          <div class="spec">
+            Camera <span>IMX477 at 1920x1080</span><br>
+            Pipeline <span>GStreamer into YOLOv8</span><br>
+            Inference <span>every 3 frames at 15fps</span><br>
+            Confidence <span>0.4</span>
+          </div>
+          <div class="open">
+            <b>Open problem</b>
+            GPS fix was not locking consistently outdoors during this run. That is the next problem to solve before a proper deployment.
+          </div>
+        </div>
+        <figure class="entry-fig">
+          <div class="slot" data-slot="03-street-detection.mp4" data-src="/assets/sensing/03-street-detection.mp4" data-poster="/assets/sensing/03-street-detection.jpg" data-alt="Street footage with YOLOv8 bounding boxes on a truck and a motorcycle, temperature and timestamp overlaid"></div>
+          <figcaption>First street run. Detections, temperature, humidity and timestamp burned into the feed.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <div class="entry-n">Update 04</div>
+        <div class="entry-t">The camera and microphone would not coexist</div>
+      </div>
+      <div class="entry-body">
+        <div></div>
+        <div class="txt">
+          <p>The reason turned out to be a boot configuration problem rather than anything in the hardware itself. Both sensors need to be registered at startup. When the system configured the microphone, it was overwriting the camera's registration in the process. <strong>So whichever sensor got configured last would work, and the other would silently disappear with no error to explain why.</strong></p>
+          <p>The fix was making sure both sensors were registered together in the same startup configuration, then making it persistent so the setup survives every reboot. Both are now running together correctly.</p>
+          <div class="open">
+            <b>Open problem</b>
+            The INMP441 picks up everything indiscriminately: fan noise, keyboard clicks, ambient hum indoors. Outside in an urban environment it will be considerably worse. Useful audio classification needs serious filtering work first.
+          </div>
+        </div>
+        <div></div>
+      </div>
+    </article>
+
+    <article class="entry">
+      <div class="entry-head">
+        <div class="entry-n">Update 05</div>
+        <div class="entry-t">Air quality, and a wiring conflict</div>
+      </div>
+      <div class="entry-body">
+        <div></div>
+        <div class="txt">
+          <p>The air quality sensor is connected and reading PM2.5 and PM10. Getting there was less straightforward than I expected.</p>
+          <p>The PM2.5 sensor communicates over UART, a serial protocol the Jetson uses to talk to peripherals. The GPS module also uses UART, and the Jetson has a limited number of these serial lines. <strong>They could not both be connected the way I had planned.</strong> The power situation made it worse: the GPIO pins were already fully occupied, with no spare power pins to simply add another module.</p>
+          <p>The fix was to route the PM2.5 sensor through USB instead. A small converter module sits in between, translating the sensor's serial output into something the Jetson can read over a standard USB port. It adds a component to the setup but it works, and it keeps the GPS on its own dedicated line.</p>
+          <p>PM2.5 is fine particulate matter, small enough to enter the lungs. PM10 catches the coarser particles. <strong>A reading tied to a GPS coordinate, a timestamp, a temperature, a noise level, and a video frame is a different kind of data point than a reading on its own.</strong></p>
+        </div>
+        <figure class="entry-fig">
+          <div class="slot tall" data-slot="05-rig.jpg" data-src="/assets/sensing/05-rig.jpg" data-alt="The instrument with the air quality sensor added"></div>
+          <figcaption>Six inputs on one board. The PM2.5 sensor routed over USB to free the GPS serial line.</figcaption>
+        </figure>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="now">
+  <h2>Where it is now</h2>
+  <div class="now-grid">
+    <div class="now-card">
+      <b>Audio</b>
+      <p>Fine-tuning the classifier on the sounds that actually matter, rather than everything the microphone happens to hear.</p>
+    </div>
+    <div class="now-card">
+      <b>Site selection</b>
+      <p>Choosing deployment sites using readings from sensors already installed across Bangalore, so the instrument goes where the existing network is thinnest.</p>
+    </div>
+    <div class="now-card">
+      <b>Still open</b>
+      <p>Consistent outdoor GPS lock, and filtering the microphone enough to make street-level audio classification usable.</p>
+    </div>
+  </div>
+
+  <div class="cta">
+    <a class="btn solid" href="https://www.linkedin.com/in/prakriti-srimal-7390ab1a5/recent-activity/all/" target="_blank" rel="noopener">Follow the build updates &nearr;</a>
+    <a class="btn" href="mailto:prakritisrimal@gmail.com?subject=Real%20Time%20Sensing">Get in touch</a>
+  </div>
+</section>
+
+<footer>
+  <span>Prakriti Srimal &nbsp;/&nbsp; Bangalore</span>
+  <span>
+    <a href="mailto:prakritisrimal@gmail.com">Email</a> &nbsp;/&nbsp;
+    <a href="https://www.linkedin.com/in/prakriti-srimal-7390ab1a5/" target="_blank" rel="noopener">LinkedIn</a> &nbsp;/&nbsp;
+    <a href="https://github.com/psrimal" target="_blank" rel="noopener">GitHub</a>
+  </span>
+</footer>
+
+<script>
+'use strict';
+/* Media slots. Change a file extension in data-src and the page adapts:
+   .mp4 / .webm build a video, anything else builds an image. Video never
+   autoplays off screen and never preloads until it is needed. */
+(function () {
+  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var vids = [];
+
+  document.querySelectorAll('.slot[data-src]').forEach(function (slot) {
+    var src = slot.getAttribute('data-src') || '';
+    var poster = slot.getAttribute('data-poster') || '';
+    var alt = slot.getAttribute('data-alt') || '';
+    var isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+    if (!isVideo) {
+      var img = document.createElement('img');
+      img.src = src; img.alt = alt; img.loading = 'lazy'; img.decoding = 'async';
+      img.addEventListener('load', function () { slot.classList.add('has-img'); });
+      img.addEventListener('error', function () { img.remove(); });
+      slot.appendChild(img);
+      return;
+    }
+
+    var v = document.createElement('video');
+    v.src = src; v.muted = true; v.loop = true; v.playsInline = true;
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.preload = 'none';
+    if (poster) v.poster = poster;
+    v.setAttribute('aria-label', alt);
+    v.addEventListener('loadeddata', function () { slot.classList.add('has-img'); });
+    v.addEventListener('error', function () { v.remove(); });
+    slot.appendChild(v);
+    vids.push({ slot: slot, v: v });
+  });
+
+  if (!vids.length || REDUCED) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var rec = vids.find(function (r) { return r.slot === e.target; });
+      if (!rec) return;
+      if (e.isIntersecting) {
+        if (rec.v.preload !== 'auto') rec.v.preload = 'auto';
+        var p = rec.v.play();
+        if (p && p.catch) p.catch(function () {});
+      } else { rec.v.pause(); }
+    });
+  }, { threshold: 0.5 });
+  vids.forEach(function (r) { io.observe(r.slot); });
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) vids.forEach(function (r) { r.v.pause(); });
+  });
+})();
+</script>
+</body>
+</html>

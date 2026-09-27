@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>IsoChronic City | Prakriti Srimal</title>
+<meta name="description" content="IsoChronic City is an urban response to what reurbanization should look like in the post-pandemic era, built on the principles of the 15-minute neighbourhood. Master's thesis, Bartlett School of Architecture, UCL B-Pro.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+  --body: 'DM Sans', system-ui, sans-serif;
+  --bg: #060807; --ink: #f0ede4; --ink-mid: #929e96; --ink-dim: #7d8c83;
+  --accent: #2db354; --rule: #171d19;
+  --edge: #5c6a62;   /* 3.53:1, for control borders */
+  --gut: clamp(20px, 6vw, 90px);
+}
+html { scroll-behavior: smooth; background: var(--bg); }
+body { font-family: var(--body); background: var(--bg); color: var(--ink); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+img { display: block; width: 100%; height: auto; }
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 99;
+  background: var(--ink); color: var(--bg); padding: 12px 18px;
+  font-family: var(--mono); font-size: 12px;
+}
+.skip:focus { left: 12px; top: 12px; }
+
+/* ---------- nav ---------- */
+nav {
+  position: sticky; top: 0; z-index: 50; background: rgba(6,8,7,0.92);
+  backdrop-filter: blur(8px); border-bottom: 1px solid var(--rule);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 var(--gut); height: 56px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+}
+nav a { text-decoration: none; color: var(--ink-mid); transition: color 160ms; }
+nav a:hover { color: var(--accent); }
+nav .back { color: var(--ink); }
+
+/* ---------- hero ---------- */
+header.hero { padding: clamp(52px, 8vw, 110px) var(--gut) clamp(40px, 5vw, 64px); }
+.kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); margin-bottom: 20px; }
+h1 {
+  font-family: var(--mono); font-weight: 700;
+  font-size: clamp(2.2rem, 8vw, 5.6rem); line-height: 0.94;
+  letter-spacing: -0.045em; text-transform: uppercase;
+}
+.credit-grid {
+  margin-top: clamp(30px, 4vw, 48px);
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 18px 32px; border-top: 1px solid var(--rule); padding-top: 26px;
+  font-family: var(--mono); font-size: 11.5px; line-height: 1.7;
+}
+.credit-grid dt { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-dim); margin-bottom: 7px; }
+.credit-grid dd { color: var(--ink-mid); }
+
+/* ---------- image slots ---------- */
+.slot {
+  position: relative; background: #0b100d; border: 1px solid var(--rule);
+  aspect-ratio: 16 / 9; overflow: hidden;
+}
+.slot img, .slot video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; background: #0b100d; }
+.slot .replay {
+  position: absolute; inset: 0; z-index: 3; border: 0; cursor: pointer;
+  background: transparent; color: transparent; font-size: 0;
+}
+.slot.reduced .replay { background: rgba(6,8,7,0.35); }
+.slot.reduced .replay::after {
+  content: 'Play'; color: var(--ink); font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.18em; text-transform: uppercase; border: 1px solid var(--accent);
+  padding: 11px 18px; background: rgba(6,8,7,0.85);
+}
+.slot::after {
+  content: attr(data-slot); position: absolute; left: 12px; bottom: 10px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-dim); pointer-events: none;
+}
+.slot.has-img::after { display: none; }
+.slot.tall { aspect-ratio: 3 / 4; }
+.slot.wide { aspect-ratio: 21 / 9; }
+
+/* Hero: the plan sits taller than its frame and drifts vertically as the
+   page scrolls. Works at any aspect ratio because the image is cropped to
+   cover, not fitted. */
+.pan-wrap { position: relative; }
+.pan-stage {
+  position: relative; overflow: hidden;
+  height: clamp(420px, 76svh, 780px);
+  background: #0b100d;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+}
+.pan-stage img {
+  position: absolute; left: 0; top: 0;
+  width: 100%; height: 132%;
+  object-fit: cover; object-position: center;
+  will-change: transform; transform: translate3d(0, -12%, 0);
+}
+@media (max-width: 780px) { .pan-stage { height: clamp(320px, 58svh, 520px); } }
+@media (prefers-reduced-motion: reduce) {
+  .pan-stage img { height: 100%; transform: none; }
+}
+
+/* ---------- prose ---------- */
+section { padding: clamp(56px, 8vw, 104px) var(--gut); }
+.prose { max-width: 66ch; }
+.prose p { font-size: clamp(0.98rem, 1.5vw, 1.09rem); line-height: 1.78; color: var(--ink-mid); }
+.prose p + p { margin-top: 1.4em; }
+/* the intro spans the same width as the media above it, in two columns,
+   so it does not sit in a narrow strip with the page empty beside it */
+.prose.cols {
+  max-width: none; columns: 2; column-gap: clamp(30px, 5vw, 76px);
+  orphans: 3; widows: 3;
+}
+.prose.cols p { break-inside: avoid; }
+.prose.cols p:first-child { margin-top: 0; }
+@media (max-width: 900px) { .prose.cols { columns: 1; max-width: 66ch; } }
+.prose strong, .prose em { color: var(--ink); font-style: normal; font-weight: 500; }
+h2 {
+  font-family: var(--mono); font-weight: 700;
+  font-size: clamp(1.4rem, 3.6vw, 2.4rem); line-height: 1.1;
+  letter-spacing: -0.03em; text-transform: uppercase; margin-bottom: 26px;
+}
+
+/* ---------- gallery ---------- */
+.plate { border-top: 1px solid var(--rule); padding-top: clamp(30px, 4vw, 48px); margin-top: clamp(44px, 6vw, 80px); }
+.plate:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+.plate-n { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; color: var(--accent); }
+.plate-t { font-family: var(--mono); font-weight: 700; font-size: clamp(1rem, 2.1vw, 1.35rem); line-height: 1.2; letter-spacing: -0.02em; }
+/* the caption sits under the media and spans its full width.
+   three columns keeps the measure readable instead of running a
+   single 190-character line across a wide screen. */
+.plate-cap {
+  display: grid; grid-template-columns: 54px minmax(0, 0.85fr) minmax(0, 1.35fr);
+  gap: clamp(18px, 3vw, 44px); align-items: start;
+  margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule);
+}
+.plate-body { font-size: 14.5px; line-height: 1.72; color: var(--ink-mid); }
+@media (max-width: 820px) {
+  .plate-cap { grid-template-columns: 1fr; gap: 12px; }
+  .plate-n { order: -1; }
+}
+.trio { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2.4vw, 30px); }
+.tri .slot { aspect-ratio: 16 / 9; }
+.tri-t { font-family: var(--mono); font-weight: 700; font-size: clamp(0.95rem, 1.7vw, 1.12rem); line-height: 1.2; letter-spacing: -0.02em; margin: 18px 0 10px; }
+.tri-p { font-size: 13.5px; line-height: 1.7; color: var(--ink-mid); }
+@media (max-width: 820px) { .trio { grid-template-columns: 1fr; } }
+
+
+/* ---------- awards ---------- */
+#awards { border-top: 1px solid var(--rule); }
+.awards-list { margin-top: clamp(34px, 5vw, 56px); }
+.award {
+  display: grid; grid-template-columns: 132px 1fr; gap: clamp(20px, 3vw, 40px);
+  padding: clamp(24px, 3vw, 34px) 0; border-top: 1px solid var(--rule); align-items: start;
+}
+.award-logo {
+  background: #ffffff; border: 1px solid var(--rule); aspect-ratio: 16 / 10;
+  display: grid; place-items: center; overflow: hidden; padding: 11px;
+}
+.award-logo img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
+/* opt in per logo, only for a PNG with a real transparent background */
+.award-logo.wordmark {
+  background: #0b100d; color: var(--ink-mid);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-align: center;
+}
+.award-logo::after {
+  content: attr(data-missing); padding: 6px;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+  line-height: 1.5; color: #8a8574; text-align: center; word-break: break-all;
+}
+.award-logo.ok::after { content: none; }
+.award-logo.mono { background: #0b100d; }
+.award-logo.mono img { filter: brightness(0) invert(1); opacity: 0.86; max-width: 82%; max-height: 70%; }
+.award-yr { font-family: var(--mono); font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 9px; }
+.award-t { font-family: var(--mono); font-weight: 700; font-size: clamp(0.98rem, 1.9vw, 1.2rem); line-height: 1.24; letter-spacing: -0.02em; margin-bottom: 11px; }
+.award-p { font-size: 14px; line-height: 1.68; color: var(--ink-mid); max-width: 62ch; }
+.award-link {
+  display: inline-block; margin-top: 13px; font-family: var(--mono);
+  font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 160ms;
+}
+.award-link:hover { border-color: var(--accent); }
+@media (max-width: 640px) { .award { grid-template-columns: 108px 1fr; gap: 18px; } }
+
+/* ---------- cta + footer ---------- */
+.cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: clamp(34px, 4vw, 50px); }
+.btn {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+  text-decoration: none; padding: 15px 24px; min-height: 44px; display: inline-flex; align-items: center; border: 1px solid var(--edge); color: var(--ink);
+  transition: border-color 160ms, color 160ms;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.solid { background: var(--accent); border-color: var(--accent); color: #050a07; font-weight: 500; }
+.btn.solid:hover { color: #050a07; }
+footer {
+  border-top: 1px solid var(--rule); padding: 34px var(--gut);
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-dim); display: flex; flex-wrap: wrap; gap: 14px; justify-content: space-between;
+}
+footer a { text-decoration: none; }
+footer a:hover { color: var(--accent); }
+</style>
+</head>
+<body>
+<a class="skip" href="#process">Skip to content</a>
+
+<nav>
+  <a class="back" href="/">&lsaquo; Prakriti Srimal</a>
+  <a href="#awards">Awards &amp; Publications</a>
+</nav>
+
+<header class="hero">
+  <div class="kicker">Master's Thesis &nbsp;/&nbsp; Bartlett B-Pro &nbsp;/&nbsp; 2023</div>
+  <h1>IsoChronic<br>City</h1>
+
+  <dl class="credit-grid">
+    <div>
+      <dt>Institution</dt>
+      <dd>The Bartlett School of Architecture<br>University College London, B-Pro</dd>
+    </div>
+    <div>
+      <dt>Team</dt>
+      <dd>Prakriti Srimal<br>Sonali Bordia<br>Shuyao Li<br>Siyang Zheng</dd>
+    </div>
+    <div>
+      <dt>Methods</dt>
+      <dd>Principal Component Analysis<br>K-Means Clustering<br>Convolutional Neural Networks<br>Space Syntax</dd>
+    </div>
+    <div>
+      <dt>Site</dt>
+      <dd>London</dd>
+    </div>
+  </dl>
+</header>
+
+<div class="pan-wrap" id="hero-pan">
+  <div class="pan-stage">
+    <img id="hero-img" src="/assets/isochroniccity/hero.jpg" alt="IsoChronic City, the analysed London plan">
+  </div>
+</div>
+
+<section>
+  <div class="prose cols">
+    <p>IsoChronic City is a master's thesis developed at the Bartlett School of Architecture, University College London, under the B-Pro program. It was envisioned by a team of four consisting of Prakriti Srimal, Sonali Bordia, Shuyao Li and Siyang Zheng.</p>
+    <p>The project is an urban response to the evolving question of what reurbanization should look like in the post-pandemic era. Rooted in the principles of the 15-minute neighbourhood, which draws from historical concepts of proximity and walkability, IsoChronic City seeks to extend the accessibility and functionality of urban living.</p>
+    <p>Leveraging datasets processed through machine learning techniques such as Principal Component Analysis, K-Means Clustering and Convolutional Neural Networks, combined with spatial computational methods, the project establishes an <strong>IsoChronic Generative Loop</strong>, a framework for urban transformation.</p>
+    <p>This proposal involves reconfiguring existing network centrality, designing responsive public spaces through topo-geometric strategies, and repurposing underutilized open areas into interactive zones equipped with essential amenities. Through these interventions, the project reshapes both the physical and spatial fabric of the city to promote sustainability, inclusivity and accessibility, creating a replicable model of a future-ready urban environment.</p>
+  </div>
+</section>
+
+<section id="process">
+  <h2>Process</h2>
+
+  <div class="plate">
+    <figure class="slot" data-slot="01-spatial-signature.jpg" data-src="/assets/isochroniccity/01-selection_of_spatial_signatures.mp4" data-poster="/assets/isochroniccity/01-selection_of_spatial_signatures.jpg" data-alt="Spatial signature classification across London"></figure>
+    <div class="plate-cap"><div class="plate-n">01</div><div class="plate-t">Formation and Selection of Spatial Signature</div><p class="plate-body">Spatial signatures are created based on parameters such as population density, land use, accessibility, deprivation and connectivity. The dense urban signature is selected as it is predominantly residential in nature with access to jobs and services.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="02-urban-decay.jpg" data-src="/assets/isochroniccity/02-urban_decay.jpg" data-poster="" data-alt="Overlaid dataset layers indicating urban decay"></figure>
+    <div class="plate-cap"><div class="plate-n">02</div><div class="plate-t">Urban Decay</div><p class="plate-body">Various layers of datasets are examined indicating the areas affected by reurbanization. By overlaying these layers a correlation is established between the datasets from the years 2010, 2015 and 2019, analysing the parts of London facing urban decay.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="03-design-goals.jpg" data-src="/assets/isochroniccity/03-design_goals.mp4" data-poster="/assets/isochroniccity/03-design_goals.jpg" data-alt="Design goals diagram"></figure>
+    <div class="plate-cap"><div class="plate-n">03</div><div class="plate-t">Design Goals</div><p class="plate-body">The design intends to achieve a sustainable, inclusive and accessible city which repeats itself at regular intervals. A 15-minute neighbourhood is defined by identifying the amenities required within a certain radius and mode of transport.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="04-grading-the-city.jpg" data-src="/assets/isochroniccity/04-grading_of_the_city.mp4" data-poster="/assets/isochroniccity/04-grading_of_the_city.jpg" data-alt="Computational grading of amenity access"></figure>
+    <div class="plate-cap"><div class="plate-n">04</div><div class="plate-t">Grading the City</div><p class="plate-body">A computational model is devised to evaluate the city. The process of grading shows the various stages of identifying the count and distance to amenities within varying radii to determine the areas with the least scores.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="05-angular-step-depth.jpg" data-src="/assets/isochroniccity/05-angular_step_depth.jpg" data-poster="" data-alt="Angular step depth segmentation of the site network"></figure>
+    <div class="plate-cap"><div class="plate-n">05</div><div class="plate-t">Space Syntax: Angular Step Depth</div><p class="plate-body">Segmentation of the site network is performed using angular step depth to create a detailed model of how the definition of a 15-minute city changes as an individual moves along the streets.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="06-optimization.jpg" data-src="/assets/isochroniccity/06-optimisation_algorithm.mp4" data-poster="/assets/isochroniccity/06-optimisation_algorithm.jpg" data-alt="Multi-objective segment selection"></figure>
+    <div class="plate-cap"><div class="plate-n">06</div><div class="plate-t">Optimization Algorithm</div><p class="plate-body">An optimization algorithm is used to select segments based on a multi-objective approach. Four street segments with poor spatial characteristics are identified as the areas of interest.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="07-generative-loop.jpg" data-src="/assets/isochroniccity/07-isochronic_generative_loop.jpg" data-poster="" data-alt="The IsoChronic generative loop"></figure>
+    <div class="plate-cap"><div class="plate-n">07</div><div class="plate-t">IsoChronic Generative Loop</div><p class="plate-body">The 20 segments derived from spatial computational modelling are influenced through an IsoChronic generative loop created on the selected four segments, coupled with data extracted from traditional data analysis and deep learning networks.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="08-masterplan.jpg" data-src="/assets/isochroniccity/08-masterplan.mp4" data-poster="/assets/isochroniccity/08-masterplan.jpg" data-alt="Masterplan"></figure>
+    <div class="plate-cap"><div class="plate-n">08</div><div class="plate-t">Masterplan</div><p class="plate-body">The strategy is proposed by evaluating the existing condition and using the theoretical background of a 15-minute city.</p></div>
+  </div>
+
+  <div class="plate">
+    <figure class="slot" data-slot="09-emplacement.jpg" data-src="/assets/isochroniccity/09-emplacement_of_interventions.mp4" data-poster="/assets/isochroniccity/09-emplacement_of_interventions.jpg" data-alt="Emplacement of interventions"></figure>
+    <div class="plate-cap"><div class="plate-n">09</div><div class="plate-t">Emplacement of Interventions</div><p class="plate-body">The design consists of interventions of varying scale: Elevated Segments, Void Segments and Mobile Segments.</p></div>
+  </div>
+</section>
+
+<section id="design">
+  <h2>Design</h2>
+
+  <div class="trio">
+    <div class="tri">
+      <figure class="slot" data-slot="10b" data-src="/assets/isochroniccity/10b.mp4" data-poster="/assets/isochroniccity/10b.jpg" data-alt="Void segment"></figure>
+      <h3 class="tri-t">Void segments</h3>
+      <p class="tri-p">Developed using a spatial modelling process and data extracted from spatial computational techniques, introducing placemaking elements along with interaction spaces and landscaping details.</p>
+    </div>
+    <div class="tri">
+      <figure class="slot" data-slot="10c-market_place" data-src="/assets/isochroniccity/10c-market_place.mp4" data-poster="/assets/isochroniccity/10c-market_place.jpg" data-alt="Mobile segment"></figure>
+      <h3 class="tri-t">Mobile segments</h3>
+      <p class="tri-p">Units designed for adaptability and positioned using a steady state island generative algorithm based on footfall trends. These modules are arranged on site to serve as pop-up markets containing amenities.</p>
+    </div>
+    <div class="tri">
+      <figure class="slot" data-slot="10a-elevated_wallkway" data-src="/assets/isochroniccity/10a-elevated_wallkway.mp4" data-poster="/assets/isochroniccity/10a-elevated_wallkway.jpg" data-alt="Elevated segment"></figure>
+      <h3 class="tri-t">Elevated segments</h3>
+      <p class="tri-p">Reduce the time taken to travel in the city, linking together the built environment while distancing the pedestrian from vehicular pollution and congestion.</p>
+    </div>
+  </div>
+
+  <figure class="slot wide" data-slot="11_unity" data-controls="true" data-src="/assets/isochroniccity/11_unity.mp4" data-poster="/assets/isochroniccity/11_unity.jpg" data-alt="Unity walkthrough of the proposal" style="margin-top: clamp(34px, 4.5vw, 56px)"></figure>
+  <div class="plate-cap" style="border-top:none">
+    <div class="plate-n">11</div>
+    <div class="plate-t">Walkthrough</div>
+    <p class="plate-body">A real-time walkthrough of the proposal, moving through the void, mobile and elevated segments as they sit in the existing fabric.</p>
+  </div>
+
+  <div class="cta">
+    <a class="btn solid" href="mailto:prakritisrimal@gmail.com?subject=I%20would%20like%20to%20view%20IsoChronic%20City%20Portfolio">Request the full portfolio</a>
+  </div>
+</section>
+
+<section id="awards">
+  <h2>Awards and Publications</h2>
+  <div class="prose">
+    <p>IsoChronic City has been recognized for its innovation and impact in urban intelligence. It has won several awards and has been featured on the following platforms.</p>
+  </div>
+
+  <div class="awards-list">
+
+    <article class="award">
+      <div class="award-logo" data-logo="/assets/isochroniccity/logos/wasa-wls.png" data-alt="WASA WLS"></div>
+      <div>
+        <div class="award-yr">Award &nbsp;/&nbsp; November 2022</div>
+        <div class="award-t">World Architecture Student Awards, World League Series (WASA-WLS)</div>
+        <p class="award-p">IsoChronic City won the gold medal at the World Architecture Student Association, World League Series, in November 2022.</p>
+        <a class="award-link" href="https://www.zenkokukenkomi.com/wsl2022-english" target="_blank" rel="noopener">WASA-WLS Winning Works 2022 &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+      <div class="award-logo" data-logo="/assets/isochroniccity/logos/mab.png" data-alt="Media Architecture Biennale"></div>
+      <div>
+        <div class="award-yr">Award &nbsp;/&nbsp; June 2023</div>
+        <div class="award-t">Media Architecture Biennale 2023</div>
+        <p class="award-p">Winner of the Student Award for Equitable and Sustainable Media Architecture, June 2023.</p>
+        <a class="award-link" href="https://studentawards.mediaarchitecture.org/mab/project/201" target="_blank" rel="noopener">MAB23 Student Awards &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+      <div class="award-logo" data-logo="/assets/isochroniccity/logos/inspireli.jpg" data-alt="Inspireli Awards"></div>
+      <div>
+        <div class="award-yr">Award</div>
+        <div class="award-t">Inspireli Awards</div>
+        <p class="award-p">IsoChronic City was presented at the Media Architecture Biennale through the Inspireli Awards.</p>
+        <a class="award-link" href="https://www.inspireli.com/en/awards/detail/5541" target="_blank" rel="noopener">Inspireli.com &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+      <div class="award-logo" data-logo="/assets/isochroniccity/logos/arch-hive.png" data-alt="Arch Hive"></div>
+      <div>
+        <div class="award-yr">Publication</div>
+        <div class="award-t">Arch Hive</div>
+        <p class="award-p">Featured in Arch Hive, recognizing the project's vision for shaping urban futures.</p>
+        <a class="award-link" href="https://arch-hive.com/project/6473690a04692f2bf80c0c78" target="_blank" rel="noopener">IsoChronic City on Arch Hive &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+      <div class="award-logo" data-logo="/assets/isochroniccity/logos/archdaily.jpg" data-alt="ArchDaily"></div>
+      <div>
+        <div class="award-yr">Publication &nbsp;/&nbsp; November 2023</div>
+        <div class="award-t">ArchDaily</div>
+        <p class="award-p">As part of the MAB23 award, IsoChronic City was featured in ArchDaily in November 2023.</p>
+        <a class="award-link" href="https://www.archdaily.com/1009280/winners-of-the-media-architecture-biennale-2023-student-awards" target="_blank" rel="noopener">Winners of the Media Architecture Biennale 2023 Student Awards &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+       <div class="award-logo" data-logo="/assets/isochroniccity/logos/archidiaries.png" data-alt="ArchiDiaries"></div>
+      <div>
+        <div class="award-yr">Publication</div>
+        <div class="award-t">ArchiDiaries</div>
+        <p class="award-p">Published in ArchiDiaries, a recognition of the project's approach to urban design and spatial intelligence.</p>
+        <a class="award-link" href="https://archidiaries.com/academic-projects/isochronic-city-masters-design-thesis-on-urban-revitalization/" target="_blank" rel="noopener">IsoChronic City on ArchiDiaries &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+      <div class="award-logo neg" data-logo="/assets/isochroniccity/logos/ucl.png" data-alt="University College London"></div>
+      <div>
+        <div class="award-yr">Institution &nbsp;/&nbsp; April 2023</div>
+        <div class="award-t">University College London</div>
+        <p class="award-p">Covered by the Bartlett Faculty of the Built Environment following the World Architecture Student Awards.</p>
+        <a class="award-link" href="https://www.ucl.ac.uk/bartlett/news/2023/apr/urban-design-march-graduates-honoured-world-architecture-student-awards" target="_blank" rel="noopener">Urban Design MArch Graduates Honoured &nearr;</a>
+      </div>
+    </article>
+
+    <article class="award">
+      <div class="award-logo neg" data-logo="/assets/isochroniccity/logos/bartlett.png" data-alt="The Bartlett School of Architecture"></div>
+      <div>
+        <div class="award-yr">Exhibition &nbsp;/&nbsp; 2022</div>
+        <div class="award-t">The Bartlett School of Architecture</div>
+        <p class="award-p">Exhibited in the B-Pro Show under RC14, Machine Thinking Urbanism.</p>
+        <a class="award-link" href="https://bpro2022.bartlettarchucl.com/rc14-machine-thinking-urbanism/isochronic-city" target="_blank" rel="noopener">IsoChronic City, B-Pro Show &nearr;</a>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<footer>
+  <span>Prakriti Srimal &nbsp;/&nbsp; Bangalore</span>
+  <span>
+    <a href="mailto:prakritisrimal@gmail.com">Email</a> &nbsp;/&nbsp;
+    <a href="https://www.linkedin.com/in/prakriti-srimal-7390ab1a5/" target="_blank" rel="noopener">LinkedIn</a> &nbsp;/&nbsp;
+    <a href="https://github.com/psrimal" target="_blank" rel="noopener">GitHub</a>
+  </span>
+</footer>
+
+<script>
+'use strict';
+/* Media slots. Change a file extension in data-src and the page adapts:
+   .mp4 / .webm build a video, anything else builds an image.
+   Video never autoplays off screen and never preloads until it is needed,
+   because thirteen clips loading at once would be unusable on mobile data. */
+/* Hero parallax. The image is 132% of the frame height, so there is 32%
+   of overhang to move through. Offset runs from -24% to 0% as the frame
+   crosses the viewport, which reads as the plan settling into place. */
+(function () {
+  var wrap = document.getElementById('hero-pan');
+  if (!wrap) return;
+  var stage = wrap.querySelector('.pan-stage');
+  var img = document.getElementById('hero-img');
+  if (!img) return;
+  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var OVER = 32;                 /* must match the 132% height in the CSS */
+  var ticking = false;
+
+  img.addEventListener('error', function () { wrap.style.display = 'none'; });
+
+  function update() {
+    if (REDUCED) return;
+    var r = stage.getBoundingClientRect();
+    var span = window.innerHeight + r.height;
+    var p = (window.innerHeight - r.top) / span;      /* 0 entering, 1 leaving */
+    p = Math.min(1, Math.max(0, p));
+    var shift = -(OVER * (1 - p));                    /* -32% .. 0% */
+    img.style.transform = 'translate3d(0,' + shift.toFixed(2) + '%,0)';
+  }
+
+  function onScroll() {
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(function () { update(); ticking = false; });
+  }
+
+  update();
+  addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', update);
+})();
+
+/* Award logos. If a file is missing the plate names the file it wanted,
+   so a blank logo tells you which filename to fix instead of nothing. */
+document.querySelectorAll('.award-logo[data-logo]').forEach(function (plate) {
+  var src = plate.getAttribute('data-logo');
+  var img = document.createElement('img');
+  img.src = src;
+  img.alt = plate.getAttribute('data-alt') || '';
+  img.loading = 'lazy';
+  img.addEventListener('load', function () { plate.classList.add('ok'); });
+  img.addEventListener('error', function () {
+    img.remove();
+    plate.setAttribute('data-missing', 'missing: ' + src.split('/').pop());
+    console.warn('Award logo not found: ' + src);
+  });
+  plate.appendChild(img);
+});
+
+(function () {
+  var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var vids = [];
+
+  document.querySelectorAll('.slot[data-src]').forEach(function (slot) {
+    var src = slot.getAttribute('data-src') || '';
+    var poster = slot.getAttribute('data-poster') || '';
+    var alt = slot.getAttribute('data-alt') || '';
+    var isVideo = /\.(mp4|webm|mov)$/i.test(src);
+
+    if (!isVideo) {
+      var img = document.createElement('img');
+      img.src = src; img.alt = alt; img.loading = 'lazy'; img.decoding = 'async';
+      img.addEventListener('load', function () { slot.classList.add('has-img'); });
+      img.addEventListener('error', function () { img.remove(); });
+      slot.appendChild(img);
+      return;
+    }
+
+    var manual = slot.getAttribute('data-controls') === 'true';
+    var v = document.createElement('video');
+    v.src = src; v.playsInline = true; v.setAttribute('playsinline', '');
+    v.preload = 'none';
+    if (manual) {
+      v.controls = true;                 /* long clip: the visitor decides */
+    } else {
+      v.muted = true; v.loop = true; v.setAttribute('muted', '');
+    }
+    if (poster) v.poster = poster;
+    v.setAttribute('aria-label', alt);
+    v.addEventListener('loadeddata', function () { slot.classList.add('has-img'); });
+    v.addEventListener('error', function () { v.remove(); });
+    slot.appendChild(v);
+
+    if (manual) { slot.classList.add('manual'); vids.push({ slot: slot, v: v, manual: true }); return; }
+
+    if (REDUCED) {
+      slot.classList.add('reduced');
+      var btn = document.createElement('button');
+      btn.className = 'replay'; btn.type = 'button';
+      btn.setAttribute('aria-label', 'Play ' + alt);
+      btn.addEventListener('click', function () {
+        slot.classList.remove('reduced');
+        v.preload = 'auto'; v.play();
+      });
+      slot.appendChild(btn);
+    }
+    vids.push({ slot: slot, v: v });
+  });
+
+  if (!vids.length || REDUCED) return;
+
+  /* load and play only while at least half the frame is on screen */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      var rec = vids.find(function (r) { return r.slot === e.target; });
+      if (!rec) return;
+      if (rec.manual) { if (!e.isIntersecting) rec.v.pause(); return; }
+      if (e.isIntersecting) {
+        if (rec.v.preload !== 'auto') rec.v.preload = 'auto';
+        var p = rec.v.play();
+        if (p && p.catch) p.catch(function () {});
+        rec.slot.classList.add('playing');
+      } else {
+        rec.v.pause();
+        rec.slot.classList.remove('playing');
+      }
+    });
+  }, { threshold: 0.5 });
+  vids.forEach(function (r) { io.observe(r.slot); });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) vids.forEach(function (r) { r.v.pause(); });
+  });
+})();
+</script>
+</body>
+</html>
