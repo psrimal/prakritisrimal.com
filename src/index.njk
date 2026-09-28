@@ -11,7 +11,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <nav class="links">
       <a href="#atlas">ATLAS</a>
       <a href="#investigation">INVESTIGATION</a>
-      <a href="#recognition">RECOGNITION</a>
+      
       <a href="#about">ABOUT</a>
     </nav>
     <button class="search-btn" id="openSearch" aria-haspopup="dialog">SEARCH ATLAS <kbd>⌘K</kbd></button>
@@ -109,43 +109,20 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
   </div>
 </section>
 
-<section class="band" id="recognition">
-  <div class="shell">
-    <div class="band-head">
-      <h2>Recognition</h2>
-      <p>Where the work has been awarded, published or shown.</p>
-    </div>
-    <ol class="recog">
-      {%- for r in recognition %}
-      <li>
-        <span class="r-year">{{ r.year }}</span>
-        <span class="r-label">{{ r.label }}</span>
-        <span class="r-body">
-          <b>{{ r.title }}</b>
-          <span>{{ r.detail }}</span>
-        </span>
-        {%- if r.project %}<button class="r-go" data-id="{{ r.project }}">OPEN</button>{% endif %}
-      </li>
-      {%- endfor %}
-    </ol>
-    <div class="toolkit">
-      <span>PYTHON</span><span>OSMNX</span><span>PYROSM</span><span>NETWORKX</span><span>GEOPANDAS</span><span>QGIS</span><span>SPACE SYNTAX</span><span>PCA / K-MEANS</span><span>CNN</span><span>JETSON ORIN</span><span>GRASSHOPPER</span><span>REVIT / PYREVIT</span>
-    </div>
-  </div>
-</section>
-
 <section class="band" id="about">
   <div class="shell">
     <div class="about">
       <div>
         <div class="band-head" style="margin-bottom:var(--s5)"><h2>About</h2></div>
         <p>I trained as an architect and stopped drawing buildings when I realised the questions I cared about were about the space between them. Now I work as a spatial data scientist, mostly on cities, mostly with street networks, sensors and whatever the city will let me measure.</p>
-        <p>Bengaluru is where I live and the place most of this work tests itself against. London is where the thesis was done. Delhi, Mumbai, Kolkata and Chennai appear because a comparison is only fair if every city is cut the same way.</p>
         <p>My pattern, for better and worse, is saying yes to something before I fully understand it and then refusing to put it down until I do. That is how a person who had never touched a breadboard ended up building a sensor.</p>
         <div class="contact">
           <a class="btn" href="mailto:prakritisrimal@gmail.com">Email</a>
           <a class="btn" href="https://github.com/psrimal" target="_blank" rel="noopener">GitHub</a>
           <a class="btn" href="https://www.linkedin.com/in/prakriti-srimal-7390ab1a5/" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <div class="toolkit">
+          <span>PYTHON</span><span>OSMNX</span><span>PYROSM</span><span>NETWORKX</span><span>GEOPANDAS</span><span>QGIS</span><span>SPACE SYNTAX</span><span>PCA / K-MEANS</span><span>CNN</span><span>JETSON ORIN</span><span>GRASSHOPPER</span><span>REVIT / PYREVIT</span>
         </div>
       </div>
       <dl class="facts">

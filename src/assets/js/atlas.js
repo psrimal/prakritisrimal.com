@@ -700,7 +700,6 @@ if ($('#rows')) {
   renderFilters(); renderRows(); renderMarkers(); drawAtlas();
   renderInvestigation(PROJECTS[0]);
   new ResizeObserver(() => requestAnimationFrame(drawAtlas)).observe($('#atlasCanvas'));
-  $$('.r-go').forEach((b) => b.addEventListener('click', () => select(b.dataset.id)));
   $('#resetAtlas').addEventListener('click', () => { activeFilter = 'ALL'; renderFilters(); renderRows(); renderMarkers(); drawAtlas(); });
   addEventListener('resize', () => { drawAtlas(); drawGraph(); });
 }
