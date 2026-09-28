@@ -62,9 +62,20 @@ const CITIES = [
 const TIER_PRIO = { study: 0, research: 1, comparison: 2, writing: 3 };
 
 /* Draws lat/lon rings onto a sphere, hiding anything on the far side. */
-function strokeRings(ctx, rings, cx, cy, R, rotRad, style, width) {
+function strokeRings(ctx, rings, cx, cy, R, rotRad, style, width, halo) {
   if (!rings) return;
+  if (halo) {
+    ctx.save();
+    ctx.strokeStyle = halo; ctx.lineWidth = width * 3.2;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ringPaths(ctx, rings, cx, cy, R, rotRad);
+    ctx.restore();
+  }
   ctx.strokeStyle = style; ctx.lineWidth = width;
+  ringPaths(ctx, rings, cx, cy, R, rotRad);
+}
+
+function ringPaths(ctx, rings, cx, cy, R, rotRad) {
   for (const ring of rings) {
     let pen = false;
     ctx.beginPath();
@@ -142,10 +153,10 @@ function globeField(canvas, opts) {
     const R = Math.min(w, h) * (o.radius || 0.42);
     const cx = o.right ? w * (w > 900 ? 0.68 : 0.5) : w * 0.5;
     const cy = h * 0.5;
-    const desk = w > 900;                      // point 2: desktop was too faint
-    const gA = desk ? 0.34 : 0.26;             // graticule
-    const dotBoost = desk ? 1.55 : 1.0;        // land dots
-    ctx.strokeStyle = `rgba(56,78,78,${gA})`; ctx.lineWidth = 1;
+    const desk = w > 900;
+    const gA = desk ? 0.46 : 0.30;             // graticule
+    const dotBoost = desk ? 2.2 : 1.15;        // land dots
+    ctx.strokeStyle = `rgba(86,116,116,${gA})`; ctx.lineWidth = 1;
     for (let k = -60; k <= 60; k += 30) {
       ctx.beginPath();
       for (let a = 0; a <= 180; a += 3) {
@@ -176,7 +187,9 @@ function globeField(canvas, opts) {
       ctx.fillRect(cx + x * R, cy - y * R, p.s * 1.25 * (desk ? 1.15 : 1), p.s * 1.25 * (desk ? 1.15 : 1));
     }
     strokeRings(ctx, GEO.world, cx, cy, R, rot(),
-      desk ? 'rgba(176,216,206,.80)' : 'rgba(176,216,206,.62)', 1);
+      desk ? 'rgba(214,240,228,.98)' : 'rgba(198,232,218,.78)',
+      desk ? 1.35 : 1,
+      desk ? 'rgba(166,248,196,.16)' : 'rgba(166,248,196,.10)');
     ctx.font = '9.5px "JetBrains Mono", monospace';
     const labels = [];
     for (const city of CITIES) {
@@ -224,7 +237,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, ra
       b: 'The finest grained of the five. 136 intersections per square kilometre, streets averaging 59 metres, and the most direct routes in the set.' }
   ];
   const rc = rng(4242);
-  const cloud = Array.from({ length: 1600 }, () => ({ th: 2 * Math.PI * rc(), ph: Math.acos(2 * rc() - 1), s: 0.4 + rc() * 0.8 }));
+  const cloud = Array.from({ length: 3200 }, () => ({ th: 2 * Math.PI * rc(), ph: Math.acos(2 * rc() - 1), s: 0.4 + rc() * 0.8 }));
   const fallback = (() => {
     const g = rng(99), lines = [];
     for (let i = 0; i < 64; i++) { const y = g(); lines.push([[0, y], [1, y + (g() - 0.5) * 0.10]]); }
@@ -273,14 +286,16 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, ra
         const lon = q.th + PHASE, la = Math.PI / 2 - q.ph;
         const x = Math.cos(la) * Math.sin(lon), z = Math.cos(la) * Math.cos(lon), y = Math.sin(la);
         if (z < 0) continue;
-        ctx.fillStyle = `rgba(166,248,196,${Math.min(1, (0.22 + z * 0.62) * globeA * (desk ? 1.6 : 1.3))})`;
+        ctx.fillStyle = `rgba(166,248,196,${Math.min(1, (0.30 + z * 0.70) * globeA * (desk ? 2.1 : 1.4))})`;
         ctx.fillRect(cx + x * R, cy - y * R, q.s, q.s);
       }
-      ctx.strokeStyle = `rgba(70,96,99,${0.7 * globeA})`; ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(102,136,136,${0.85 * globeA})`; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
       // swap to the finer coastline once the sphere is big enough to show it
       const coast = (p > 0.10 && GEO.world50) ? GEO.world50 : GEO.world;
-      strokeRings(ctx, coast, cx, cy, R, PHASE, `rgba(176,216,206,${0.92 * globeA})`, desk ? 1.1 : 1);
+      strokeRings(ctx, coast, cx, cy, R, PHASE,
+        `rgba(216,242,230,${globeA})`, desk ? 1.5 : 1.1,
+        `rgba(166,248,196,${0.18 * globeA})`);
     }
 
     /* Close range. The sphere radius is nowhere near enough to reach city scale,
