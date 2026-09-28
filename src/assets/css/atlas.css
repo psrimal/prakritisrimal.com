@@ -30,9 +30,9 @@ header.chrome{
   backdrop-filter:blur(6px);
 }
 .chrome-in{display:flex;align-items:center;gap:var(--s6);height:64px}
-.mark{display:flex;align-items:baseline;gap:10px;text-decoration:none;flex:0 0 auto}
-.mark b{font-family:var(--mono);font-weight:700;font-size:19px;letter-spacing:.02em}
-.mark span{font-family:var(--mono);font-size:9.5px;line-height:1.3;color:var(--text-3);letter-spacing:.14em}
+.mark{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
+.mark b{font-family:var(--mono);font-weight:700;font-size:20px;line-height:1;letter-spacing:.02em;display:block}
+.mark span{font-family:var(--mono);font-size:9px;line-height:1.35;color:var(--text-3);letter-spacing:.15em;display:block;padding-top:1px}
 nav.links{display:flex;gap:var(--s6);margin-left:auto;font-family:var(--mono);font-size:11.5px;letter-spacing:.16em}
 nav.links a{text-decoration:none;color:var(--text-2);padding:6px 0;border-bottom:1px solid transparent}
 nav.links a:hover{color:var(--text);border-bottom-color:var(--active)}
@@ -48,11 +48,11 @@ nav.links a:hover{color:var(--text);border-bottom-color:var(--active)}
 .hero{position:relative;min-height:100svh;display:flex;align-items:center;padding:110px 0 90px;overflow:hidden}
 #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:0}
 .hero .shell{position:relative;z-index:1}
-.hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:var(--s7);align-items:center}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:var(--s7);align-items:center}
 .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--text-3)}
 h1.display{
   font-family:var(--mono);font-weight:700;margin:var(--s5) 0 0;
-  font-size:clamp(40px,6.4vw,104px);line-height:.98;letter-spacing:-.035em;
+  font-size:clamp(34px,4.6vw,78px);line-height:1.0;letter-spacing:-.035em;max-width:16ch;
 }
 h1.display .dim{color:var(--text-3)}
 .hero-sub{max-width:52ch;color:var(--text-2);margin-top:var(--s5);font-size:18px}
@@ -262,3 +262,52 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
 .tier-key{display:flex;flex-wrap:wrap;gap:var(--s5);margin-top:var(--s6);font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;color:var(--text-3)}
 .tier-key span{display:flex;align-items:center;gap:8px}
 .tier-key i{width:8px;height:8px;border-radius:50%;display:block}
+
+/* ---------- live vs not yet ---------- */
+.rows-divider{
+  font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--text-3);
+  padding:22px 18px 10px;border-bottom:1px solid var(--rule);background:var(--void)
+}
+.row.thin{padding:13px 18px;opacity:.62}
+.row.thin:hover{opacity:1}
+.row.thin h3{font-size:15px;margin:7px 0 0;color:var(--text-2)}
+.row.thin[aria-pressed="true"]{opacity:1}
+
+/* ---------- lab matrix ---------- */
+.matrix{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12px}
+.matrix th{font-weight:400;text-align:left;color:var(--text-3);font-size:10px;letter-spacing:.14em;padding:12px 10px;border-bottom:1px solid var(--rule-strong)}
+.matrix thead th:not(:first-child){text-align:center}
+.matrix tbody th{border-bottom:1px solid var(--rule);padding:16px 10px 16px 0;min-width:220px}
+.matrix tbody th b{display:block;font-size:14px;font-weight:600;color:var(--text);letter-spacing:0}
+.matrix tbody th span{display:block;font-size:10px;letter-spacing:.14em;color:var(--text-3);margin-top:4px}
+.matrix td{text-align:center;padding:16px 10px;border-bottom:1px solid var(--rule)}
+.matrix td.stops{text-align:right;color:var(--text-2);font-size:11.5px;letter-spacing:.06em}
+.matrix tbody tr{cursor:pointer}
+.matrix tbody tr:hover td,.matrix tbody tr:hover th{background:var(--raised)}
+.pip{display:inline-block;width:11px;height:11px;border-radius:50%;border:1px solid currentColor;opacity:.55}
+.pip.full{background:currentColor;opacity:1}
+.pip.half{background:linear-gradient(90deg,currentColor 50%,transparent 50%);opacity:1}
+@media(max-width:820px){.matrix tbody th{min-width:160px}.matrix td.stops{display:none}.matrix thead th:last-child{display:none}}
+
+/* ---------- recognition ---------- */
+.recog{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+.recog li{
+  display:grid;grid-template-columns:70px 108px 1fr auto;gap:var(--s5);align-items:start;
+  padding:22px 0;border-bottom:1px solid var(--rule)
+}
+.r-year{font-family:var(--mono);font-size:13px;color:var(--text);letter-spacing:.04em}
+.r-label{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:var(--text-3);padding-top:4px}
+.r-body b{display:block;font-family:var(--mono);font-weight:600;font-size:17px;letter-spacing:-.01em;margin-bottom:6px}
+.r-body span{color:var(--text-2);font-size:14.5px;line-height:1.6;max-width:62ch;display:block}
+.r-go{
+  font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--text-3);
+  background:transparent;border:1px solid var(--rule);padding:8px 12px;cursor:pointer;min-height:34px
+}
+.r-go:hover{color:var(--active);border-color:var(--active)}
+.recog li:hover .r-year{color:var(--active)}
+@media(max-width:760px){
+  .recog li{grid-template-columns:62px 1fr;gap:var(--s3) var(--s4)}
+  .r-label{grid-column:2;padding-top:0}
+  .r-body{grid-column:2}
+  .r-go{grid-column:2;justify-self:start;margin-top:4px}
+}

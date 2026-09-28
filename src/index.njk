@@ -11,7 +11,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <nav class="links">
       <a href="#atlas">ATLAS</a>
       <a href="#investigation">INVESTIGATION</a>
-      <a href="#lab">LAB</a>
+      <a href="#recognition">RECOGNITION</a>
       <a href="#about">ABOUT</a>
     </nav>
     <button class="search-btn" id="openSearch" aria-haspopup="dialog">SEARCH ATLAS <kbd>⌘K</kbd></button>
@@ -47,7 +47,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <div class="scale-readout" aria-live="polite">
       <div>VIEW / <b id="scaleName">EARTH</b></div>
       <div>SCALE / <b id="scaleValue">1:40,000,000</b></div>
-      <div>STATE / <b id="scaleState">MARKERS FROM VERIFIED WORK</b></div>
+      <div>STATE / <b id="scaleState">NATURAL EARTH COASTLINE</b></div>
     </div>
   </div>
 </section>
@@ -67,7 +67,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
       </div>
 
       <div class="panel">
-        <div class="panel-top"><span>LAYER CONTROL</span><span id="signalCount">{{ projects | length }} SIGNALS</span></div>
+        <div class="panel-top"><span>LAYER CONTROL</span><span id="signalCount">LOADING</span></div>
         <div class="filters" id="filters" role="group" aria-label="Filter investigations by domain"></div>
         <div class="rows" id="rows">
           {%- for p in projects %}{% if p.stage == 'live' %}
@@ -109,13 +109,25 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
   </div>
 </section>
 
-<section class="band" id="lab">
+<section class="band" id="recognition">
   <div class="shell">
     <div class="band-head">
-      <h2>The lab</h2>
-      <p>Where each investigation actually stops. Filled means done and shown on this site, half means partial, empty means not started.</p>
+      <h2>Recognition</h2>
+      <p>Where the work has been awarded, published or shown.</p>
     </div>
-    <div id="labMatrix"></div>
+    <ol class="recog">
+      {%- for r in recognition %}
+      <li>
+        <span class="r-year">{{ r.year }}</span>
+        <span class="r-label">{{ r.label }}</span>
+        <span class="r-body">
+          <b>{{ r.title }}</b>
+          <span>{{ r.detail }}</span>
+        </span>
+        {%- if r.project %}<button class="r-go" data-id="{{ r.project }}">OPEN</button>{% endif %}
+      </li>
+      {%- endfor %}
+    </ol>
     <div class="toolkit">
       <span>PYTHON</span><span>OSMNX</span><span>PYROSM</span><span>NETWORKX</span><span>GEOPANDAS</span><span>QGIS</span><span>SPACE SYNTAX</span><span>PCA / K-MEANS</span><span>CNN</span><span>JETSON ORIN</span><span>GRASSHOPPER</span><span>REVIT / PYREVIT</span>
     </div>

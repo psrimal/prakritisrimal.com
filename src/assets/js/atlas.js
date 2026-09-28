@@ -3,6 +3,19 @@
    Canvas work here is schematic and says so on screen. */
 
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* Real geography. world.json always exists; bengaluru.json appears once you run
+   tools/build-geo.mjs over your shapefiles. Everything degrades to the schematic
+   if a file is missing, so the site never breaks waiting on data. */
+const GEO = { world: null, world50: null, blr: null };
+const grab = (u) => fetch(u).then((r) => r.ok ? r.json() : null).catch(() => null);
+/* coarse first so the globe paints immediately, then the finer set for the descent */
+grab('/assets/data/world.json').then((w) => { GEO.world = w && w.rings; redrawAll(); });
+Promise.all([grab('/assets/data/world-50m.json'), grab('/assets/data/bengaluru.json')])
+  .then(([w50, b]) => { GEO.world50 = w50 && w50.rings; GEO.blr = b; redrawAll(); });
+
+const REDRAWS = [];
+function redrawAll() { REDRAWS.forEach((f) => { try { f(); } catch (e) {} }); }
 const PROJECTS = window.PROJECTS || [];
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => [...document.querySelectorAll(s)];
@@ -34,6 +47,40 @@ const CITIES = [
   { n: 'DUBAI', lat: 25.20, lon: 55.27, tier: 'writing', c: C.water }
 ];
 const TIER_PRIO = { study: 0, research: 1, comparison: 2, writing: 3 };
+
+/* Draws lat/lon rings onto a sphere, hiding anything on the far side. */
+function strokeRings(ctx, rings, cx, cy, R, rotRad, style, width) {
+  if (!rings) return;
+  ctx.strokeStyle = style; ctx.lineWidth = width;
+  for (const ring of rings) {
+    let pen = false;
+    ctx.beginPath();
+    for (let i = 0; i < ring.length; i++) {
+      const la = ring[i][1] * Math.PI / 180, lo = ring[i][0] * Math.PI / 180 + rotRad;
+      const z = Math.cos(la) * Math.cos(lo);
+      if (z <= 0) { pen = false; continue; }
+      const x = cx + Math.cos(la) * Math.sin(lo) * R, y = cy - Math.sin(la) * R;
+      if (!pen) { ctx.moveTo(x, y); pen = true; } else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+}
+
+/* Flat equirectangular draw, for the close range where curvature is irrelevant. */
+function strokeFlat(ctx, rings, cx, cy, ppd, lat0, lon0, style, width, close) {
+  if (!rings) return;
+  const k = Math.cos(lat0 * Math.PI / 180);
+  ctx.strokeStyle = style; ctx.lineWidth = width;
+  for (const ring of rings) {
+    ctx.beginPath();
+    for (let i = 0; i < ring.length; i++) {
+      const x = cx + (ring[i][0] - lon0) * ppd * k, y = cy - (ring[i][1] - lat0) * ppd;
+      i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+    }
+    if (close) ctx.closePath();
+    ctx.stroke();
+  }
+}
 
 function drawMarker(ctx, city, px, py, t) {
   if (city.tier === 'study') {
@@ -82,7 +129,10 @@ function globeField(canvas, opts) {
     const R = Math.min(w, h) * (o.radius || 0.42);
     const cx = o.right ? w * (w > 900 ? 0.68 : 0.5) : w * 0.5;
     const cy = h * 0.5;
-    ctx.strokeStyle = 'rgba(38,53,53,.42)'; ctx.lineWidth = 1;
+    const desk = w > 900;                      // point 2: desktop was too faint
+    const gA = desk ? 0.30 : 0.22;             // graticule
+    const dotBoost = desk ? 1.55 : 1.0;        // land dots
+    ctx.strokeStyle = `rgba(56,78,78,${gA})`; ctx.lineWidth = 1;
     for (let k = -60; k <= 60; k += 30) {
       ctx.beginPath();
       for (let a = 0; a <= 180; a += 3) {
@@ -108,9 +158,12 @@ function globeField(canvas, opts) {
       const lon = p.th + rot(), lat = Math.PI / 2 - p.ph;
       const x = Math.cos(lat) * Math.sin(lon), z = Math.cos(lat) * Math.cos(lon), y = Math.sin(lat);
       if (z < 0) continue;
-      ctx.fillStyle = `rgba(166,248,196,${0.16 + z * 0.72})`;
-      ctx.fillRect(cx + x * R, cy - y * R, p.s * 1.25, p.s * 1.25);
+      const a = Math.min(1, (0.16 + z * 0.72) * dotBoost);
+      ctx.fillStyle = `rgba(166,248,196,${a})`;
+      ctx.fillRect(cx + x * R, cy - y * R, p.s * 1.25 * (desk ? 1.15 : 1), p.s * 1.25 * (desk ? 1.15 : 1));
     }
+    strokeRings(ctx, GEO.world, cx, cy, R, rot(),
+      desk ? 'rgba(150,196,186,.60)' : 'rgba(150,196,186,.42)', 1);
     ctx.font = '9.5px "JetBrains Mono", monospace';
     const labels = [];
     for (const city of CITIES) {
@@ -125,6 +178,7 @@ function globeField(canvas, opts) {
   }
   const loop = () => { if (!vis) { raf = null; return; } t += 1; draw(); raf = requestAnimationFrame(loop); };
   size(); draw();
+  REDRAWS.push(() => { size(); draw(); });
   if (!RM) {
     new IntersectionObserver((es) => { vis = es[0].isIntersecting; if (vis && !raf) raf = requestAnimationFrame(loop); }, { threshold: 0.02 }).observe(canvas);
   }
@@ -146,88 +200,88 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, ra
   const sec = $('.descent'), cv = $('#scaleCanvas'); if (!sec || !cv) return;
   let ctx, w, h;
   const STEPS = [
-    { p: 0.00, name: 'EARTH', scale: '1:40,000,000', state: 'MARKERS FROM VERIFIED WORK',
+    { p: 0.00, name: 'EARTH', scale: '1:40,000,000', state: 'NATURAL EARTH COASTLINE',
       t: 'From the planet<br>to the street.',
       b: 'Seven cities carry work on this site. One is the subject, one is where the research was done, four are the comparison set, and one turns up in an essay about pace.' },
     { p: 0.34, name: 'SUBCONTINENT', scale: '1:4,000,000', state: 'MEASURED / 10 KM NETWORK BALL',
       t: 'Five cities,<br>cut the same way.',
       b: 'Delhi, Mumbai, Kolkata, Chennai and Bengaluru, each measured inside a ten kilometre network distance ball from its historic core. Not a municipal boundary, not a circle. The number beside each city is intersections per square kilometre.' },
-    { p: 0.68, name: 'BENGALURU', scale: '1:40,000', state: 'SCHEMATIC GEOMETRY',
+    { p: 0.68, name: 'BENGALURU', scale: '1:40,000', state: 'DISTRICT BOUNDARY / OSM',
       t: 'And into<br>Bengaluru.',
       b: 'The finest grained of the five. 136 intersections per square kilometre, streets averaging 59 metres, and the most direct routes in the set.' }
   ];
   const rc = rng(4242);
   const cloud = Array.from({ length: 1600 }, () => ({ th: 2 * Math.PI * rc(), ph: Math.acos(2 * rc() - 1), s: 0.4 + rc() * 0.8 }));
-  const streets = (() => {
+  const fallback = (() => {
     const g = rng(99), lines = [];
-    for (let i = 0; i < 64; i++) { const y = g(); lines.push({ a: [0, y], b: [1, y + (g() - 0.5) * 0.10], w: g() > 0.85 ? 1.5 : 0.7 }); }
-    for (let i = 0; i < 64; i++) { const x = g(); lines.push({ a: [x, 0], b: [x + (g() - 0.5) * 0.10, 1], w: g() > 0.85 ? 1.5 : 0.7 }); }
-    for (let i = 0; i < 9; i++) { const a = g() * 6.28; lines.push({ a: [0.5, 0.5], b: [0.5 + Math.cos(a) * 0.8, 0.5 + Math.sin(a) * 0.8], w: 1.8 }); }
+    for (let i = 0; i < 64; i++) { const y = g(); lines.push([[0, y], [1, y + (g() - 0.5) * 0.10]]); }
+    for (let i = 0; i < 64; i++) { const x = g(); lines.push([[x, 0], [x + (g() - 0.5) * 0.10, 1]]); }
     return lines;
   })();
   const size = () => { const f = fitCanvas(cv); ctx = f.ctx; w = f.w; h = f.h; };
+  const sstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  const PHASE = -1.354;   // locked so India faces the viewer throughout
+  const BLR = [77.5946, 12.9716];
 
   function draw(p) {
     ctx.clearRect(0, 0, w, h);
-    const cx0 = w * (w > 900 ? 0.30 : 0.5), cy0 = h * 0.5;
-    /* rotation locked so India stays facing the viewer through the descent */
-    const phase = -1.354;
-    const R = Math.min(w, h) * (0.34 + Math.pow(p, 1.35) * 2.0);
-    /* the camera follows the Indian centroid in as the sphere grows, otherwise
-       the cities shoot off the top of the frame */
-    const sstep = (a, b, x) => { const t2 = Math.min(1, Math.max(0, (x - a) / (b - a))); return t2 * t2 * (3 - 2 * t2); };
-    const follow = sstep(0.06, 0.38, p);
+    const desk = w > 900;
+    const cx0 = w * (desk ? 0.30 : 0.5), cy0 = h * 0.5;
     const proj = (latDeg, lonDeg) => {
-      const la = latDeg * Math.PI / 180, lo = lonDeg * Math.PI / 180 + phase;
+      const la = latDeg * Math.PI / 180, lo = lonDeg * Math.PI / 180 + PHASE;
       return { x: Math.cos(la) * Math.sin(lo), z: Math.cos(la) * Math.cos(lo), y: Math.sin(la) };
     };
+    const R = Math.min(w, h) * (0.34 + Math.pow(p, 1.35) * 2.0);
+    const follow = sstep(0.06, 0.38, p);
     const ctr = proj(20.5, 79.0);
-    const cx = cx0 - ctr.x * R * follow;
-    const cy = cy0 + ctr.y * R * follow;
+    const cx = cx0 - ctr.x * R * follow, cy = cy0 + ctr.y * R * follow;
+
     const globeA = Math.max(0, 1 - Math.max(0, p - 0.55) / 0.30);
-    const streetA = Math.max(0, (p - 0.62) / 0.38);
-    const cityA = Math.min(1, Math.max(0, (p - 0.12) / 0.20)) * Math.max(0, 1 - Math.max(0, p - 0.66) / 0.22);
+    const cityA  = sstep(0.12, 0.32, p) * (1 - sstep(0.66, 0.88, p));
+    const localA = sstep(0.66, 0.86, p);
 
     if (globeA > 0.01) {
       for (const q of cloud) {
-        const lon = q.th + phase, lat = Math.PI / 2 - q.ph;
-        const x = Math.cos(lat) * Math.sin(lon), z = Math.cos(lat) * Math.cos(lon), y = Math.sin(lat);
+        const lon = q.th + PHASE, la = Math.PI / 2 - q.ph;
+        const x = Math.cos(la) * Math.sin(lon), z = Math.cos(la) * Math.cos(lon), y = Math.sin(la);
         if (z < 0) continue;
-        ctx.fillStyle = `rgba(166,248,196,${(0.10 + z * 0.45) * globeA})`;
+        ctx.fillStyle = `rgba(166,248,196,${(0.10 + z * 0.45) * globeA * (desk ? 1.5 : 1)})`;
         ctx.fillRect(cx + x * R, cy - y * R, q.s, q.s);
       }
-      ctx.strokeStyle = `rgba(38,53,53,${0.55 * globeA})`; ctx.lineWidth = 1;
+      ctx.strokeStyle = `rgba(56,78,78,${0.45 * globeA})`; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
-      for (let k = -60; k <= 60; k += 30) {
-        ctx.beginPath();
-        for (let a = 0; a <= 180; a += 3) {
-          const lon = (a / 180) * Math.PI * 2 + phase, lat = k * Math.PI / 180;
-          const x = Math.cos(lat) * Math.sin(lon), z = Math.cos(lat) * Math.cos(lon), y = Math.sin(lat);
-          if (z < 0) { ctx.moveTo(cx + x * R, cy - y * R); continue; }
-          a === 0 ? ctx.moveTo(cx + x * R, cy - y * R) : ctx.lineTo(cx + x * R, cy - y * R);
-        }
-        ctx.stroke();
-      }
+      // swap to the finer coastline once the sphere is big enough to show it
+      const coast = (p > 0.10 && GEO.world50) ? GEO.world50 : GEO.world;
+      strokeRings(ctx, coast, cx, cy, R, PHASE, `rgba(150,196,186,${0.62 * globeA})`, 1);
     }
 
-    if (streetA > 0.01) {
-      const bp = proj(12.97, 77.59);
+    /* close range: the real district, or the schematic if the file is not built yet */
+    if (localA > 0.01) {
+      const bp = proj(BLR[1], BLR[0]);
       const bx = cx + bp.x * R, by = cy - bp.y * R;
-      const S = Math.max(w, h) * 2.4, ox = bx - S / 2, oy = by - S / 2;
-      for (const l of streets) {
-        ctx.strokeStyle = `rgba(110,150,145,${0.44 * streetA})`; ctx.lineWidth = l.w;
-        ctx.beginPath(); ctx.moveTo(ox + l.a[0] * S, oy + l.a[1] * S); ctx.lineTo(ox + l.b[0] * S, oy + l.b[1] * S); ctx.stroke();
+      const ppd = R * Math.PI / 180;   // pixels per degree at this sphere radius
+      if (GEO.blr) {
+        strokeFlat(ctx, GEO.blr.roads, bx, by, ppd, BLR[1], BLR[0], `rgba(120,160,155,${0.42 * localA})`, 0.7);
+        strokeFlat(ctx, GEO.blr.water, bx, by, ppd, BLR[1], BLR[0], `rgba(115,207,229,${0.55 * localA})`, 1, true);
+        strokeFlat(ctx, GEO.blr.district, bx, by, ppd, BLR[1], BLR[0], `rgba(166,248,196,${0.75 * localA})`, 1.4, true);
+      } else {
+        const S = Math.max(w, h) * 2.4, ox = bx - S / 2, oy = by - S / 2;
+        ctx.strokeStyle = `rgba(110,150,145,${0.40 * localA})`; ctx.lineWidth = 0.8;
+        for (const l of fallback) {
+          ctx.beginPath();
+          ctx.moveTo(ox + l[0][0] * S, oy + l[0][1] * S);
+          ctx.lineTo(ox + l[1][0] * S, oy + l[1][1] * S);
+          ctx.stroke();
+        }
       }
     }
 
-    /* the comparison constellation: five measured cities, joined and labelled */
     if (cityA > 0.01) {
       const pos = {};
       for (const city of CITIES) {
-        const lat = city.lat * Math.PI / 180, lon = city.lon * Math.PI / 180 + phase;
-        const x = Math.cos(lat) * Math.sin(lon), z = Math.cos(lat) * Math.cos(lon), y = Math.sin(lat);
-        if (z <= 0.02) continue;
-        pos[city.n] = { px: cx + x * R, py: cy - y * R, city };
+        const q = proj(city.lat, city.lon);
+        if (q.z <= 0.02) continue;
+        pos[city.n] = { px: cx + q.x * R, py: cy - q.y * R, city };
       }
       const blr = pos['BENGALURU'];
       if (blr) {
@@ -243,31 +297,31 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, ra
       for (const k in pos) {
         const { px, py, city } = pos[k];
         ctx.globalAlpha = cityA; drawMarker(ctx, city, px, py, 0); ctx.globalAlpha = 1;
-        const txt = city.grain ? `${city.n}  ${city.grain}` : city.n;
-        labels.push({ city, px, py, fade: cityA, text: txt });
+        labels.push({ city, px, py, fade: cityA, text: city.grain ? `${city.n}  ${city.grain}` : city.n });
       }
       placeLabels(ctx, labels);
     }
   }
 
-  let cur = null;
+  let cur = null, lastP = 0;
   function onScroll() {
     const rect = sec.getBoundingClientRect();
     const total = sec.offsetHeight - innerHeight;
-    const p = Math.min(1, Math.max(0, (-rect.top) / Math.max(1, total)));
-    draw(p);
-    let s = STEPS[0];
-    for (const st of STEPS) if (p >= st.p) s = st;
-    if (cur !== s.name) {
-      cur = s.name;
-      $('#scaleName').textContent = s.name;
-      $('#scaleValue').textContent = s.scale;
-      $('#scaleState').textContent = s.state;
-      $('#descentTitle').innerHTML = s.t;
-      $('#descentBody').textContent = s.b;
+    lastP = Math.min(1, Math.max(0, (-rect.top) / Math.max(1, total)));
+    draw(lastP);
+    let st = STEPS[0];
+    for (const x of STEPS) if (lastP >= x.p) st = x;
+    if (cur !== st.name) {
+      cur = st.name;
+      $('#scaleName').textContent = st.name;
+      $('#scaleValue').textContent = st.scale;
+      $('#scaleState').textContent = (st.name === 'BENGALURU' && !GEO.blr) ? 'SCHEMATIC / AWAITING SHAPEFILE' : st.state;
+      $('#descentTitle').innerHTML = st.t;
+      $('#descentBody').textContent = st.b;
     }
   }
   size(); onScroll();
+  REDRAWS.push(() => { size(); cur = null; onScroll(); });
   addEventListener('resize', () => { size(); onScroll(); });
   addEventListener('scroll', () => requestAnimationFrame(onScroll), { passive: true });
 })();
@@ -399,14 +453,23 @@ function renderFilters() {
 
 function renderRows() {
   const list = PROJECTS.filter((p) => activeFilter === 'ALL' || p.domain === activeFilter);
-  $('#signalCount').textContent = String(list.length).padStart(2, '0') + ' SIGNALS';
-  $('#rows').innerHTML = list.map((p) => `
+  const live = list.filter((p) => p.stage === 'live');
+  const rest = list.filter((p) => p.stage !== 'live');
+  $('#signalCount').textContent = `${String(live.length).padStart(2, '0')} LIVE / ${String(rest.length).padStart(2, '0')} NOT YET`;
+  const full = (p) => `
     <button class="row" data-id="${p.id}" aria-pressed="${p.id === activeId}" style="color:var(--${p.color})">
       <span class="row-meta"><span>${p.num} / ${esc(p.domain)} / ${esc(p.place)}</span><span class="status">${esc(p.maturity)}</span></span>
       <h3>${esc(p.question)}</h3>
       <p>${esc(p.blurb)}</p>
       ${p.href ? '<span class="open">FULL PROJECT PAGE</span>' : ''}
-    </button>`).join('');
+    </button>`;
+  const thin = (p) => `
+    <button class="row thin" data-id="${p.id}" aria-pressed="${p.id === activeId}" style="color:var(--${p.color})">
+      <span class="row-meta"><span>${p.num} / ${esc(p.domain)}</span><span class="status">${esc(p.maturity)}</span></span>
+      <h3>${esc(p.question)}</h3>
+    </button>`;
+  $('#rows').innerHTML = live.map(full).join('')
+    + (rest.length ? '<div class="rows-divider">NOT YET</div>' + rest.map(thin).join('') : '');
   $$('#rows .row').forEach((b) => b.addEventListener('click', () => select(b.dataset.id)));
 }
 
@@ -494,7 +557,7 @@ function renderInvestigation(p) {
   $('#panels').innerHTML = p.views.map((v, i) => `
     <div class="tabpanel" role="tabpanel" id="p-${v.id}" aria-labelledby="t-${v.id}" ${i === 0 ? '' : 'hidden'}>
       ${v.blocks.map(block).join('')}
-      ${i === 0 && p.href ? `<a class="open-link" href="${p.href}">Open the full project page</a>` : ''}
+      ${p.href ? `<a class="open-link" href="${p.href}">Open the full project page</a>` : ''}
     </div>`).join('');
 
   const keys = p.views.map((v) => v.id);
@@ -637,6 +700,7 @@ if ($('#rows')) {
   renderFilters(); renderRows(); renderMarkers(); drawAtlas();
   renderInvestigation(PROJECTS[0]);
   new ResizeObserver(() => requestAnimationFrame(drawAtlas)).observe($('#atlasCanvas'));
+  $$('.r-go').forEach((b) => b.addEventListener('click', () => select(b.dataset.id)));
   $('#resetAtlas').addEventListener('click', () => { activeFilter = 'ALL'; renderFilters(); renderRows(); renderMarkers(); drawAtlas(); });
   addEventListener('resize', () => { drawAtlas(); drawGraph(); });
 }
