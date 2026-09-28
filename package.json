@@ -12,7 +12,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@11ty/eleventy": "^3.1.6"
+    "@11ty/eleventy": "^3.1.6",
+    "mapshaper": "^0.7.69",
+    "shapefile": "^0.6.6",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
   },
   "type": "module",
   "private": true

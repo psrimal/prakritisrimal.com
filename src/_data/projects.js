@@ -5,6 +5,8 @@
 export default [
   {
     id: 'isochronic',
+    progress: { data: 1, process: 1, model: 1, interpret: 1 },
+    stage: 'live',
     num: '01',
     domain: 'ACCESS',
     color: 'network',
@@ -12,7 +14,7 @@ export default [
     year: '2023',
     maturity: 'AWARDED',
     title: 'IsoChronic City',
-    question: 'How far can you actually get?',
+    question: 'What does urbanisation look like in the post covid era?',
     note: 'A radius is not a journey. Reach follows the graph people can actually walk.',
     blurb: 'MArch thesis at the Bartlett. Machine learning and space syntax applied to the fifteen minute neighbourhood in London.',
     href: '/work/isochronic-city/',
@@ -60,6 +62,8 @@ export default [
 
   {
     id: 'geometry',
+    progress: { data: 1, process: 1, model: 1, interpret: 1 },
+    stage: 'live',
     num: '02',
     domain: 'FORM',
     color: 'form',
@@ -67,8 +71,8 @@ export default [
     year: '2026',
     maturity: 'MEASURED',
     title: 'The Social Geometry of Indian Cities',
-    question: 'What is a city made of?',
-    note: 'What five street networks can, and cannot, tell us about the way cities shape everyday encounters.',
+    question: 'How do cities shape encounters?',
+    note: 'What five street networks tell us about the way cities shape everyday encounters.',
     blurb: 'Grain, block scale, connectivity, dead ends and orientation measured across Delhi, Mumbai, Kolkata, Chennai and Bengaluru.',
     href: '/work/social-geometry/',
     views: [
@@ -129,6 +133,8 @@ export default [
 
   {
     id: 'sensing',
+    progress: { data: 0.5, process: 0.5, model: 0.5, interpret: 0 },
+    stage: 'live',
     num: '03',
     domain: 'SENSING',
     color: 'sensing',
@@ -171,6 +177,8 @@ export default [
 
   {
     id: 'speed',
+    progress: { data: 0, process: 0, model: 0, interpret: 0.5 },
+    stage: 'live',
     num: '04',
     domain: 'PACE',
     color: 'active',
@@ -198,6 +206,8 @@ export default [
 
   {
     id: 'scenario',
+    progress: { data: 0, process: 0, model: 0.5, interpret: 0 },
+    stage: 'incubation',
     num: '05',
     domain: 'SCENARIO',
     color: 'water',
@@ -232,6 +242,8 @@ export default [
 
   {
     id: 'water',
+    progress: { data: 0, process: 0, model: 0, interpret: 0 },
+    stage: 'incubation',
     num: '06',
     domain: 'WATER',
     color: 'water',

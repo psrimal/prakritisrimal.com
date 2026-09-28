@@ -26,17 +26,10 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <div class="hero-grid">
       <div>
         <p class="eyebrow" id="bootLine">OBSERVE / 001</p>
-        <h1 class="display">One planet.<br><span class="dim">Many signals.</span></h1>
-        <p class="hero-sub">I read cities as data. Street networks, sound, air, movement and pace, measured where I can measure them and named as unmeasured where I cannot.</p>
+        <h1 class="display">Cities are conversations.<br><span class="dim">I listen through data.</span></h1>
         <div class="hero-actions">
           <a class="btn solid" href="#atlas">Open the atlas</a>
           <a class="btn" href="#about">About Prakriti</a>
-        </div>
-        <div class="tier-key">
-          <span><i style="background:var(--active)"></i>STUDY CITY / BENGALURU</span>
-          <span><i style="background:var(--network)"></i>RESEARCH / LONDON</span>
-          <span><i style="background:var(--form)"></i>COMPARISON SET / DELHI, MUMBAI, KOLKATA, CHENNAI</span>
-          <span><i style="background:var(--water)"></i>WRITING / DUBAI</span>
         </div>
       </div>
       <div></div>
@@ -63,7 +56,6 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
   <div class="shell">
     <div class="band-head">
       <h2>The atlas</h2>
-      <p>Six questions. One is measured, one is awarded, one is being built, one is an essay, one is a nomination and one is still only a question.</p>
     </div>
 
     <div class="atlas">
@@ -78,7 +70,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
         <div class="panel-top"><span>LAYER CONTROL</span><span id="signalCount">{{ projects | length }} SIGNALS</span></div>
         <div class="filters" id="filters" role="group" aria-label="Filter investigations by domain"></div>
         <div class="rows" id="rows">
-          {%- for p in projects %}
+          {%- for p in projects %}{% if p.stage == 'live' %}
           <button class="row" data-id="{{ p.id }}" aria-pressed="{{ 'true' if loop.first else 'false' }}" style="color:var(--{{ p.color }})">
             <span class="row-meta">
               <span>{{ p.num }} / {{ p.domain }} / {{ p.place }}</span>
@@ -88,7 +80,14 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
             <p>{{ p.blurb }}</p>
             {%- if p.href %}<span class="open">FULL PROJECT PAGE</span>{% endif %}
           </button>
-          {%- endfor %}
+          {% endif %}{%- endfor %}
+          <div class="rows-divider">NOT YET</div>
+          {%- for p in projects %}{% if p.stage != 'live' %}
+          <button class="row thin" data-id="{{ p.id }}" aria-pressed="false" style="color:var(--{{ p.color }})">
+            <span class="row-meta"><span>{{ p.num }} / {{ p.domain }}</span><span class="status">{{ p.maturity }}</span></span>
+            <h3>{{ p.question }}</h3>
+          </button>
+          {% endif %}{%- endfor %}
         </div>
         <div class="panel-foot"><span>SELECT A SIGNAL TO OPEN IT</span><button class="chip" id="resetAtlas" style="min-height:0;padding:4px 8px">RESET</button></div>
       </div>
@@ -114,14 +113,9 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
   <div class="shell">
     <div class="band-head">
       <h2>The lab</h2>
-      <p>How a question becomes a finding, and where each of the six above currently stops.</p>
+      <p>Where each investigation actually stops. Filled means done and shown on this site, half means partial, empty means not started.</p>
     </div>
-    <div class="lab">
-      <div><p class="n">STAGE 01</p><h3>Data</h3><p>Sources named, licensed, dated and bounded. If a layer has no source it is labelled a concept, not a result.</p></div>
-      <div><p class="n">STAGE 02</p><h3>Process</h3><p>Cleaning, topology, projection and joins. The boring part where most of the error lives.</p></div>
-      <div><p class="n">STAGE 03</p><h3>Model</h3><p>Deterministic graph analysis first. Anything predictive is separated out and validated on held out geography.</p></div>
-      <div><p class="n">STAGE 04</p><h3>Interpret</h3><p>A finding needs a unit, a period, a place and a limit. The morphology study ends with three pages of what the data cannot say.</p></div>
-    </div>
+    <div id="labMatrix"></div>
     <div class="toolkit">
       <span>PYTHON</span><span>OSMNX</span><span>PYROSM</span><span>NETWORKX</span><span>GEOPANDAS</span><span>QGIS</span><span>SPACE SYNTAX</span><span>PCA / K-MEANS</span><span>CNN</span><span>JETSON ORIN</span><span>GRASSHOPPER</span><span>REVIT / PYREVIT</span>
     </div>
