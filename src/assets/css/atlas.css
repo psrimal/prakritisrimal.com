@@ -73,11 +73,25 @@ h1.display .dim{color:var(--text-3)}
 .descent-sticky{position:sticky;top:0;height:100svh;display:grid;grid-template-columns:1fr 1fr;align-items:center;overflow:hidden}
 #scaleCanvas{position:absolute;inset:0;width:100%;height:100%}
 .descent-copy{position:relative;z-index:2;padding-inline:4.5vw;grid-column:2}
+.descent-copy::before{
+  content:'';position:absolute;inset:-6vh -4.5vw;z-index:-1;
+  background:radial-gradient(120% 90% at 65% 50%, rgba(6,10,11,.92) 38%, rgba(6,10,11,0) 78%);
+  pointer-events:none
+}
 .descent-copy h2{font-family:var(--mono);font-weight:700;font-size:clamp(30px,3.6vw,58px);line-height:1.04;letter-spacing:-.03em;margin:0}
 .descent-copy p{color:var(--text-2);max-width:42ch;margin-top:var(--s4)}
 .scale-readout{position:absolute;left:4.5vw;bottom:8vh;z-index:2;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;color:var(--text-3);line-height:2}
 .scale-readout b{color:var(--active);font-weight:500}
-@media(max-width:900px){.descent{height:220vh}.descent-sticky{grid-template-columns:1fr}.descent-copy{grid-column:1;padding-top:30vh}}
+@media(max-width:900px){
+  .descent{height:260vh}
+  .descent-sticky{grid-template-columns:1fr;align-items:end}
+  .descent-copy{grid-column:1;padding:0 var(--s5) 22vh;align-self:end}
+  .descent-copy h2{font-size:clamp(26px,7.4vw,40px)}
+  .descent-copy p{font-size:15px;max-width:none;
+    background:linear-gradient(to bottom, rgba(6,10,11,0), rgba(6,10,11,.86) 14%, rgba(6,10,11,.86));
+    padding:10px 0 0}
+  .scale-readout{left:var(--s5);bottom:4vh;font-size:10px;line-height:1.9}
+}
 
 /* ---------- sections ---------- */
 section.band{padding:var(--s10) 0;border-top:1px solid var(--rule)}
@@ -310,4 +324,41 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .r-label{grid-column:2;padding-top:0}
   .r-body{grid-column:2}
   .r-go{grid-column:2;justify-self:start;margin-top:4px}
+}
+
+/* ---------- phone pass ---------- */
+@media(max-width:760px){
+  :root{--shell:min(1600px, 100% - 40px)}
+  .chrome-in{height:56px;gap:var(--s4)}
+  .mark span{font-size:8px;letter-spacing:.13em}
+  .search-btn{font-size:10px;padding:8px 10px;margin-left:auto}
+  .search-btn kbd{display:none}
+  .hero{min-height:auto;padding:96px 0 64px}
+  h1.display{font-size:clamp(30px,8.6vw,44px);max-width:none}
+  .hero-actions{gap:10px;margin-top:var(--s6)}
+  .btn{padding:13px 16px;font-size:11px}
+  section.band{padding:var(--s8) 0}
+  .band-head{gap:var(--s4);margin-bottom:var(--s6)}
+  .band-head h2{font-size:clamp(30px,9vw,44px)}
+  .band-head p{font-size:15px}
+  .panel-top,.filters,.row,.panel-foot{padding-left:16px;padding-right:16px}
+  .row h3{font-size:17px}
+  .row p{font-size:14px}
+  #invQuestion{font-size:clamp(26px,7.6vw,38px);max-width:none}
+  .inv-note{font-size:15px}
+  .tabs{grid-template-columns:none}
+  .tab{flex:1 1 44%;min-width:0;font-size:10px;letter-spacing:.1em;padding:14px 6px;border-bottom:1px solid var(--rule)}
+  .tabpanel{padding:var(--s5) var(--s4)}
+  .tabpanel h3{font-size:clamp(21px,6.4vw,28px)}
+  .tabpanel p{font-size:15px}
+  .dtable{font-size:11.5px}
+  .dtable th,.dtable td{padding:9px 7px}
+  .steps li{grid-template-columns:26px 1fr;gap:12px}
+  .findings{gap:var(--s4)}
+  .graph-wrap{aspect-ratio:1/1}
+  .controls{gap:var(--s3)}
+  .toolkit span{font-size:10px;padding:6px 9px}
+  .closing{min-height:78svh}
+  .closing h2{font-size:clamp(30px,9vw,46px)}
+  footer{flex-direction:column;gap:10px;font-size:9.5px}
 }
