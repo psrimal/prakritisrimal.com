@@ -3,14 +3,13 @@ layout: base.njk
 title: Prakriti Srimal / Spatial Intelligence
 description: Spatial data science, geospatial intelligence and urban sensing. An atlas of investigations across Bengaluru, London, Dubai and four more Indian cities.
 ---
-<a class="skip" href="#atlas">Skip to the atlas</a>
+<a class="skip" href="#tour">Skip to the cities</a>
 
 <header class="chrome">
   <div class="shell chrome-in">
     <a class="mark" href="#top"><b>P/S</b><span>PRAKRITI<br>SPATIAL INTELLIGENCE</span></a>
     <nav class="links">
-      <a href="#atlas">ATLAS</a>
-      <a href="#investigation">INVESTIGATION</a>
+      <a href="#tour">CITIES</a>
       
       <a href="#about">ABOUT</a>
     </nav>
@@ -28,7 +27,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
         <p class="eyebrow" id="bootLine">OBSERVE / 001</p>
         <h1 class="display">Cities are conversations.<br><span class="dim">I listen through data.</span></h1>
         <div class="hero-actions">
-          <a class="btn solid" href="#atlas">Open the atlas</a>
+          <a class="btn solid" href="#tour">See the cities</a>
           <a class="btn" href="#about">About Prakriti</a>
         </div>
       </div>
@@ -37,75 +36,64 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
   </div>
 </section>
 
-<section class="descent" aria-label="Change of scale">
-  <div class="descent-sticky">
-    <canvas id="scaleCanvas" aria-hidden="true"></canvas>
-    <div class="descent-copy">
-      <h2 id="descentTitle">From the planet<br>to the street.</h2>
-      <p id="descentBody">Seven cities carry work on this site. One is the subject, one is where the research was done, four are the comparison set, and one turns up in an essay about pace.</p>
-    </div>
+<section class="tour" id="tour" aria-label="The cities">
+  <div class="tour-map" aria-hidden="true">
+    <canvas id="tourCanvas"></canvas>
     <div class="scale-readout" aria-live="polite">
       <div>VIEW / <b id="scaleName">EARTH</b></div>
       <div>SCALE / <b id="scaleValue">1:40,000,000</b></div>
       <div>STATE / <b id="scaleState">NATURAL EARTH COASTLINE</b></div>
     </div>
+    <nav class="tour-dots" aria-label="Jump to a city">
+      {%- for c in cities %}
+      <button data-id="{{ c.id }}" aria-current="false"><i></i><span>{{ c.name }}</span></button>
+      {%- endfor %}
+    </nav>
   </div>
-</section>
 
-<section class="band" id="atlas">
-  <div class="shell">
-    <div class="band-head">
-      <h2>The atlas</h2>
+  <div class="tour-track">
+    <div class="tour-intro">
+      <p class="eyebrow">{{ cities | length }} STOPS</p>
+      <h2>From the planet<br>to the street.</h2>
+      <p>One city I live in, one where the research was done, five measured side by side, and one still to come.</p>
     </div>
 
-    <div class="atlas">
-      <div class="map-wrap" id="mapWrap">
-        <canvas id="atlasCanvas" aria-hidden="true"></canvas>
-        <div class="map-hud tl"><span class="dot"></span> BENGALURU / STUDY AREA <span>12.9716 N, 77.5946 E</span></div>
-        <div class="map-hud bl">SCHEMATIC SPATIAL STUDY / NOT A MEASURED MAP</div>
-        <div class="map-hud br">0 <span class="bar"></span> 5 km</div>
+    {%- for c in cities %}
+    <article class="stop" id="stop-{{ c.id }}">
+      <header class="stop-head">
+        <span class="stop-kicker">{{ c.kicker }}</span>
+        <h2>{{ c.name }}</h2>
+      </header>
+
+      {%- set h = c.hero %}
+      <div class="stop-hero{% if h.status != 'live' %} is-dim{% endif %}">
+        <div class="row-meta"><span>{{ h.title | upper }}</span><span class="status">{{ h.label }}</span></div>
+        <h3>{{ h.q }}</h3>
+        <p>{{ h.text }}</p>
+        {%- if h.href %}<a class="open-link" href="{{ h.href }}">Open the project</a>{% endif %}
       </div>
 
-      <div class="panel">
-        <div class="panel-top"><span>LAYER CONTROL</span><span id="signalCount">LOADING</span></div>
-        <div class="filters" id="filters" role="group" aria-label="Filter investigations by domain"></div>
-        <div class="rows" id="rows">
-          {%- for p in projects %}{% if p.stage == 'live' %}
-          <button class="row" data-id="{{ p.id }}" aria-pressed="{{ 'true' if loop.first else 'false' }}" style="color:var(--{{ p.color }})">
-            <span class="row-meta">
-              <span>{{ p.num }} / {{ p.domain }} / {{ p.place }}</span>
-              <span class="status">{{ p.maturity }}</span>
-            </span>
-            <h3>{{ p.question }}</h3>
-            <p>{{ p.blurb }}</p>
-            {%- if p.href %}<span class="open">FULL PROJECT PAGE</span>{% endif %}
-          </button>
-          {% endif %}{%- endfor %}
-          <div class="rows-divider">NOT YET</div>
-          {%- for p in projects %}{% if p.stage != 'live' %}
-          <button class="row thin" data-id="{{ p.id }}" aria-pressed="false" style="color:var(--{{ p.color }})">
-            <span class="row-meta"><span>{{ p.num }} / {{ p.domain }}</span><span class="status">{{ p.maturity }}</span></span>
-            <h3>{{ p.question }}</h3>
-          </button>
-          {% endif %}{%- endfor %}
-        </div>
-        <div class="panel-foot"><span>SELECT A SIGNAL TO OPEN IT</span><button class="chip" id="resetAtlas" style="min-height:0;padding:4px 8px">RESET</button></div>
-      </div>
-    </div>
-  </div>
-</section>
+      {%- if c.analyses.length %}
+      <ol class="stop-list">
+        {%- for an in c.analyses %}
+        <li class="{% if an.status != 'live' %}is-dim{% endif %}">
+          {%- if an.href %}<a href="{{ an.href }}">{% else %}<div>{% endif %}
+            <span class="row-meta"><span>{{ '0' if loop.index < 10 }}{{ loop.index }}</span><span class="status">{{ an.label }}</span></span>
+            <b>{{ an.q }}</b>
+            <span class="d">{{ an.text }}</span>
+          {%- if an.href %}</a>{% else %}</div>{% endif %}
+        </li>
+        {%- endfor %}
+      </ol>
+      {%- endif %}
 
-<section class="band" id="investigation">
-  <div class="shell">
-    <div class="inv-head">
-      <div>
-        <p class="eyebrow" id="invLabel"></p>
-        <h2 id="invQuestion"></h2>
-      </div>
-      <p class="inv-note" id="invNote"></p>
-    </div>
-    <div class="tabs" role="tablist" aria-label="Investigation views" id="tabs"></div>
-    <div id="panels"></div>
+      <footer class="stop-foot">
+        {%- if h.href %}<a href="{{ h.href }}">{{ h.title }}<span aria-hidden="true"> &#8599;</span></a>{% else %}<span>{{ h.title }}</span>{% endif %}
+        <span class="stop-count">{{ '0' if loop.index < 10 }}{{ loop.index }} / {{ '0' if loop.length < 10 }}{{ loop.length }}</span>
+      </footer>
+    </article>
+    {%- endfor %}
+    <div class="tour-tail" aria-hidden="true"></div>
   </div>
 </section>
 
@@ -121,6 +109,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
           <a class="btn" href="https://github.com/psrimal" target="_blank" rel="noopener">GitHub</a>
           <a class="btn" href="https://www.linkedin.com/in/prakriti-srimal-7390ab1a5/" target="_blank" rel="noopener">LinkedIn</a>
         </div>
+        <p class="writing">Writing: <a href="/work/speed-of-a-city/">The Speed of a City</a>, on why London felt warmer than Dubai.</p>
         <div class="toolkit">
           <span>PYTHON</span><span>OSMNX</span><span>PYROSM</span><span>NETWORKX</span><span>GEOPANDAS</span><span>QGIS</span><span>SPACE SYNTAX</span><span>PCA / K-MEANS</span><span>CNN</span><span>JETSON ORIN</span><span>GRASSHOPPER</span><span>REVIT / PYREVIT</span>
         </div>
@@ -143,7 +132,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <p class="eyebrow">RETURN / EARTH</p>
     <h2>Every city leaves evidence.</h2>
     <p>I am still collecting it.</p>
-    <div class="hero-actions"><a class="btn" href="#atlas">Return to the atlas</a></div>
+    <div class="hero-actions"><a class="btn" href="#tour">Back to the cities</a></div>
   </div>
 </section>
 

@@ -362,3 +362,75 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .closing h2{font-size:clamp(30px,9vw,46px)}
   footer{flex-direction:column;gap:10px;font-size:9.5px}
 }
+
+/* ======================= the tour ======================= */
+.tour{position:relative;border-top:1px solid var(--rule)}
+.tour-map{position:sticky;top:0;height:100svh;overflow:hidden;z-index:0}
+#tourCanvas{position:absolute;inset:0;width:100%;height:100%}
+.tour .scale-readout{position:absolute;left:4.5vw;bottom:6vh;z-index:2}
+.tour-track{position:relative;z-index:1;margin-top:-100svh;pointer-events:none}
+.tour-track > *{pointer-events:auto}
+
+.tour-intro{min-height:100svh;display:flex;flex-direction:column;justify-content:center;
+  width:min(520px,38vw);margin-left:auto;margin-right:4.5vw;padding:0}
+.tour-intro h2{font-family:var(--mono);font-weight:700;font-size:clamp(30px,3.6vw,58px);line-height:1.04;letter-spacing:-.03em;margin:var(--s4) 0 0}
+.tour-intro p:last-child{color:var(--text-2);margin-top:var(--s4);max-width:40ch}
+
+.stop{
+  width:min(520px,38vw);margin:0 4.5vw 0 auto;
+  min-height:120svh;display:flex;flex-direction:column;justify-content:center;
+  padding:12vh 0
+}
+.stop > *{background:rgba(11,17,18,.93);border:1px solid var(--rule);border-bottom:0;backdrop-filter:blur(4px)}
+.stop > *:last-child{border-bottom:1px solid var(--rule)}
+.stop-head{padding:16px 22px 12px}
+.stop-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--active)}
+.stop-head h2{font-family:var(--mono);font-weight:700;font-size:clamp(26px,2.6vw,40px);letter-spacing:-.03em;line-height:1.05;margin:8px 0 0}
+.stop-hero{padding:18px 22px}
+.stop-hero h3{font-family:var(--mono);font-weight:600;font-size:clamp(18px,1.5vw,22px);letter-spacing:-.01em;line-height:1.2;margin:10px 0 8px}
+.stop-hero p{color:var(--text-2);font-size:14.5px;line-height:1.58;margin:0}
+.stop-hero .open-link{margin-top:var(--s4)}
+.stop-list{list-style:none;margin:0;padding:0}
+.stop-list li{border-top:1px solid var(--rule)}
+.stop-list li > a, .stop-list li > div{display:block;padding:11px 22px;text-decoration:none;color:inherit}
+.stop-list li > a:hover{background:var(--raised)}
+.stop-list b{display:block;font-family:var(--mono);font-weight:600;font-size:14.5px;margin:4px 0 3px;color:var(--text)}
+.stop-list .d{display:block;color:var(--text-2);font-size:13px;line-height:1.5}
+.is-dim{opacity:.46}
+.is-dim .status{color:var(--text-3)}
+.stop-foot{display:flex;justify-content:space-between;align-items:center;padding:12px 22px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em}
+.stop-foot a{color:var(--active);text-decoration:none;border-bottom:1px solid transparent}
+.stop-foot a:hover{border-bottom-color:var(--active)}
+.stop-foot > span:first-child{color:var(--text-3)}
+.stop-count{color:var(--text-3)}
+.stop .row-meta{display:flex;justify-content:space-between;gap:12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-3)}
+.stop .status{font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;border:1px solid currentColor;padding:2px 6px}
+.stop-hero:not(.is-dim) .status{color:var(--active)}
+.tour-tail{height:40svh}
+
+.tour-dots{position:absolute;right:auto;left:4.5vw;top:50%;transform:translateY(-50%);z-index:2;display:flex;flex-direction:column;gap:6px}
+.tour-dots button{display:flex;align-items:center;gap:10px;background:none;border:0;padding:6px 0;cursor:pointer;
+  font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--text-3);text-transform:uppercase;min-height:28px}
+.tour-dots i{width:7px;height:7px;border:1px solid currentColor;border-radius:50%;display:block}
+.tour-dots button[aria-current="true"]{color:var(--active)}
+.tour-dots button[aria-current="true"] i{background:currentColor}
+.tour-dots span{opacity:0;transition:opacity .2s}
+.tour-dots:hover span,.tour-dots button[aria-current="true"] span{opacity:1}
+
+.writing{color:var(--text-2);font-size:15px;margin-top:var(--s6)}
+.writing a{color:var(--active)}
+
+@media(max-width:900px){
+  .tour-intro,.stop{width:auto;margin:0 16px}
+  .tour-intro{justify-content:flex-end;padding-bottom:16vh;min-height:100svh}
+  .stop{min-height:auto;justify-content:flex-start;padding:62svh 0 18svh}
+  .stop-list li.is-dim .d{display:none}
+  .stop-hero p{font-size:14px}
+  .tour .scale-readout{left:16px;top:66px;bottom:auto;font-size:9.5px;line-height:1.8}
+  .tour-dots{display:none}
+  .stop-head{padding:16px 16px 12px}
+  .stop-hero{padding:16px}
+  .stop-list li > a,.stop-list li > div{padding:13px 16px}
+  .stop-foot{padding:12px 16px}
+}
