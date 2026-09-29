@@ -216,25 +216,30 @@ footer a:hover{color:var(--accent)}
 }
 
 /* image sliders. green is the accent, everything else stays muted. */
-.slider{--thumb:12px}
-.slider .viewport{position:relative}
+.slider{--thumb:12px;--ar:1}
+
+/* one fixed frame per slider. every image is fitted inside it, so nothing jumps between slides.
+   --ar is set from the files themselves (the tallest one), the cap keeps it on screen. */
+.slider .viewport{
+  position:relative;width:100%;
+  aspect-ratio:var(--ar);
+  max-height:min(78vh,780px);
+}
 .slider .viewport:focus-visible{outline:1px solid var(--line);outline-offset:6px}
 .slider .track{
-  display:flex;overflow-x:auto;overflow-y:hidden;
+  height:100%;display:flex;overflow-x:auto;overflow-y:hidden;
   scroll-snap-type:x mandatory;overscroll-behavior-x:contain;
   scrollbar-width:none;-webkit-overflow-scrolling:touch;
 }
+.slider .track.is-moving{scroll-snap-type:none}   /* snapping off while we animate or scrub, or it fights every frame */
 .slider .track::-webkit-scrollbar{display:none}
 .slider .slide{
-  flex:0 0 100%;min-width:0;scroll-snap-align:center;scroll-snap-stop:always;
+  flex:0 0 100%;min-width:0;height:100%;
+  scroll-snap-align:center;scroll-snap-stop:always;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
-  min-height:14rem;
 }
-.slider .slide img{
-  display:block;width:auto;height:auto;max-width:100%;
-  max-height:min(78vh,780px);margin:0 auto;
-}
-.slider .slide img[hidden]{display:none}   /* author display:block beats the UA [hidden] rule */
+.slider .slide img{display:block;width:100%;height:100%;object-fit:contain}
+.slider .slide img[hidden]{display:none}
 .slider .missing-note{
   font-family:var(--mono);font-size:.72rem;color:var(--muted);margin:0;text-align:center;
 }
@@ -274,11 +279,12 @@ footer a:hover{color:var(--accent)}
 
 /* the thumb centre lands on each label centre: input is inset by half a column, widened by one thumb */
 .slider input[type="range"]{
-  -webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;
+  -webkit-appearance:none;appearance:none;background:transparent;cursor:grab;touch-action:pan-y;
   display:block;height:var(--thumb);margin-top:0;margin-bottom:0;padding:0;
   width:calc(100% * (var(--n) - 1) / var(--n) + var(--thumb));
   margin-left:calc(100% / (2 * var(--n)) - var(--thumb) / 2);
 }
+.slider input[type="range"]:active{cursor:grabbing}
 .slider input[type="range"]::-webkit-slider-runnable-track{height:1px;background:var(--line)}
 .slider input[type="range"]::-webkit-slider-thumb{
   -webkit-appearance:none;appearance:none;width:var(--thumb);height:var(--thumb);
@@ -301,7 +307,6 @@ footer a:hover{color:var(--accent)}
   .slider .stop-labels button{font-size:.56rem;letter-spacing:.05em}
   .slider .nav{width:2.1rem;height:2.1rem}
 }
-@media (prefers-reduced-motion:reduce){ .slider .track{scroll-behavior:auto} }
 </style>
 </head>
 <body>
@@ -374,7 +379,7 @@ footer a:hover{color:var(--accent)}
         <button type="button">Chennai</button>
         <button type="button">Bengaluru</button>
         </div>
-        <input type="range" min="0" max="4" step="1" value="0" aria-label="Fig 01, choose image">
+        <input type="range" min="0" max="4" step="0.01" value="0" aria-label="Fig 01, choose image">
       </div>
       <p class="sr" aria-live="polite"></p>
       <figcaption><b>Fig 01</b> Network footprint.</figcaption>
@@ -400,7 +405,7 @@ footer a:hover{color:var(--accent)}
         <button type="button">10 km</button>
         <button type="button">15 km</button>
         </div>
-        <input type="range" min="0" max="3" step="1" value="0" aria-label="Fig 02, choose image">
+        <input type="range" min="0" max="3" step="0.01" value="0" aria-label="Fig 02, choose image">
       </div>
       <p class="sr" aria-live="polite"></p>
       <figcaption><b>Fig 02</b> Bengaluru at 4 radii</figcaption>
@@ -426,7 +431,7 @@ footer a:hover{color:var(--accent)}
         <button type="button">Chennai</button>
         <button type="button">Bengaluru</button>
         </div>
-        <input type="range" min="0" max="4" step="1" value="0" aria-label="Fig 03, choose image">
+        <input type="range" min="0" max="4" step="0.01" value="0" aria-label="Fig 03, choose image">
       </div>
       <p class="sr" aria-live="polite"></p>
       <figcaption><b>Fig 03</b> Metrics computed at every radius.</figcaption>
@@ -461,7 +466,7 @@ footer a:hover{color:var(--accent)}
         <button type="button">Chennai</button>
         <button type="button">Bengaluru</button>
         </div>
-        <input type="range" min="0" max="4" step="1" value="0" aria-label="Fig 05, choose image">
+        <input type="range" min="0" max="4" step="0.01" value="0" aria-label="Fig 05, choose image">
       </div>
       <p class="sr" aria-live="polite"></p>
       <figcaption><b>Fig 05</b> Drive networks within 10 km</figcaption>
@@ -584,7 +589,7 @@ footer a:hover{color:var(--accent)}
         <button type="button">Mumbai</button>
         <button type="button">Delhi</button>
         </div>
-        <input type="range" min="0" max="4" step="1" value="0" aria-label="Fig 08, choose image">
+        <input type="range" min="0" max="4" step="0.01" value="0" aria-label="Fig 08, choose image">
       </div>
       <p class="sr" aria-live="polite"></p>
       <figcaption><b>Fig 08</b> Length-weighted street bearing distributions.</figcaption>
@@ -640,7 +645,7 @@ footer a:hover{color:var(--accent)}
         <button type="button">Chennai</button>
         <button type="button">Bengaluru</button>
         </div>
-        <input type="range" min="0" max="4" step="1" value="0" aria-label="Fig 11, choose image">
+        <input type="range" min="0" max="4" step="0.01" value="0" aria-label="Fig 11, choose image">
       </div>
       <p class="sr" aria-live="polite"></p>
       <figcaption><b>Fig 11</b> Rank-normalised metric betweenness centrality.</figcaption>
@@ -727,6 +732,8 @@ footer a:hover{color:var(--accent)}
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  function ease(t) { return t * t * t * (t * (t * 6 - 15) + 10); }   /* smootherstep: no jolt at either end, gentle through the middle */
+
   Array.prototype.forEach.call(document.querySelectorAll('[data-slider]'), function (root) {
     var viewport = root.querySelector('.viewport');
     var track = root.querySelector('.track');
@@ -736,60 +743,145 @@ footer a:hover{color:var(--accent)}
     var prev = root.querySelector('.prev');
     var next = root.querySelector('.next');
     var status = root.querySelector('.sr');
-    var n = slides.length, idx = 0, raf = 0, settling = false, settleTimer = 0;
+    var n = slides.length, idx = 0, raf = 0, anim = 0, scrubbing = false, failed = 0;
 
     function clamp(i) { return Math.max(0, Math.min(n - 1, i)); }
+    function width() { return track.clientWidth || 1; }
 
-    function paint(i) {
+    /* labels, arrows and the screen-reader line. the thumb is only moved when asked to. */
+    function paint(i, keepRange) {
       idx = i;
-      range.value = i;
+      if (!keepRange) range.value = i;
       stops.forEach(function (b, k) { b.setAttribute('aria-current', k === i ? 'true' : 'false'); });
       prev.disabled = i === 0;
       next.disabled = i === n - 1;
+      range.setAttribute('aria-valuetext', stops[i].textContent);
       status.textContent = stops[i].textContent + ', ' + (i + 1) + ' of ' + n;
     }
 
-    function fromScroll() {
-      var i = clamp(Math.round(track.scrollLeft / (track.clientWidth || 1)));
-      if (i !== idx) paint(i);
+    function stopAnim() {
+      if (anim) { cancelAnimationFrame(anim); anim = 0; }
+      if (!scrubbing) track.classList.remove('is-moving');
     }
 
-    function go(i, smooth) {
+    /* eased scroll. the thumb rides along frame by frame so image and thumb never disagree. */
+    function animateTo(target, ms) {
+      stopAnim();
+      var w = width(), from = track.scrollLeft, dist = target - from;
+      if (reduce || Math.abs(dist) < 1 || ms <= 0) {
+        track.scrollLeft = target; range.value = target / w; return;
+      }
+      track.classList.add('is-moving');
+      var t0 = performance.now();
+      (function step(now) {
+        var t = Math.min(1, (now - t0) / ms);
+        track.scrollLeft = from + dist * ease(t);
+        range.value = track.scrollLeft / w;
+        if (t < 1) { anim = requestAnimationFrame(step); }
+        else {
+          anim = 0; track.scrollLeft = target; range.value = Math.round(target / w);
+          if (!scrubbing) track.classList.remove('is-moving');
+        }
+      })(t0);
+    }
+
+    function go(i, ms) {
       if (root.classList.contains('fallback')) return;
+      var from = idx;
       i = clamp(i);
       paint(i);
-      settling = true;                       // ignore the scroll events our own scrollTo produces
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(function () { settling = false; fromScroll(); }, smooth && !reduce ? 700 : 80);
-      track.scrollTo({ left: i * track.clientWidth, behavior: smooth && !reduce ? 'smooth' : 'auto' });
+      var d = Math.abs(i - from);
+      animateTo(i * width(), ms != null ? ms : Math.min(900, 560 + 110 * Math.max(0, d - 1)));
     }
 
+    /* native swipe / trackpad: let the browser do the physics, just keep the thumb and labels in step */
     track.addEventListener('scroll', function () {
-      if (raf || settling) return;
-      raf = requestAnimationFrame(function () { raf = 0; if (!settling) fromScroll(); });
+      if (raf) return;
+      raf = requestAnimationFrame(function () {
+        raf = 0;
+        if (anim || scrubbing) return;
+        var f = track.scrollLeft / width();
+        range.value = f;
+        var i = clamp(Math.round(f));
+        if (i !== idx) paint(i, true);
+      });
     }, { passive: true });
 
-    range.addEventListener('input', function () { go(parseInt(range.value, 10), false); });
-    stops.forEach(function (b, k) { b.addEventListener('click', function () { go(k, true); }); });
-    prev.addEventListener('click', function () { go(idx - 1, true); });
-    next.addEventListener('click', function () { go(idx + 1, true); });
+    ['touchstart', 'wheel', 'pointerdown'].forEach(function (t) {
+      track.addEventListener(t, stopAnim, { passive: true });
+    });
+
+    /* thumb: images follow it continuously while dragging, then ease onto the nearest stop */
+    function settle() {
+      if (!scrubbing) return;
+      scrubbing = false;
+      go(Math.round(parseFloat(range.value)), 320);
+    }
+    range.addEventListener('pointerdown', function () {
+      scrubbing = true; stopAnim(); track.classList.add('is-moving');
+    });
+    range.addEventListener('input', function () {
+      var v = parseFloat(range.value);
+      if (scrubbing) {
+        track.scrollLeft = v * width();
+        var i = clamp(Math.round(v));
+        if (i !== idx) paint(i, true);
+      } else {
+        go(Math.round(v));                       /* assistive tech and anything that is not a drag */
+      }
+    });
+    range.addEventListener('change', settle);
+    window.addEventListener('pointerup', settle);
+    window.addEventListener('pointercancel', settle);
+
+    /* the thumb is fine-grained for dragging, so keys must step whole stops */
+    range.addEventListener('keydown', function (e) {
+      var k = e.key, hit = true;
+      if (k === 'ArrowLeft' || k === 'ArrowDown' || k === 'PageDown') go(idx - 1);
+      else if (k === 'ArrowRight' || k === 'ArrowUp' || k === 'PageUp') go(idx + 1);
+      else if (k === 'Home') go(0);
+      else if (k === 'End') go(n - 1);
+      else hit = false;
+      if (hit) e.preventDefault();
+    });
+
+    stops.forEach(function (b, k) { b.addEventListener('click', function () { go(k); }); });
+    prev.addEventListener('click', function () { go(idx - 1); });
+    next.addEventListener('click', function () { go(idx + 1); });
 
     viewport.addEventListener('keydown', function (e) {
-      if (e.key === 'ArrowLeft')  { go(idx - 1, true); e.preventDefault(); }
-      else if (e.key === 'ArrowRight') { go(idx + 1, true); e.preventDefault(); }
-      else if (e.key === 'Home') { go(0, true); e.preventDefault(); }
-      else if (e.key === 'End')  { go(n - 1, true); e.preventDefault(); }
+      if (e.key === 'ArrowLeft') { go(idx - 1); e.preventDefault(); }
+      else if (e.key === 'ArrowRight') { go(idx + 1); e.preventDefault(); }
+      else if (e.key === 'Home') { go(0); e.preventDefault(); }
+      else if (e.key === 'End') { go(n - 1); e.preventDefault(); }
     });
 
     window.addEventListener('resize', function () {
-      if (!root.classList.contains('fallback')) track.scrollTo({ left: idx * track.clientWidth, behavior: 'auto' });
+      if (root.classList.contains('fallback')) return;
+      stopAnim(); track.scrollLeft = idx * width(); range.value = idx;
     });
 
-    /* images: warm the rest when the slider is near the screen, and cope with files that are not there */
+    /* frame: sized from the tallest file in the set, so a slower or smaller export cannot make it jump */
+    function fitFrame() {
+      var tallest = Infinity;
+      Array.prototype.forEach.call(root.querySelectorAll('.slide img'), function (im) {
+        if (!im.hidden && im.naturalWidth && im.naturalHeight) {
+          tallest = Math.min(tallest, im.naturalWidth / im.naturalHeight);
+        }
+      });
+      if (tallest < Infinity) root.style.setProperty('--ar', tallest.toFixed(4));
+    }
+
+    /* images: fetch and decode the rest before they are needed, and cope with files that are absent */
     var warmed = false;
     function warm() {
       if (warmed) return; warmed = true;
-      slides.forEach(function (s) { var im = s.querySelector('img'); if (im) im.loading = 'eager'; });
+      slides.forEach(function (s) {
+        var im = s.querySelector('img');
+        if (!im) return;
+        im.loading = 'eager';
+        if (im.decode) im.decode().catch(function () {});
+      });
     }
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
@@ -804,34 +896,36 @@ footer a:hover{color:var(--accent)}
       track.innerHTML = '';
       var s = document.createElement('div'); s.className = 'slide';
       var im = document.createElement('img');
+      im.addEventListener('load', fitFrame);
       im.src = root.getAttribute('data-fallback');
       im.alt = root.getAttribute('data-fallback-alt') || '';
       s.appendChild(im); track.appendChild(s);
       track.scrollLeft = 0;
     }
 
-    var failed = 0;
     function missing(im) {
       var slide = im.closest('.slide');
       if (!slide || slide.classList.contains('missing') || root.classList.contains('fallback')) return;
       slide.classList.add('missing');
       im.hidden = true;
       failed++;
-      /* only give up on the slider if every single image is absent. one missing
-         city must not throw away the others. */
+      /* only give up on the slider if every image is absent. one missing city must not take the rest down. */
       if (failed === n && root.getAttribute('data-fallback')) { useFallback(); return; }
       var note = document.createElement('p');
       note.className = 'missing-note';
       note.textContent = 'not found: ' + im.getAttribute('src');
       slide.appendChild(note);
+      fitFrame();
     }
 
     slides.forEach(function (s) {
       var im = s.querySelector('img');
       if (!im) return;
+      im.addEventListener('load', fitFrame);
       im.addEventListener('error', function () { missing(im); });
       if (im.complete && im.naturalWidth === 0 && im.getAttribute('src')) missing(im);
     });
+    fitFrame();
 
     paint(0);
     root.classList.add('is-ready');
