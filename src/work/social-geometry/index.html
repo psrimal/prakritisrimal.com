@@ -8,7 +8,7 @@
 <meta property="og:title" content="The Social Geometry of Indian Cities">
 <meta property="og:description" content="What five street networks can, and cannot, tell us about the way cities shape everyday encounters.">
 <meta property="og:type" content="article">
-<meta property="og:image" content="figures/09_networks_hero.png">
+<meta property="og:image" content="https://prakritisrimal.com/assets/socialgeometry/09_networks_hero.png">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -234,6 +234,7 @@ footer a:hover{color:var(--accent)}
   display:block;width:auto;height:auto;max-width:100%;
   max-height:min(78vh,780px);margin:0 auto;
 }
+.slider .slide img[hidden]{display:none}   /* author display:block beats the UA [hidden] rule */
 .slider .missing-note{
   font-family:var(--mono);font-size:.72rem;color:var(--muted);margin:0;text-align:center;
 }
@@ -306,7 +307,7 @@ footer a:hover{color:var(--accent)}
 <body>
 
 <nav class="top">
-  <div class="bar"><a href="index.html">&#8592; Prakriti Srimal</a></div>
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
 </nav>
 
 <nav id="toc" aria-label="Sections">
@@ -353,14 +354,14 @@ footer a:hover{color:var(--accent)}
 
     <p>This analysis looks at five Indian cities: Delhi, Kolkata, Mumbai, Chennai and Bengaluru. The goal is not to rank cities, but to ask whether streets themselves can serve as a measurable fingerprint for understanding the conditions under which behaviour is shaped.</p>
 
-    <figure class="slider" data-slider data-fallback="figures/01_footprints.png" data-fallback-alt="Network footprints against a nominal 10 km ball for five cities." style="--n:5">
+    <figure class="slider" data-slider data-fallback="/assets/socialgeometry/01_footprints.png" data-fallback-alt="Network footprints against a nominal 10 km ball for five cities." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 01, one image at a time">
         <div class="track">
-        <div class="slide"><img src="figures/01a_delhi.png" alt="Delhi: network footprint against the nominal 10 km ball." decoding="async"></div>
-        <div class="slide"><img src="figures/01b_mumbai.png" alt="Mumbai: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/01c_kolkata.png" alt="Kolkata: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/01d_chennai.png" alt="Chennai: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/01e_bengaluru.png" alt="Bengaluru: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/01a_delhi.png" alt="Delhi: network footprint against the nominal 10 km ball." decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/01b_mumbai.png" alt="Mumbai: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/01c_kolkata.png" alt="Kolkata: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/01d_chennai.png" alt="Chennai: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/01e_bengaluru.png" alt="Bengaluru: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
         </div>
         <button type="button" class="nav prev" aria-label="Previous image">&#8592;</button>
         <button type="button" class="nav next" aria-label="Next image">&#8594;</button>
@@ -381,13 +382,13 @@ footer a:hover{color:var(--accent)}
 
     <p>Now how does one decide the boundary for a fair comparison? Municipal Boundaries? One is going to be bigger/smaller than the other.. draw a circle? The coastal cities are going to lose half in the sea. Again, streets. The boundary was formed by a network distance of 10km starting from each of their historic center. For Bangalore it was the pete ; for Delhi it was the red fort, for Mumbai it's the Fort, for Kolkata it's the BBD Bagh and for Chennai it's the Fort St George</p>
 
-    <figure class="slider" data-slider data-fallback="figures/10_crop_sensitivity_map.png" data-fallback-alt="Bengaluru at four network radii." style="--n:4">
+    <figure class="slider" data-slider data-fallback="/assets/socialgeometry/10_crop_sensitivity_map.png" data-fallback-alt="Bengaluru at four network radii." style="--n:4">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 02, one image at a time">
         <div class="track">
-        <div class="slide"><img src="figures/10a_bengaluru_3km.png" alt="Bengaluru street network at a 3 km network radius." decoding="async"></div>
-        <div class="slide"><img src="figures/10b_bengaluru_6km.png" alt="Bengaluru street network at a 6 km network radius." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/10c_bengaluru_10km.png" alt="Bengaluru street network at a 10 km network radius." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/10d_bengaluru_15km.png" alt="Bengaluru street network at a 15 km network radius." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/10a_bengaluru_3km.png" alt="Bengaluru street network at a 3 km network radius." decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/10b_bengaluru_6km.png" alt="Bengaluru street network at a 6 km network radius." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/10c_bengaluru_10km.png" alt="Bengaluru street network at a 10 km network radius." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/10d_bengaluru_15km.png" alt="Bengaluru street network at a 15 km network radius." loading="lazy" decoding="async"></div>
         </div>
         <button type="button" class="nav prev" aria-label="Previous image">&#8592;</button>
         <button type="button" class="nav next" aria-label="Next image">&#8594;</button>
@@ -405,14 +406,14 @@ footer a:hover{color:var(--accent)}
       <figcaption><b>Fig 02</b> Bengaluru at 4 radii</figcaption>
     </figure>
 
-    <figure class="slider" data-slider data-fallback="figures/07_sensitivity_radius.png" data-fallback-alt="Every metric recomputed at four network radii." style="--n:5">
+    <figure class="slider" data-slider data-fallback="/assets/socialgeometry/07_sensitivity_radius.png" data-fallback-alt="Every metric recomputed at four network radii." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 03, one image at a time">
         <div class="track">
-        <div class="slide"><img src="figures/07a_delhi_radius_sensitivity.png" alt="Delhi: metrics recomputed at four network radii." decoding="async"></div>
-        <div class="slide"><img src="figures/07b_mumbai_radius_sensitivity.png" alt="Mumbai: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/07c_kolkata_radius_sensitivity.png" alt="Kolkata: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/07d_chennai_radius_sensitivity.png" alt="Chennai: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/07e_bengaluru_radius_sensitivity.png" alt="Bengaluru: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/07a_delhi_radius_sensitivity.png" alt="Delhi: metrics recomputed at four network radii." decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/07b_mumbai_radius_sensitivity.png" alt="Mumbai: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/07c_kolkata_radius_sensitivity.png" alt="Kolkata: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/07d_chennai_radius_sensitivity.png" alt="Chennai: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/07e_bengaluru_radius_sensitivity.png" alt="Bengaluru: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
         </div>
         <button type="button" class="nav prev" aria-label="Previous image">&#8592;</button>
         <button type="button" class="nav next" aria-label="Next image">&#8594;</button>
@@ -432,7 +433,7 @@ footer a:hover{color:var(--accent)}
     </figure>
 
     <figure>
-      <img src="figures/08_rank_stability.png" alt="Spearman rank stability of each metric between adjacent radii.">
+      <img src="/assets/socialgeometry/08_rank_stability.png" alt="Spearman rank stability of each metric between adjacent radii.">
       <figcaption><b>Fig 04</b> Spearman stability across radii.</figcaption>
     </figure>
 
@@ -440,14 +441,14 @@ footer a:hover{color:var(--accent)}
 
     <p>From 6 km outward, the rankings lock. Everything reported below is drawn at 10 km and holds at 15 km too.</p>
 
-    <figure class="slider" data-slider data-fallback="figures/09_networks_hero.png" data-fallback-alt="Drive networks of five Indian cities plotted at identical scale." style="--n:5">
+    <figure class="slider" data-slider data-fallback="/assets/socialgeometry/09_networks_hero.png" data-fallback-alt="Drive networks of five Indian cities plotted at identical scale." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 05, one image at a time">
         <div class="track">
-        <div class="slide"><img src="figures/09a_delhi_network.png" alt="Delhi: drive network within 10 km, plotted at identical scale." decoding="async"></div>
-        <div class="slide"><img src="figures/09b_mumbai_network.png" alt="Mumbai: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/09c_kolkata_network.png" alt="Kolkata: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/09d_chennai_network.png" alt="Chennai: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/09e_bengaluru_network.png" alt="Bengaluru: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/09a_delhi_network.png" alt="Delhi: drive network within 10 km, plotted at identical scale." decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/09b_mumbai_network.png" alt="Mumbai: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/09c_kolkata_network.png" alt="Kolkata: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/09d_chennai_network.png" alt="Chennai: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/09e_bengaluru_network.png" alt="Bengaluru: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
         </div>
         <button type="button" class="nav prev" aria-label="Previous image">&#8592;</button>
         <button type="button" class="nav next" aria-label="Next image">&#8594;</button>
@@ -469,7 +470,7 @@ footer a:hover{color:var(--accent)}
     <p>The 5 cities also reveal a different movement profile: Mumbai narrows into a peninsula; Delhi spreads; Kolkata fills its footprint; Bengaluru blooms outward and Chennai stretches along a coastal spine.</p>
 
     <figure>
-      <img src="figures/02_metric_rankings.png" alt="Five morphology metrics ranked across the five cities.">
+      <img src="/assets/socialgeometry/02_metric_rankings.png" alt="Five morphology metrics ranked across the five cities.">
       <figcaption><b>Fig 06</b> Morphology metrics.</figcaption>
     </figure>
 
@@ -540,7 +541,7 @@ footer a:hover{color:var(--accent)}
     <h3>The Shape of a Junction</h3>
 
     <figure>
-      <img src="figures/03_junction_composition.png" alt="Junction composition by city: dead ends, three-way and four-way-or-more.">
+      <img src="/assets/socialgeometry/03_junction_composition.png" alt="Junction composition by city: dead ends, three-way and four-way-or-more.">
       <figcaption><b>Fig 07</b> Junction composition by city.</figcaption>
     </figure>
 
@@ -563,14 +564,14 @@ footer a:hover{color:var(--accent)}
   <div class="wrap">
     <h3>Direction</h3>
 
-    <figure class="slider" data-slider data-fallback="figures/04_orientation_roses.png" data-fallback-alt="Length-weighted street bearing distributions for five cities." style="--n:5">
+    <figure class="slider" data-slider data-fallback="/assets/socialgeometry/04_orientation_roses.png" data-fallback-alt="Length-weighted street bearing distributions for five cities." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 08, one image at a time">
         <div class="track">
-        <div class="slide"><img src="figures/04a_chennai.png" alt="Chennai: length-weighted street bearing distribution." decoding="async"></div>
-        <div class="slide"><img src="figures/04b_bengaluru.png" alt="Bengaluru: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/04c_kolkata.png" alt="Kolkata: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/04d_mumbai.png" alt="Mumbai: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/04e_delhi.png" alt="Delhi: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/04a_chennai.png" alt="Chennai: length-weighted street bearing distribution." decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/04b_bengaluru.png" alt="Bengaluru: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/04c_kolkata.png" alt="Kolkata: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/04d_mumbai.png" alt="Mumbai: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/04e_delhi.png" alt="Delhi: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
         </div>
         <button type="button" class="nav prev" aria-label="Previous image">&#8592;</button>
         <button type="button" class="nav next" aria-label="Next image">&#8594;</button>
@@ -602,14 +603,14 @@ footer a:hover{color:var(--accent)}
     <p>A low score here does not mean unplanned. It means not aligned to a single axis. Lutyens' geometry is radial and hexagonal, and it sits on top of Shahjahanabad and beside gridded colonies, so within a 10 km ball the bearings spread almost evenly around the compass. This measure cannot distinguish an accreted organic fabric from a deliberately polycentric one.</p>
 
     <figure>
-      <img src="figures/05_order_vs_grain.png" alt="Orientation order plotted against intersection density.">
+      <img src="/assets/socialgeometry/05_order_vs_grain.png" alt="Orientation order plotted against intersection density.">
       <figcaption><b>Fig 09</b> Orientation order against intersection density.</figcaption>
     </figure>
 
     <p>Placed together, the cities stop resembling stereotypes and start looking like distinct spatial systems.</p>
 
     <figure>
-      <img src="figures/06_segment_lengths.png" alt="Street segment length distributions across five cities.">
+      <img src="/assets/socialgeometry/06_segment_lengths.png" alt="Street segment length distributions across five cities.">
       <figcaption><b>Fig 10</b> Segment length distributions and long-segment share.</figcaption>
     </figure>
   </div>
@@ -619,14 +620,14 @@ footer a:hover{color:var(--accent)}
   <div class="wrap">
     <h3>Streets That Carry Most of the Load</h3>
 
-    <figure class="slider" data-slider data-fallback="figures/11_metric_betweenness.png" data-fallback-alt="Street networks shaded by metric betweenness centrality." style="--n:5">
+    <figure class="slider" data-slider data-fallback="/assets/socialgeometry/11_metric_betweenness.png" data-fallback-alt="Street networks shaded by metric betweenness centrality." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 11, one image at a time">
         <div class="track">
-        <div class="slide"><img src="figures/11a_delhi_betweenness.png" alt="Delhi: street network shaded by metric betweenness centrality." decoding="async"></div>
-        <div class="slide"><img src="figures/11b_mumbai_betweenness.png" alt="Mumbai: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/11c_kolkata_betweenness.png" alt="Kolkata: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/11d_chennai_betweenness.png" alt="Chennai: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
-        <div class="slide"><img src="figures/11e_bengaluru_betweenness.png" alt="Bengaluru: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/11a_delhi_betweenness.png" alt="Delhi: street network shaded by metric betweenness centrality." decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/11b_mumbai_betweenness.png" alt="Mumbai: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/11c_kolkata_betweenness.png" alt="Kolkata: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/11d_chennai_betweenness.png" alt="Chennai: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
+        <div class="slide"><img src="/assets/socialgeometry/11e_bengaluru_betweenness.png" alt="Bengaluru: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
         </div>
         <button type="button" class="nav prev" aria-label="Previous image">&#8592;</button>
         <button type="button" class="nav next" aria-label="Next image">&#8594;</button>
@@ -659,7 +660,7 @@ footer a:hover{color:var(--accent)}
     <p>The reason, I think, is that constraint and hierarchy are different things. Mumbai's geography leaves so little redundant network that almost every street ends up doing real work. Delhi has room for a clear order of rank: a small set of arterials carrying the load, and a large quiet background behind them. Delhi has the strongest street hierarchy in the set.</p>
 
     <figure>
-      <img src="figures/12_foreground_concentration.png" alt="Lorenz curves of betweenness concentration for five cities.">
+      <img src="/assets/socialgeometry/12_foreground_concentration.png" alt="Lorenz curves of betweenness concentration for five cities.">
       <figcaption><b>Fig 12</b> Lorenz curve of metric betweenness against street length.</figcaption>
     </figure>
   </div>
@@ -809,12 +810,16 @@ footer a:hover{color:var(--accent)}
       track.scrollLeft = 0;
     }
 
+    var failed = 0;
     function missing(im) {
       var slide = im.closest('.slide');
       if (!slide || slide.classList.contains('missing') || root.classList.contains('fallback')) return;
       slide.classList.add('missing');
       im.hidden = true;
-      if (slide === slides[0] && root.getAttribute('data-fallback')) { useFallback(); return; }
+      failed++;
+      /* only give up on the slider if every single image is absent. one missing
+         city must not throw away the others. */
+      if (failed === n && root.getAttribute('data-fallback')) { useFallback(); return; }
       var note = document.createElement('p');
       note.className = 'missing-note';
       note.textContent = 'not found: ' + im.getAttribute('src');
