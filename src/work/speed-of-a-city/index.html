@@ -5,16 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Speed of a City | Prakriti Srimal</title>
 <meta name="description" content="Why London felt warmer than Dubai, and why it might have less to do with people than with speed.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/tokens.css">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --mono: 'JetBrains Mono', ui-monospace, monospace;
-  --body: 'DM Sans', system-ui, sans-serif;
+  --mono: var(--font-mono); --display: var(--font-display);
+  --body: var(--font-body);
   --bg: #060807; --ink: #f0ede4; --ink-mid: #929e96; --ink-dim: #7d8c83;
-  --accent: #2db354; --rule: #171d19;
+  --accent: var(--brand); --rule: #171d19;
   --edge: #5c6a62;   /* 3.53:1, for control borders */
   --gut: clamp(20px, 5vw, 64px);
   --text: 58ch;
@@ -66,9 +64,9 @@ header.hero {
 header.hero .spine { position: relative; z-index: 2; align-items: end; }
 .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
 h1 {
-  font-family: var(--mono); font-weight: 700;
+  font-family: var(--display); font-weight: 700;
   font-size: clamp(1.9rem, 6vw, 4.1rem); line-height: 0.96;
-  letter-spacing: -0.045em; text-transform: uppercase;
+  letter-spacing: -0.025em; text-transform: uppercase;
 }
 .standfirst {
   margin-top: 18px; font-family: var(--mono);
@@ -171,6 +169,7 @@ footer a:hover { color: var(--accent); }
       <b>Prakriti Srimal</b>
       <b>London and Dubai</b>
       <b>Pace and encounter</b>
+      <b>29 August 2026</b>
     </div>
   </div>
 </header>
@@ -309,7 +308,9 @@ document.querySelectorAll('.m-fig img').forEach(function (img) {
   }
   function draw() {
     ctx.clearRect(0, 0, W, H);
-    var tints = ['#1c6e37', '#2db354', '#6de89a'];
+    var cs = getComputedStyle(document.documentElement);
+    var tints = ['--brand-soft', '--brand', '--brand-pale']
+      .map(function (v) { return cs.getPropertyValue(v).trim() || '#A6F8C4'; });
     for (var g = 0; g < 3; g++) {
       ctx.fillStyle = tints[g];
       for (var i = g; i < N; i += 3) {

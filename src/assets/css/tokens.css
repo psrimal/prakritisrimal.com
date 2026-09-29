@@ -1,0 +1,34 @@
+/* ============================================================
+   tokens.css  —  the only file that decides colour and type.
+
+   Every page on the site links this first. Change a value here and
+   the homepage, the four project pages and everything inside them
+   follow. Nothing below this file should hard code a brand colour
+   or a font family.
+
+   To change the green:      edit --brand
+   To change the typefaces:  edit the @import line and the three
+                             --font-* values together
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Roboto:wght@300;400;500&family=Roboto+Mono:wght@400;500&display=swap');
+
+:root {
+  /* ---- brand ---- */
+  --brand: #A6F8C4;          /* the one green. was #2db354 on the project pages */
+  --brand-ink: #060A0B;      /* text that sits on top of a solid --brand fill */
+  --brand-soft: #3f8f63;     /* darker step, for gradients and canvas fills */
+  --brand-pale: #d8f6e4;     /* lighter step */
+
+  /* ---- type ---- */
+  --font-display: 'Poppins', system-ui, -apple-system, sans-serif;
+  --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* Canvas scripts cannot read CSS variables directly, so they read these
+   instead via getComputedStyle. Keeping them here means the dot fields and
+   the globe stay in step with the rest of the site automatically. */
+.brand-probe { color: var(--brand); }
+.brand-soft-probe { color: var(--brand-soft); }
+.brand-pale-probe { color: var(--brand-pale); }

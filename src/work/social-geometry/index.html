@@ -10,24 +10,22 @@
 <meta property="og:type" content="article">
 <meta property="og:image" content="/assets/socialgeometry/09_networks_hero.png">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="/assets/css/tokens.css">
 <style>
 :root{
   --bg:#050a07;
   --ink:#f0ede4;
   --muted:#7f8c83;
   --line:#1a241d;
-  --accent:#2db354;
+  --accent: var(--brand);
   --delhi:#e0603a;
   --mumbai:#e8b84b;
   --kolkata:#2db354;
   --chennai:#4aa8d8;
   --blr:#b07de0;
-  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
-  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  --mono: var(--font-mono); --display: var(--font-display);
+  --sans: var(--font-body);
 }
 
 *{box-sizing:border-box}
@@ -75,7 +73,7 @@ body{
 /* hero */
 .hero{padding:5.5rem 0 3.5rem}
 h1{
-  font-family:var(--mono);font-weight:700;
+  font-family:var(--display);font-weight:700;
   font-size:clamp(2rem,5.2vw,3.5rem);
   line-height:1.08;letter-spacing:-.03em;margin:0 0 1.5rem;
 }
@@ -100,7 +98,7 @@ section{padding:2rem 0}
    h4 statement  : the three findings, sentence case
    green is used for links and the active nav item. nowhere else. */
 h2{
-  font-family:var(--mono);font-weight:500;color:var(--ink);
+  font-family:var(--display);font-weight:500;color:var(--ink);
   font-size:clamp(1.55rem,3.4vw,2.15rem);
   line-height:1.15;letter-spacing:-.022em;
   margin:4.5rem 0 1.75rem;
@@ -109,7 +107,7 @@ section:first-of-type h2{margin-top:2.5rem}
 
 /* subheadings carry the green accent. level is set by size, not colour. */
 h3{
-  font-family:var(--mono);font-weight:500;color:var(--accent);
+  font-family:var(--display);font-weight:500;color:var(--accent);
   font-size:clamp(1.15rem,2.3vw,1.4rem);
   line-height:1.3;letter-spacing:-.01em;
   margin:3.5rem 0 1.4rem;
@@ -237,7 +235,7 @@ footer a:hover{color:var(--accent)}
   <div class="wrap">
     <h1>The Social Geometry of Indian Cities</h1>
     <p class="standfirst">What five street networks can tell us about the way cities shape everyday encounters.</p>
-    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>Delhi &#183; Mumbai &#183; Kolkata &#183; Chennai &#183; Bengaluru</span></p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>Delhi &#183; Mumbai &#183; Kolkata &#183; Chennai &#183; Bengaluru</span> &nbsp;&nbsp;&#183;&nbsp;&nbsp; 25 September 2026</p>
   </div>
 </header>
 
