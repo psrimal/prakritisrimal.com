@@ -50,7 +50,7 @@ export default [
   },
   {
     id: 'india',
-    name: 'Five Indian cities',
+    name: 'India',
     kicker: 'COMPARISON',
     lat: 21.0, lon: 79.5,
     camera: { km: 3400 },
@@ -62,16 +62,7 @@ export default [
       text: 'Delhi, Mumbai, Kolkata, Chennai and Bengaluru, each cut by a ten kilometre network distance ball from its historic core and measured the same way. Kolkata comes out least connected, which is close to the opposite of the usual story.',
       href: '/work/social-geometry/'
     },
-    analyses: [
-      { q: 'How fine is the grain?', status: 'live', label: 'MEASURED',
-        text: 'Bengaluru has 136 intersections per square kilometre, Mumbai 58.', href: '/work/social-geometry/#findings' },
-      { q: 'What shape is a junction?', status: 'live', label: 'MEASURED',
-        text: 'Kolkata has the most dead ends and the fewest four way junctions of the five.', href: '/work/social-geometry/#junction' },
-      { q: 'Which way do the streets point?', status: 'live', label: 'MEASURED',
-        text: 'Chennai is the most directionally ordered, pinned to its coastline.', href: '/work/social-geometry/#direction' },
-      { q: 'Which streets carry the load?', status: 'live', label: 'MEASURED',
-        text: 'Delhi has the strongest hierarchy. Mumbai the least concentrated through movement.', href: '/work/social-geometry/#load' }
-    ]
+    analyses: []
   },
   {
     id: 'singapore',
