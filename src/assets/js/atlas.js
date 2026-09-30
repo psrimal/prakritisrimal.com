@@ -184,15 +184,12 @@ function globeField(canvas, opts) {
     }
     coast(ctx, P, w, h, GEO.world, desk ? 0.98 : 0.78, desk ? 1.35 : 1);
 
-    ctx.font = '9.5px "JetBrains Mono", monospace';
-    const labels = [];
     for (const m of MARKERS) {
       P(m.lat, m.lon, q); if (q[2] <= 0.02) continue;
       const fade = Math.min(1, (q[2] - 0.02) / 0.28);
       ctx.globalAlpha = fade; drawMarker(ctx, m, q[0], q[1], t); ctx.globalAlpha = 1;
-      if (q[2] > 0.3 && w > 640) labels.push({ m, x: q[0], y: q[1], fade, text: m.n });
     }
-    placeLabels(ctx, labels);
+    /* no city names on the hero globe; the tour names them as it arrives */
   }
   const loop = () => { if (!vis) { raf = null; return; } t += 1; draw(); raf = requestAnimationFrame(loop); };
   size(); draw();
@@ -202,12 +199,6 @@ function globeField(canvas, opts) {
 }
 if ($('#heroCanvas')) globeField($('#heroCanvas'), { count: 5200, seed: 11 });
 if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, spin: 0.000022, radius: 0.40, lon: 60 });
-
-(function boot() {
-  const el = $('#bootLine'); if (!el || RM) return;
-  const seq = ['SYSTEM / READY', 'ACQUIRING / 001', 'OBSERVE / 001'];
-  let i = 0; const id = setInterval(() => { el.textContent = seq[i++]; if (i >= seq.length) clearInterval(id); }, 260);
-})();
 
 /* ---------------- the tour ---------------- */
 (function tour() {
@@ -259,7 +250,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
 
   const cloud = (() => { const r = rng(4242), a = []; for (let i = 0; i < 3200; i++) a.push({ lat: Math.asin(2 * r() - 1) / D, lon: r() * 360 - 180, s: 0.4 + r() * 0.8 }); return a; })();
   const q = [0, 0, 0];
-  let lastF = 0, curKey = null;
+  let curKey = null;
 
   function draw(f) {
     ctx.clearRect(0, 0, w, h);
@@ -271,7 +262,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
     const planet = 1 - sstep(1.2, 4, zoom);    // dot field and graticule
     const local = sstep(8, 30, zoom);          // street networks
 
-    if (planet > 0.01) {
+    if (planet > 0.02) {
       ctx.strokeStyle = `rgba(102,136,136,${0.8 * planet})`; ctx.lineWidth = 1.2;
       ctx.beginPath(); ctx.arc(cx, cy, cam.R, 0, 7); ctx.stroke();
       for (const p of cloud) {
@@ -302,7 +293,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
     /* markers stay until the city fills the frame */
     const mA = 1 - sstep(10, 40, zoom);
     if (mA > 0.01) {
-      ctx.font = '10px "JetBrains Mono", monospace';
+      ctx.font = '10px "Roboto Mono", ui-monospace, monospace';
       const labels = [];
       const india = cam.key.id === 'india' ? 1 - Math.abs(f - (1 + TOUR.findIndex((c) => c.id === 'india'))) : 0;
       const indiaA = sstep(0, 0.6, india);
@@ -335,44 +326,79 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
     }
   }
 
-  /* scroll position to a continuous stop index: 0 is Earth, 1 the first city */
+  /* Scroll position to a continuous stop index: 0 is Earth, 1 the first city.
+     Anchors are measured in document coordinates once per layout change, not
+     per frame. Reading getBoundingClientRect for every stop on every scroll
+     event forces a layout each time, which is what made this feel notchy. */
+  /* Each stop holds its card still for part of its scroll range. Inside that
+     band the camera sits on the city; between bands it flies to the next one.
+     Bands are measured in document coordinates once per layout change. */
   const stops = () => $$('#tour .stop');
-  function progress() {
-    const S = stops(); if (!S.length) return 0;
-    /* anchor on the visible card, not the tall block around it: the camera
-       should be settled exactly when the card sits in the middle of the screen */
-    /* desktop: card centred beside the map. phone: the card slides up from
-       below, so the camera arrives when its top edge passes just over halfway
-       and the city is still visible above it */
+  let bands = [], introY = 0, target = 0, shown = 0, running = false;
+
+  function measure() {
+    const docY = (el) => el.getBoundingClientRect().top + scrollY;
+    const introEl = $('#tour .tour-intro h2');
+    introY = docY(introEl) + introEl.offsetHeight / 2;
     const desk = w > 900;
-    const mid = innerHeight * (desk ? 0.5 : 0.56);
-    const centreOf = (el) => {
-      const a = el.firstElementChild.getBoundingClientRect(), b = el.lastElementChild.getBoundingClientRect();
-      return desk ? (a.top + b.bottom) / 2 : a.top;
-    };
-    const intro = $('#tour .tour-intro h2').getBoundingClientRect();
-    const anchors = [(intro.top + intro.bottom) / 2, ...S.map(centreOf)];
-    if (mid <= anchors[0]) return 0;
-    for (let i = 0; i < anchors.length - 1; i++) {
-      if (mid <= anchors[i + 1]) return i + (mid - anchors[i]) / (anchors[i + 1] - anchors[i]);
-    }
-    return anchors.length - 1;
+    bands = stops().map((el) => {
+      const top = docY(el), h = el.offsetHeight;
+      if (!desk) {
+        /* card scrolls; hold while its top third is on screen */
+        const a = top + innerHeight * 0.20, b = top + h - innerHeight * 0.55;
+        return { hold: [a, Math.max(a + 1, b)] };
+      }
+      const pinStart = top + innerHeight * 0.5;
+      const pinEnd = top + h - innerHeight * 0.5;
+      const pad = Math.min((pinEnd - pinStart) * 0.5, innerHeight * 0.45);
+      return { hold: [pinStart + pad * 0.15, pinEnd - pad] };
+    });
   }
 
-  let queued = false;
-  function frame() { queued = false; lastF = progress(); draw(lastF); markActive(lastF); }
-  const req = () => { if (!queued) { queued = true; requestAnimationFrame(frame); } };
+  function targetFrom() {
+    if (!bands.length) return 0;
+    const mid = scrollY + innerHeight * 0.5;
+    const first = bands[0].hold[0];
+    if (mid <= introY) return 0;
+    if (mid < first) return (mid - introY) / (first - introY);
+    for (let i = 0; i < bands.length; i++) {
+      const [h0, h1] = bands[i].hold;
+      if (mid <= h1) return i + 1;                       // held on this city
+      const next = bands[i + 1];
+      if (!next) return i + 1;
+      if (mid < next.hold[0]) {                          // flying to the next
+        return i + 1 + (mid - h1) / (next.hold[0] - h1);
+      }
+    }
+    return bands.length;
+  }
+
+  /* A little damping between scroll position and camera. Without it every
+     wheel notch lands as a hard step. */
+  function tick() {
+    const d = target - shown;
+    if (Math.abs(d) < 0.0004) { shown = target; draw(shown); markActive(shown); running = false; return; }
+    shown += d * (RM ? 1 : 0.18);
+    draw(shown); markActive(shown);
+    requestAnimationFrame(tick);
+  }
+  function kick() { if (!running) { running = true; requestAnimationFrame(tick); } }
+
+  const onScroll = () => { target = targetFrom(); kick(); };
 
   function markActive(f) {
-    const i = Math.round(f) - 1;
+    const i = Math.round(f) - 1;   // whole numbers are the held stops
     stops().forEach((el, j) => el.classList.toggle('is-here', j === i));
     $$('.tour-dots button').forEach((b, j) => b.setAttribute('aria-current', String(j === i)));
   }
 
-  size(); frame();
-  REDRAWS.push(() => { size(); frame(); });
-  addEventListener('resize', () => { size(); req(); });
-  addEventListener('scroll', req, { passive: true });
+  size(); measure(); target = shown = targetFrom(); draw(shown); markActive(shown);
+  REDRAWS.push(() => { size(); measure(); target = targetFrom(); kick(); });
+  addEventListener('resize', () => { size(); measure(); target = targetFrom(); shown = target; draw(shown); markActive(shown); });
+  addEventListener('scroll', onScroll, { passive: true });
+  /* late web fonts and images shift the page; re-measure when they land */
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); target = targetFrom(); kick(); });
+  addEventListener('load', () => { measure(); target = targetFrom(); kick(); });
 
   /* jump links: the small stop index and the search both use this */
   window.goToStop = (id) => {

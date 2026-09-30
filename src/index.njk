@@ -59,6 +59,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
 
     {%- for c in cities %}
     <article class="stop" id="stop-{{ c.id }}">
+      <div class="stop-pin">
       <header class="stop-head">
         <span class="stop-kicker">{{ c.kicker }}</span>
         <h2>{{ c.name }}</h2>
@@ -90,6 +91,7 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
         {%- if h.href %}<a href="{{ h.href }}">{{ h.title }}<span aria-hidden="true"> &#8599;</span></a>{% else %}<span>{{ h.title }}</span>{% endif %}
         <span class="stop-count">{{ '0' if loop.index < 10 }}{{ loop.index }} / {{ '0' if loop.length < 10 }}{{ loop.length }}</span>
       </footer>
+      </div>
     </article>
     {%- endfor %}
     <div class="tour-tail" aria-hidden="true"></div>

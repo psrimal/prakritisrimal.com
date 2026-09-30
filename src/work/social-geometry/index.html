@@ -218,33 +218,34 @@ footer a:hover{color:var(--accent)}
 /* image sliders. green is the accent, everything else stays muted. */
 .slider{--thumb:12px;--ar:1}
 
-/* one fixed frame per slider. every image is fitted inside it, so nothing jumps between slides.
-   --ar is set from the files themselves (the tallest one), the cap keeps it on screen. */
+/* one fixed frame per slider, sized from the tallest file in the set, so nothing
+   jumps between slides. images swap in place: no horizontal motion at all. */
 .slider .viewport{
   position:relative;width:100%;
   aspect-ratio:var(--ar);
   max-height:min(78vh,780px);
+  touch-action:pan-y;
 }
 .slider .viewport:focus-visible{outline:1px solid var(--line);outline-offset:6px}
-.slider .track{
-  height:100%;display:flex;overflow-x:auto;overflow-y:hidden;
-  scroll-snap-type:x mandatory;overscroll-behavior-x:contain;
-  scrollbar-width:none;-webkit-overflow-scrolling:touch;
-}
-.slider .track.is-moving{scroll-snap-type:none}   /* snapping off while we animate or scrub, or it fights every frame */
-.slider .track::-webkit-scrollbar{display:none}
+.slider .stage{position:absolute;inset:0}
 .slider .slide{
-  flex:0 0 100%;min-width:0;height:100%;
-  scroll-snap-align:center;scroll-snap-stop:always;
+  position:absolute;inset:0;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
 }
+.slider .slide.on{opacity:1;pointer-events:auto}
+/* while the slider is near the screen, give each slide its own layer so a swap is a
+   composite, not a fresh raster of a multi-megabyte PNG. dropped again when it scrolls away. */
+.slider.warm .slide{will-change:opacity;transform:translateZ(0)}
+/* one frame where every slide is painted, so the first swap is not the first raster */
+.slider.prime .slide{opacity:.004}
 .slider .slide img{display:block;width:100%;height:100%;object-fit:contain}
 .slider .slide img[hidden]{display:none}
 .slider .missing-note{
   font-family:var(--mono);font-size:.72rem;color:var(--muted);margin:0;text-align:center;
 }
 .slider .nav{
-  position:absolute;top:50%;transform:translateY(-50%);
+  position:absolute;top:50%;transform:translateY(-50%);z-index:2;
   width:2.4rem;height:2.4rem;border-radius:50%;
   display:none;align-items:center;justify-content:center;
   background:rgba(5,10,7,.72);color:var(--ink);
@@ -279,7 +280,7 @@ footer a:hover{color:var(--accent)}
 
 /* the thumb centre lands on each label centre: input is inset by half a column, widened by one thumb */
 .slider input[type="range"]{
-  -webkit-appearance:none;appearance:none;background:transparent;cursor:grab;touch-action:pan-y;
+  -webkit-appearance:none;appearance:none;background:transparent;cursor:grab;touch-action:none;
   display:block;height:var(--thumb);margin-top:0;margin-bottom:0;padding:0;
   width:calc(100% * (var(--n) - 1) / var(--n) + var(--thumb));
   margin-left:calc(100% / (2 * var(--n)) - var(--thumb) / 2);
@@ -298,6 +299,10 @@ footer a:hover{color:var(--accent)}
 .slider input[type="range"]:focus-visible{outline:1px solid var(--accent);outline-offset:6px}
 .slider figcaption{margin-top:1.4rem}
 .slider.fallback .nav,.slider.fallback .stops{display:none}
+
+/* plots that read better smaller than the measure */
+figure.narrow img{width:75%;margin-left:auto;margin-right:auto}
+@media (max-width:600px){ figure.narrow img{width:100%} }
 
 .sr{
   position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
@@ -361,7 +366,7 @@ footer a:hover{color:var(--accent)}
 
     <figure class="slider" data-slider data-fallback="/assets/socialgeometry/01_footprints.png" data-fallback-alt="Network footprints against a nominal 10 km ball for five cities." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 01, one image at a time">
-        <div class="track">
+        <div class="stage">
         <div class="slide"><img src="/assets/socialgeometry/01a_delhi.png" alt="Delhi: network footprint against the nominal 10 km ball." decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/01b_mumbai.png" alt="Mumbai: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/01c_kolkata.png" alt="Kolkata: network footprint against the nominal 10 km ball." loading="lazy" decoding="async"></div>
@@ -389,7 +394,7 @@ footer a:hover{color:var(--accent)}
 
     <figure class="slider" data-slider data-fallback="/assets/socialgeometry/10_crop_sensitivity_map.png" data-fallback-alt="Bengaluru at four network radii." style="--n:4">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 02, one image at a time">
-        <div class="track">
+        <div class="stage">
         <div class="slide"><img src="/assets/socialgeometry/10a_bengaluru_3km.png" alt="Bengaluru street network at a 3 km network radius." decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/10b_bengaluru_6km.png" alt="Bengaluru street network at a 6 km network radius." loading="lazy" decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/10c_bengaluru_10km.png" alt="Bengaluru street network at a 10 km network radius." loading="lazy" decoding="async"></div>
@@ -413,7 +418,7 @@ footer a:hover{color:var(--accent)}
 
     <figure class="slider" data-slider data-fallback="/assets/socialgeometry/07_sensitivity_radius.png" data-fallback-alt="Every metric recomputed at four network radii." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 03, one image at a time">
-        <div class="track">
+        <div class="stage">
         <div class="slide"><img src="/assets/socialgeometry/07a_delhi_radius_sensitivity.png" alt="Delhi: metrics recomputed at four network radii." decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/07b_mumbai_radius_sensitivity.png" alt="Mumbai: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/07c_kolkata_radius_sensitivity.png" alt="Kolkata: metrics recomputed at four network radii." loading="lazy" decoding="async"></div>
@@ -437,7 +442,7 @@ footer a:hover{color:var(--accent)}
       <figcaption><b>Fig 03</b> Metrics computed at every radius.</figcaption>
     </figure>
 
-    <figure>
+    <figure class="narrow">
       <img src="/assets/socialgeometry/08_rank_stability.png" alt="Spearman rank stability of each metric between adjacent radii.">
       <figcaption><b>Fig 04</b> Spearman stability across radii.</figcaption>
     </figure>
@@ -448,7 +453,7 @@ footer a:hover{color:var(--accent)}
 
     <figure class="slider" data-slider data-fallback="/assets/socialgeometry/09_networks_hero.png" data-fallback-alt="Drive networks of five Indian cities plotted at identical scale." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 05, one image at a time">
-        <div class="track">
+        <div class="stage">
         <div class="slide"><img src="/assets/socialgeometry/09a_delhi_network.png" alt="Delhi: drive network within 10 km, plotted at identical scale." decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/09b_mumbai_network.png" alt="Mumbai: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/09c_kolkata_network.png" alt="Kolkata: drive network within 10 km, plotted at identical scale." loading="lazy" decoding="async"></div>
@@ -571,7 +576,7 @@ footer a:hover{color:var(--accent)}
 
     <figure class="slider" data-slider data-fallback="/assets/socialgeometry/04_orientation_roses.png" data-fallback-alt="Length-weighted street bearing distributions for five cities." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 08, one image at a time">
-        <div class="track">
+        <div class="stage">
         <div class="slide"><img src="/assets/socialgeometry/04a_chennai.png" alt="Chennai: length-weighted street bearing distribution." decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/04b_bengaluru.png" alt="Bengaluru: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/04c_kolkata.png" alt="Kolkata: length-weighted street bearing distribution." loading="lazy" decoding="async"></div>
@@ -607,7 +612,7 @@ footer a:hover{color:var(--accent)}
 
     <p>A low score here does not mean unplanned. It means not aligned to a single axis. Lutyens' geometry is radial and hexagonal, and it sits on top of Shahjahanabad and beside gridded colonies, so within a 10 km ball the bearings spread almost evenly around the compass. This measure cannot distinguish an accreted organic fabric from a deliberately polycentric one.</p>
 
-    <figure>
+    <figure class="narrow">
       <img src="/assets/socialgeometry/05_order_vs_grain.png" alt="Orientation order plotted against intersection density.">
       <figcaption><b>Fig 09</b> Orientation order against intersection density.</figcaption>
     </figure>
@@ -627,7 +632,7 @@ footer a:hover{color:var(--accent)}
 
     <figure class="slider" data-slider data-fallback="/assets/socialgeometry/11_metric_betweenness.png" data-fallback-alt="Street networks shaded by metric betweenness centrality." style="--n:5">
       <div class="viewport" tabindex="0" role="group" aria-roledescription="carousel" aria-label="Fig 11, one image at a time">
-        <div class="track">
+        <div class="stage">
         <div class="slide"><img src="/assets/socialgeometry/11a_delhi_betweenness.png" alt="Delhi: street network shaded by metric betweenness centrality." decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/11b_mumbai_betweenness.png" alt="Mumbai: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
         <div class="slide"><img src="/assets/socialgeometry/11c_kolkata_betweenness.png" alt="Kolkata: street network shaded by metric betweenness centrality." loading="lazy" decoding="async"></div>
@@ -664,7 +669,7 @@ footer a:hover{color:var(--accent)}
 
     <p>The reason, I think, is that constraint and hierarchy are different things. Mumbai's geography leaves so little redundant network that almost every street ends up doing real work. Delhi has room for a clear order of rank: a small set of arterials carrying the load, and a large quiet background behind them. Delhi has the strongest street hierarchy in the set.</p>
 
-    <figure>
+    <figure class="narrow">
       <img src="/assets/socialgeometry/12_foreground_concentration.png" alt="Lorenz curves of betweenness concentration for five cities.">
       <figcaption><b>Fig 12</b> Lorenz curve of metric betweenness against street length.</figcaption>
     </figure>
@@ -730,28 +735,23 @@ footer a:hover{color:var(--accent)}
 
 <script>
 (function () {
-  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function ease(t) { return t * t * t * (t * (t * 6 - 15) + 10); }   /* smootherstep: no jolt at either end, gentle through the middle */
-
   Array.prototype.forEach.call(document.querySelectorAll('[data-slider]'), function (root) {
     var viewport = root.querySelector('.viewport');
-    var track = root.querySelector('.track');
     var slides = Array.prototype.slice.call(root.querySelectorAll('.slide'));
     var stops = Array.prototype.slice.call(root.querySelectorAll('.stop-labels button'));
     var range = root.querySelector('input[type="range"]');
     var prev = root.querySelector('.prev');
     var next = root.querySelector('.next');
     var status = root.querySelector('.sr');
-    var n = slides.length, idx = 0, raf = 0, anim = 0, scrubbing = false, failed = 0;
+    var n = slides.length, idx = -1, failed = 0, dragging = false;
 
     function clamp(i) { return Math.max(0, Math.min(n - 1, i)); }
-    function width() { return track.clientWidth || 1; }
 
-    /* labels, arrows and the screen-reader line. the thumb is only moved when asked to. */
-    function paint(i, keepRange) {
+    /* swap the visible image. nothing moves, nothing animates. */
+    function show(i) {
+      if (i === idx) return;
       idx = i;
-      if (!keepRange) range.value = i;
+      slides.forEach(function (s, k) { s.classList.toggle('on', k === i); });
       stops.forEach(function (b, k) { b.setAttribute('aria-current', k === i ? 'true' : 'false'); });
       prev.disabled = i === 0;
       next.disabled = i === n - 1;
@@ -759,82 +759,31 @@ footer a:hover{color:var(--accent)}
       status.textContent = stops[i].textContent + ', ' + (i + 1) + ' of ' + n;
     }
 
-    function stopAnim() {
-      if (anim) { cancelAnimationFrame(anim); anim = 0; }
-      if (!scrubbing) track.classList.remove('is-moving');
-    }
-
-    /* eased scroll. the thumb rides along frame by frame so image and thumb never disagree. */
-    function animateTo(target, ms) {
-      stopAnim();
-      var w = width(), from = track.scrollLeft, dist = target - from;
-      if (reduce || Math.abs(dist) < 1 || ms <= 0) {
-        track.scrollLeft = target; range.value = target / w; return;
-      }
-      track.classList.add('is-moving');
-      var t0 = performance.now();
-      (function step(now) {
-        var t = Math.min(1, (now - t0) / ms);
-        track.scrollLeft = from + dist * ease(t);
-        range.value = track.scrollLeft / w;
-        if (t < 1) { anim = requestAnimationFrame(step); }
-        else {
-          anim = 0; track.scrollLeft = target; range.value = Math.round(target / w);
-          if (!scrubbing) track.classList.remove('is-moving');
-        }
-      })(t0);
-    }
-
-    function go(i, ms) {
-      if (root.classList.contains('fallback')) return;
-      var from = idx;
+    /* go() also parks the thumb on the stop. while dragging we leave the thumb alone,
+       so it tracks the pointer exactly and never fights it. */
+    function go(i) {
       i = clamp(i);
-      paint(i);
-      var d = Math.abs(i - from);
-      animateTo(i * width(), ms != null ? ms : Math.min(900, 560 + 110 * Math.max(0, d - 1)));
+      show(i);
+      range.value = i;
     }
 
-    /* native swipe / trackpad: let the browser do the physics, just keep the thumb and labels in step */
-    track.addEventListener('scroll', function () {
-      if (raf) return;
-      raf = requestAnimationFrame(function () {
-        raf = 0;
-        if (anim || scrubbing) return;
-        var f = track.scrollLeft / width();
-        range.value = f;
-        var i = clamp(Math.round(f));
-        if (i !== idx) paint(i, true);
-      });
-    }, { passive: true });
-
-    ['touchstart', 'wheel', 'pointerdown'].forEach(function (t) {
-      track.addEventListener(t, stopAnim, { passive: true });
-    });
-
-    /* thumb: images follow it continuously while dragging, then ease onto the nearest stop */
-    function settle() {
-      if (!scrubbing) return;
-      scrubbing = false;
-      go(Math.round(parseFloat(range.value)), 320);
+    range.addEventListener('pointerdown', function () { dragging = true; });
+    function endDrag() {
+      if (!dragging) return;
+      dragging = false;
+      range.value = idx;                 /* settle onto the stop it is showing */
     }
-    range.addEventListener('pointerdown', function () {
-      scrubbing = true; stopAnim(); track.classList.add('is-moving');
-    });
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('pointercancel', endDrag);
+    range.addEventListener('change', endDrag);
+
     range.addEventListener('input', function () {
       var v = parseFloat(range.value);
-      if (scrubbing) {
-        track.scrollLeft = v * width();
-        var i = clamp(Math.round(v));
-        if (i !== idx) paint(i, true);
-      } else {
-        go(Math.round(v));                       /* assistive tech and anything that is not a drag */
-      }
+      if (dragging) { show(clamp(Math.round(v))); }   /* image follows, thumb stays under the finger */
+      else { go(Math.round(v)); }
     });
-    range.addEventListener('change', settle);
-    window.addEventListener('pointerup', settle);
-    window.addEventListener('pointercancel', settle);
 
-    /* the thumb is fine-grained for dragging, so keys must step whole stops */
+    /* step is fine-grained for dragging, so keys must move whole stops */
     range.addEventListener('keydown', function (e) {
       var k = e.key, hit = true;
       if (k === 'ArrowLeft' || k === 'ArrowDown' || k === 'PageDown') go(idx - 1);
@@ -856,12 +805,20 @@ footer a:hover{color:var(--accent)}
       else if (e.key === 'End') { go(n - 1); e.preventDefault(); }
     });
 
-    window.addEventListener('resize', function () {
-      if (root.classList.contains('fallback')) return;
-      stopAnim(); track.scrollLeft = idx * width(); range.value = idx;
-    });
+    /* swipe across the image still changes slide, it just does not drag anything along with it */
+    var sx = 0, sy = 0, tracking = false;
+    viewport.addEventListener('touchstart', function (e) {
+      if (e.touches.length !== 1) { tracking = false; return; }
+      tracking = true; sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+    }, { passive: true });
+    viewport.addEventListener('touchend', function (e) {
+      if (!tracking) return;
+      tracking = false;
+      var t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.5) go(idx + (dx < 0 ? 1 : -1));
+    }, { passive: true });
 
-    /* frame: sized from the tallest file in the set, so a slower or smaller export cannot make it jump */
+    /* frame: sized from the tallest file in the set */
     function fitFrame() {
       var tallest = Infinity;
       Array.prototype.forEach.call(root.querySelectorAll('.slide img'), function (im) {
@@ -872,35 +829,53 @@ footer a:hover{color:var(--accent)}
       if (tallest < Infinity) root.style.setProperty('--ar', tallest.toFixed(4));
     }
 
-    /* images: fetch and decode the rest before they are needed, and cope with files that are absent */
+    /* fetch and decode the rest before they are needed, so a swap is never a blank frame */
     var warmed = false;
+    function prime() {
+      /* paint every slide once, off-screen-cheap, then hand the layers back */
+      root.classList.add('warm', 'prime');
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { root.classList.remove('prime'); });
+      });
+    }
     function warm() {
       if (warmed) return; warmed = true;
+      var pending = 0, done = false;
+      function maybe() { if (!done && pending === 0) { done = true; prime(); } }
       slides.forEach(function (s) {
         var im = s.querySelector('img');
         if (!im) return;
         im.loading = 'eager';
-        if (im.decode) im.decode().catch(function () {});
+        if (im.decode) {
+          pending++;
+          im.decode().catch(function () {}).then(function () { pending--; maybe(); });
+        }
       });
+      maybe();
     }
     if ('IntersectionObserver' in window) {
       var io = new IntersectionObserver(function (es) {
         if (es.some(function (e) { return e.isIntersecting; })) { warm(); io.disconnect(); }
       }, { rootMargin: '900px 0px' });
       io.observe(root);
-    } else { warm(); }
+      /* layers only while it is nearby, so six sliders do not all hold layers at once */
+      var near = new IntersectionObserver(function (es) {
+        root.classList.toggle('warm', es.some(function (e) { return e.isIntersecting; }));
+      }, { rootMargin: '600px 0px' });
+      near.observe(root);
+    } else { warm(); root.classList.add('warm'); }
 
     function useFallback() {
       if (root.classList.contains('fallback')) return;
       root.classList.add('fallback');
-      track.innerHTML = '';
-      var s = document.createElement('div'); s.className = 'slide';
+      var stage = root.querySelector('.stage');
+      stage.innerHTML = '';
+      var s = document.createElement('div'); s.className = 'slide on';
       var im = document.createElement('img');
       im.addEventListener('load', fitFrame);
       im.src = root.getAttribute('data-fallback');
       im.alt = root.getAttribute('data-fallback-alt') || '';
-      s.appendChild(im); track.appendChild(s);
-      track.scrollLeft = 0;
+      s.appendChild(im); stage.appendChild(s);
     }
 
     function missing(im) {
@@ -927,7 +902,7 @@ footer a:hover{color:var(--accent)}
     });
     fitFrame();
 
-    paint(0);
+    go(0);
     root.classList.add('is-ready');
   });
 })();

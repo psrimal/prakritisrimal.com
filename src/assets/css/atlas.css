@@ -380,13 +380,16 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
 .tour-intro h2{font-family:var(--display);font-weight:700;font-size:clamp(30px,3.6vw,58px);line-height:1.04;letter-spacing:-.03em;margin:var(--s4) 0 0}
 .tour-intro p:last-child{color:var(--text-2);margin-top:var(--s4);max-width:40ch}
 
-.stop{
-  width:min(520px,38vw);margin:0 4.5vw 0 auto;
-  min-height:120svh;display:flex;flex-direction:column;justify-content:center;
-  padding:12vh 0
+/* Each stop owns a tall scroll range. The card inside is sticky, so it lands
+   once and holds while the camera settles, then releases as the next stop
+   scrolls up behind it. */
+.stop{width:min(520px,38vw);margin:0 4.5vw 0 auto;height:190svh}
+.stop-pin{
+  position:sticky;top:0;height:100svh;
+  display:flex;flex-direction:column;justify-content:center
 }
-.stop > *{background:rgba(11,17,18,.93);border:1px solid var(--rule);border-bottom:0;backdrop-filter:blur(4px)}
-.stop > *:last-child{border-bottom:1px solid var(--rule)}
+.stop-pin > *{background:rgba(11,17,18,.93);border:1px solid var(--rule);border-bottom:0;backdrop-filter:blur(4px)}
+.stop-pin > *:last-child{border-bottom:1px solid var(--rule)}
 .stop-head{padding:16px 22px 12px}
 .stop-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--active)}
 .stop-head h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,2.6vw,40px);letter-spacing:-.03em;line-height:1.05;margin:8px 0 0}
@@ -428,7 +431,11 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
 @media(max-width:900px){
   .tour-intro,.stop{width:auto;margin:0 16px}
   .tour-intro{justify-content:flex-end;padding-bottom:16vh;min-height:100svh}
-  .stop{min-height:auto;justify-content:flex-start;padding:62svh 0 18svh}
+  /* On a phone a pinned card fills the screen and hides the map, which is the
+     thing it is supposed to be describing. Here the map stays sticky behind
+     and the card scrolls up over it instead. */
+  .stop{height:auto}
+  .stop-pin{position:static;height:auto;justify-content:flex-start;padding:56svh 0 14svh}
   .stop-list li.is-dim .d{display:none}
   .stop-hero p{font-size:14px}
   .tour .scale-readout{left:16px;top:66px;bottom:auto;font-size:9.5px;line-height:1.8}
