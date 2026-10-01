@@ -231,7 +231,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
      log scale so both ends are visible at the top of the arc */
   function camera(f) {
     const K = KEYS(), i = clamp(Math.floor(f), 0, K.length - 2), raw = clamp(f - i, 0, 1);
-    const t = sstep(0.30, 0.70, raw);    // hold at each end so a card can be read
+    const t = sstep(0.08, 0.92, raw);    // hold at each end so a card can be read
     const a = K[i], b = K[i + 1], c = slerp(a, b, t);
     const la = Math.log(a.R), lb = Math.log(b.R);
     const top = Math.log(Math.min(a.R, b.R, shortSide() * 0.55 / Math.max(0.12, c.ang || slerp(a, b, 1).ang)));
@@ -353,8 +353,8 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
       const top = docY(el), h = el.offsetHeight;
       if (!desk) {
         /* card scrolls; hold while its top third is on screen */
-        const a = top + innerHeight * 0.20, b = top + h - innerHeight * 0.55;
-        return { hold: [a, Math.max(a + 1, b)] };
+        const a = top + innerHeight * 0.20, b = a + innerHeight * 0.45;
+        return { hold: [a, b] };
       }
       const pinStart = top + innerHeight * 0.5;
       const pinEnd = top + h - innerHeight * 0.5;
@@ -408,7 +408,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
     if (Math.abs(d) < 0.0004) { shown = target; paint(shown); running = false; return; }
     /* follow rate comes from scroll speed: a slow scroll glides, a fast one
        drags the zoom along with it. Speed decays once the scrolling stops. */
-    shown += d * (RM ? 1 : clamp(0.10 + scrollVel * 0.30, 0.10, 0.60));
+    shown += d * (RM ? 1 : clamp(0.08 + scrollVel * 0.12, 0.08, 0.28));
     scrollVel *= 0.9;
     paint(shown);
     requestAnimationFrame(tick);

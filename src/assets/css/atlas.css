@@ -448,7 +448,7 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
      which is no longer in the flow to measure. The visible content moves
      into .tour-band instead, a fixed panel that swaps its text as the held
      city changes, built in JS from the same city data. */
-  .stop{height:120svh}
+  .stop{height:240svh}
   .stop-pin{display:none}
   .tour .scale-readout{left:16px;top:66px;bottom:auto;font-size:9.5px;line-height:1.8}
   .tour-dots{display:none}
