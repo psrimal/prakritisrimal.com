@@ -48,6 +48,20 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
       <button data-id="{{ c.id }}" aria-current="false"><i></i><span>{{ c.name }}</span></button>
       {%- endfor %}
     </nav>
+
+    <div class="tour-band" id="tourBand" aria-live="polite">
+      {%- set c = cities[0] %}
+      <div class="tb-head">
+        <span class="tb-kicker">{{ c.kicker }}</span>
+        <h2 class="tb-name">{{ c.name }}</h2>
+      </div>
+      <div class="tb-hero">
+        <div class="tb-meta"><span class="tb-proj">{{ c.hero.title | upper }}</span><span class="tb-status">{{ c.hero.label }}</span></div>
+        <h3 class="tb-q">{{ c.hero.q }}</h3>
+        <p class="tb-desc">{{ c.hero.text }}</p>
+      </div>
+      <ol class="tb-rows"></ol>
+    </div>
   </div>
 
   <div class="tour-track">

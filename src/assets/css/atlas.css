@@ -337,7 +337,15 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .mark span{font-size:8px;letter-spacing:.13em}
   .search-btn{font-size:10px;padding:8px 10px;margin-left:auto}
   .search-btn kbd{display:none}
-  .hero{min-height:auto;padding:96px 0 64px}
+  /* Section 1: the globe becomes its own block above the text instead of a
+     full-bleed background behind it. The canvas is already the first child
+     of .hero ahead of .shell in the markup, so switching it out of absolute
+     positioning naturally stacks it above the copy with no markup change. */
+  .hero{min-height:auto;padding:72px 0 64px;display:flex;flex-direction:column;align-items:stretch;overflow:visible}
+  #heroCanvas{position:static;width:100%;height:42svh;display:block}
+  .hero .shell{margin-top:28px}
+  .hero-grid{display:block}
+  .hero-grid > div:last-child{display:none}
   h1.display{font-size:clamp(30px,8.6vw,44px);max-width:none}
   .hero-actions{gap:10px;margin-top:var(--s6)}
   .btn{padding:13px 16px;font-size:11px}
@@ -434,10 +442,14 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   /* On a phone a pinned card fills the screen and hides the map, which is the
      thing it is supposed to be describing. Here the map stays sticky behind
      and the card scrolls up over it instead. */
-  .stop{height:auto}
-  .stop-pin{position:static;height:auto;justify-content:flex-start;padding:56svh 0 14svh}
-  .stop-list li.is-dim .d{display:none}
-  .stop-hero p{font-size:14px}
+  /* Section 2: the card no longer scrolls under the map. Each stop keeps an
+     explicit scroll length so the zoom still has a deliberate, readable pace
+     per city -- that pacing used to come from the card's own content height,
+     which is no longer in the flow to measure. The visible content moves
+     into .tour-band instead, a fixed panel that swaps its text as the held
+     city changes, built in JS from the same city data. */
+  .stop{height:120svh}
+  .stop-pin{display:none}
   .tour .scale-readout{left:16px;top:66px;bottom:auto;font-size:9.5px;line-height:1.8}
   .tour-dots{display:none}
   .stop-head{padding:16px 16px 12px}
@@ -451,3 +463,32 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
 .foot-links a{text-decoration:none;color:var(--text-3);border-bottom:1px solid transparent;padding-bottom:2px}
 .foot-links a:hover{color:var(--active);border-bottom-color:var(--active)}
 @media(max-width:760px){.foot-links{gap:var(--s4)}}
+
+/* ---------- phone tour band ---------- */
+.tour-band{display:none}
+@media(max-width:900px){
+  .tour-band{
+    display:flex;flex-direction:column;
+    position:absolute;left:0;right:0;bottom:0;z-index:2;
+    max-height:52svh;overflow-y:auto;overscroll-behavior:contain;
+    background:rgba(11,17,18,.95);border-top:1px solid var(--rule);
+    backdrop-filter:blur(6px);padding-bottom:env(safe-area-inset-bottom,0)
+  }
+  .tb-head{padding:16px 16px 10px}
+  .tb-kicker{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--active)}
+  .tb-name{font-family:var(--display);font-weight:700;font-size:clamp(21px,6.4vw,28px);letter-spacing:-.02em;line-height:1.05;margin:6px 0 0}
+  .tb-hero{padding:4px 16px 14px;border-top:1px solid var(--rule)}
+  .tb-meta{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--text-3);padding-top:12px}
+  .tb-status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;border:1px solid currentColor;padding:2px 5px}
+  .tb-hero:not(.is-dim) .tb-status{color:var(--active)}
+  .tb-q{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em;line-height:1.22;margin:9px 0 7px}
+  .tb-desc{color:var(--text-2);font-size:13.5px;line-height:1.56;margin:0}
+  .tb-link{display:inline-flex;margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--active);text-decoration:none;border-bottom:1px solid var(--active);padding-bottom:3px}
+  .tb-rows{list-style:none;margin:0;padding:0}
+  .tb-rows li{border-top:1px solid var(--rule)}
+  .tb-rows li.is-dim{opacity:.46}
+  .tb-rows a,.tb-rows div{display:block;padding:10px 16px;text-decoration:none;color:inherit}
+  .tb-rows .row-meta{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--text-3)}
+  .tb-rows b{display:block;font-family:var(--mono);font-weight:600;font-size:13px;margin:4px 0 0;color:var(--text)}
+  .tb-rows .status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;border:1px solid currentColor;padding:2px 5px}
+}

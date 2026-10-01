@@ -79,7 +79,8 @@ h1 {
 .slot.contain { background: #0b100d; }
 .slot.contain img { object-fit: contain; padding: clamp(14px, 3vw, 34px); }
 .hero-figure { padding: 0 var(--gut); }
-.hero-figure .slot { aspect-ratio: 21 / 9; }
+.hero-figure .slot { aspect-ratio: 16 / 9; }
+.hero-figure .slot img, .hero-figure .slot video { object-fit: contain; background: #0b100d; }
 
 section { padding: clamp(56px, 8vw, 104px) var(--gut); }
 h2 {
@@ -121,9 +122,11 @@ h2 {
 .entry-n { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); }
 .entry-t { font-family: var(--mono); font-weight: 700; font-size: clamp(1.05rem, 2.3vw, 1.5rem); line-height: 1.2; letter-spacing: -0.025em; }
 .entry-body {
-  display: grid; grid-template-columns: 92px minmax(0, 1fr) minmax(0, 1fr);
+  display: grid; grid-template-columns: 92px minmax(0, 1.7fr) minmax(0, 1fr);
   gap: clamp(18px, 3vw, 34px); align-items: start;
 }
+.entry-fig { max-width: 320px; justify-self: end; width: 100%; }
+.entry-fig .slot.tall { aspect-ratio: 4 / 5; }
 .entry-body .txt { font-size: 14.5px; line-height: 1.74; color: var(--ink-mid); }
 .entry-body .txt p + p { margin-top: 1.2em; }
 .entry-body .txt strong { color: var(--ink); font-weight: 500; }
@@ -144,6 +147,7 @@ h2 {
 @media (max-width: 900px) {
   .entry-head, .entry-body { grid-template-columns: 1fr; gap: 14px; }
   .entry-n { order: -1; }
+  .entry-fig { max-width: none; justify-self: stretch; }
 }
 
 /* ---------- now ---------- */
