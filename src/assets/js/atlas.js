@@ -212,7 +212,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
   const shortSide = () => Math.min(w, h);
   const radiusFor = (km) => shortSide() * EARTH_KM / km;
   const KEYS = () => [
-    { id: 'earth', lat: 16, lon: 68, R: shortSide() * 0.40, name: 'EARTH' },
+    { id: 'earth', lat: 16, lon: 68, R: shortSide() * (w > 900 ? 0.40 : 0.35), name: 'EARTH' },
     ...TOUR.map((c) => ({ id: c.id, lat: c.lat, lon: c.lon, R: radiusFor(c.camera.km), name: c.name.toUpperCase() }))
   ];
 
@@ -415,9 +415,43 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
   const onScroll = () => { target = targetFrom(); kick(); };
 
   function markActive(f) {
-    const i = Math.round(f) - 1;   // whole numbers are the held stops
+    const i = clamp(Math.round(f) - 1, 0, TOUR.length - 1);   // whole numbers are the held stops
     stops().forEach((el, j) => el.classList.toggle('is-here', j === i));
     $$('.tour-dots button').forEach((b, j) => b.setAttribute('aria-current', String(j === i)));
+    updateBand(i);
+    const bandEl = $('#tourBand');
+    if (bandEl) bandEl.classList.toggle('is-on', f > 0.8);
+  }
+
+  /* Phone-only fixed band. Hidden on desktop by CSS, so this is cheap to
+     update unconditionally rather than branching on viewport width. Content
+     comes straight from the same TOUR data the desktop cards render from. */
+  let lastBandIndex = -1;
+  function rowHTML(a, n) {
+    const num = String(n).padStart(2, '0');
+    const body = `<span class="row-meta"><span>${num}</span><span class="status">${esc(a.label)}</span></span><b>${esc(a.q)}</b>`;
+    return `<li class="${a.status === 'live' ? '' : 'is-dim'}">${a.href ? `<a href="${a.href}">${body}</a>` : `<div>${body}</div>`}</li>`;
+  }
+  function updateBand(i) {
+    if (i === lastBandIndex) return;
+    lastBandIndex = i;
+    const band = $('#tourBand'); if (!band) return;
+    const c = TOUR[i]; const h = c.hero;
+    band.querySelector('.tb-kicker').textContent = c.kicker;
+    band.querySelector('.tb-name').textContent = c.name;
+    const heroEl = band.querySelector('.tb-hero');
+    heroEl.classList.toggle('is-dim', h.status !== 'live');
+    heroEl.querySelector('.tb-proj').textContent = h.title.toUpperCase();
+    heroEl.querySelector('.tb-status').textContent = h.label;
+    heroEl.querySelector('.tb-q').textContent = h.q;
+    heroEl.querySelector('.tb-desc').textContent = h.text;
+    let link = heroEl.querySelector('.tb-link');
+    if (h.href) {
+      if (!link) { link = document.createElement('a'); link.className = 'tb-link'; heroEl.appendChild(link); }
+      link.href = h.href; link.textContent = 'Open the project';
+    } else if (link) link.remove();
+    band.querySelector('.tb-rows').innerHTML = (c.analyses || []).map((a, n) => rowHTML(a, n + 1)).join('');
+    band.scrollTop = 0;
   }
 
   size(); measure(); target = shown = targetFrom(); paint(shown);

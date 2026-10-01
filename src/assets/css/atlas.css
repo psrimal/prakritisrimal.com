@@ -492,3 +492,30 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .tb-rows b{display:block;font-family:var(--mono);font-weight:600;font-size:13px;margin:4px 0 0;color:var(--text)}
   .tb-rows .status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;border:1px solid currentColor;padding:2px 5px}
 }
+
+/* ---------- phone pass 2: tour intro, band, closing ---------- */
+.tour-band{transition:transform .35s ease,opacity .25s ease}
+@media(max-width:900px){
+  /* The band only exists once the camera has actually arrived at a city.
+     Before that (the Earth view and the intro copy) it stays tucked away,
+     so it can no longer sit underneath the intro text. */
+  .tour-band{transform:translateY(100%);opacity:0;pointer-events:none}
+  .tour-band.is-on{transform:none;opacity:1;pointer-events:auto}
+
+  /* Intro copy sits below the globe at rest, smaller, with a soft dark
+     backdrop so it stays legible while it scrolls up past the globe. */
+  .tour-intro{position:relative;padding-bottom:7vh}
+  .tour-intro::before{
+    content:'';position:absolute;z-index:-1;left:-16px;right:-16px;bottom:0;top:-22vh;
+    background:linear-gradient(to bottom,rgba(6,10,11,0),rgba(6,10,11,.92) 30%)
+  }
+  .tour-intro h2{font-size:clamp(24px,7.2vw,32px);line-height:1.1}
+  .tour-intro p:last-child{font-size:15px;line-height:1.55;max-width:none}
+}
+
+/* Last section: text first, globe underneath it as its own block */
+@media(max-width:760px){
+  .closing{flex-direction:column;align-items:stretch;justify-content:flex-start;min-height:auto;padding:var(--s8) 0 var(--s6)}
+  .closing .shell{order:1}
+  #closeCanvas{order:2;position:static;width:100%;height:44svh;display:block;margin-top:var(--s6)}
+}
