@@ -5,12 +5,12 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ title }}</title>
 <meta name="description" content="{{ description }}">
-<link rel="stylesheet" href="/assets/css/tokens.css">
-<link rel="stylesheet" href="/assets/css/atlas.css">
+<link rel="stylesheet" href="/assets/css/tokens.css?v={{ build.id }}">
+<link rel="stylesheet" href="/assets/css/atlas.css?v={{ build.id }}">
 </head>
 <body>
 {{ content | safe }}
-<script>window.CITIES = {{ cities | json | safe }};</script>
-<script type="module" src="/assets/js/atlas.js"></script>
+<script>window.BUILD = "{{ build.id }}"; window.CITIES = {{ cities | json | safe }};</script>
+<script type="module" src="/assets/js/atlas.js?v={{ build.id }}"></script>
 </body>
 </html>

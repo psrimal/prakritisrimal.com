@@ -38,7 +38,7 @@ const GEO = {
 const REDRAWS = [];
 let GEO_GEN = 0;   // bumped whenever new geography finishes loading
 const redrawAll = () => REDRAWS.forEach((f) => { try { f(); } catch (e) { /* keep going */ } });
-const grab = (u) => fetch(u).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+const grab = (u) => fetch(u + (window.BUILD ? '?v=' + window.BUILD : '')).then((r) => (r.ok ? r.json() : null)).catch(() => null);
 
 grab('/assets/data/world-50m.json').then((w) => { if (w) { GEO.world50 = w.rings; GEO_GEN++; redrawAll(); } });
 
@@ -406,13 +406,23 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
   function tick() {
     const d = target - shown;
     if (Math.abs(d) < 0.0004) { shown = target; paint(shown); running = false; return; }
-    shown += d * (RM ? 1 : 0.18);
+    /* follow rate comes from scroll speed: a slow scroll glides, a fast one
+       drags the zoom along with it. Speed decays once the scrolling stops. */
+    shown += d * (RM ? 1 : clamp(0.10 + scrollVel * 0.30, 0.10, 0.60));
+    scrollVel *= 0.9;
     paint(shown);
     requestAnimationFrame(tick);
   }
   function kick() { if (!running) { running = true; requestAnimationFrame(tick); } }
 
-  const onScroll = () => { target = targetFrom(); kick(); };
+  let lastY = scrollY, lastT = performance.now(), scrollVel = 0;   // px per ms
+  const onScroll = () => {
+    const now = performance.now(), y = scrollY;
+    const v = Math.abs(y - lastY) / Math.max(1, now - lastT);
+    scrollVel = scrollVel * 0.5 + v * 0.5;
+    lastY = y; lastT = now;
+    target = targetFrom(); kick();
+  };
 
   function markActive(f) {
     const i = clamp(Math.round(f) - 1, 0, TOUR.length - 1);   // whole numbers are the held stops
