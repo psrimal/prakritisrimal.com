@@ -283,9 +283,9 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
         const L = GEO.city[id].layers;
         ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
         if (L.water) { ctx.strokeStyle = `rgba(115,207,229,${0.75 * local})`; ctx.lineWidth = 1; ctx.fillStyle = `rgba(115,207,229,${0.10 * local})`; strokeRings(ctx, L.water, P, w, h, true); }
-        /* streets outside the district: same colours, drawn first, at 5% so
+        /* streets outside the district: same colours, drawn first, at 10% so
            the boundary reads without a hard cut at the edge */
-        const OUT = 0.05;
+        const OUT = 0.10;
         if (L.local_out) { ctx.strokeStyle = `rgba(120,160,155,${0.30 * local * OUT})`; ctx.lineWidth = 0.5; strokeRings(ctx, L.local_out, P, w, h); }
         if (L.minor_out) { ctx.strokeStyle = `rgba(150,190,182,${0.55 * local * OUT})`; ctx.lineWidth = 0.7; strokeRings(ctx, L.minor_out, P, w, h); }
         if (L.major_out) { ctx.strokeStyle = `rgba(214,240,228,${0.85 * local * OUT})`; ctx.lineWidth = 1.2; strokeRings(ctx, L.major_out, P, w, h); }
