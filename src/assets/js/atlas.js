@@ -155,8 +155,9 @@ function coast(ctx, P, w, h, rings, alpha, width) {
 
 /* ---------------- hero and closing globe ---------------- */
 function globeField(canvas, opts) {
-  const o = Object.assign({ count: 4000, spin: 0.00003, seed: 7, radius: 0.43, lat: 14, lon: 72 }, opts || {});
+  const o = Object.assign({ count: 4000, spin: 0.00003, seed: 7, radius: 0.43, lat: 14, lon: 72, drag: false }, opts || {});
   let ctx, w, h, raf = null, t = 0, vis = true;
+  let dLon = 0, dLat = 0, vLon = 0, grabbing = false;   // drag offsets, and release momentum
   const r0 = rng(o.seed), pts = [];
   for (let i = 0; i < o.count; i++) pts.push({ lat: Math.asin(2 * r0() - 1) / D, lon: r0() * 360 - 180, s: 0.5 + r0() * 0.9 });
   const size = () => { const f = fitCanvas(canvas); ctx = f.ctx; w = f.w; h = f.h; };
@@ -167,8 +168,8 @@ function globeField(canvas, opts) {
     const desk = w > 900;
     const R = Math.min(w, h) * o.radius;
     const cx = w * (desk ? 0.68 : 0.5), cy = h * 0.5;
-    const lon0 = o.lon - t * o.spin * 60 / D;
-    const P = ortho(o.lat, lon0, R, cx, cy);
+    const lon0 = o.lon - t * o.spin * 60 / D + dLon;
+    const P = ortho(clamp(o.lat + dLat, -80, 80), lon0, R, cx, cy);
 
     ctx.strokeStyle = `rgba(86,116,116,${desk ? 0.46 : 0.30})`; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.arc(cx, cy, R, 0, 7); ctx.stroke();
@@ -192,13 +193,41 @@ function globeField(canvas, opts) {
     }
     /* no city names on the hero globe; the tour names them as it arrives */
   }
-  const loop = () => { if (!vis) { raf = null; return; } t += 1; draw(); raf = requestAnimationFrame(loop); };
+  const loop = () => {
+    if (!vis) { raf = null; return; }
+    if (!grabbing) { t += 1; if (Math.abs(vLon) > 0.01) { dLon += vLon; vLon *= 0.95; } else vLon = 0; }
+    draw(); raf = requestAnimationFrame(loop); };
   size(); draw();
+
+  /* Drag to turn the globe. Mouse moves it both ways; on touch only sideways,
+     so a vertical swipe still scrolls the page. It keeps coasting after release
+     and then settles back into its slow spin. */
+  if (o.drag) {
+    let last = null;
+    const Rpx = () => Math.min(w, h) * o.radius;
+    canvas.style.touchAction = 'pan-y';
+    canvas.style.cursor = 'grab';
+    canvas.addEventListener('pointerdown', (e) => {
+      grabbing = true; vLon = 0; last = [e.clientX, e.clientY];
+      canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing';
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!grabbing || !last) return;
+      const dx = e.clientX - last[0], dy = e.clientY - last[1]; last = [e.clientX, e.clientY];
+      const k = 1 / Rpx() / D;
+      dLon -= dx * k; vLon = -dx * k;
+      if (e.pointerType === 'mouse') dLat = clamp(dLat + dy * k, -60, 60);
+      if (RM || !raf) draw();
+    });
+    const end = () => { grabbing = false; last = null; canvas.style.cursor = 'grab'; if (RM) vLon = 0; };
+    canvas.addEventListener('pointerup', end); canvas.addEventListener('pointercancel', end);
+  }
+
   REDRAWS.push(() => { size(); draw(); });
   if (!RM) new IntersectionObserver((es) => { vis = es[0].isIntersecting; if (vis && !raf) raf = requestAnimationFrame(loop); }, { threshold: 0.02 }).observe(canvas);
   addEventListener('resize', () => { size(); draw(); });
 }
-if ($('#heroCanvas')) globeField($('#heroCanvas'), { count: 5200, seed: 11 });
+if ($('#heroCanvas')) globeField($('#heroCanvas'), { count: 5200, seed: 11, drag: true });
 if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, spin: 0.000022, radius: 0.40, lon: 60 });
 
 /* ---------------- the tour ---------------- */

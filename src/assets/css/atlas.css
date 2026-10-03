@@ -524,3 +524,7 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .closing .shell{order:1}
   #closeCanvas{order:2;position:static;width:100%;height:44svh;display:block;margin-top:var(--s6)}
 }
+
+/* hero globe is draggable: let pointer events reach the canvas through the text layer */
+.hero .shell{pointer-events:none}
+.hero .shell .hero-actions,.hero .shell h1{pointer-events:auto}
