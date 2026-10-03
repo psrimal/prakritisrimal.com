@@ -501,6 +501,11 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
      so it can no longer sit underneath the intro text. */
   .tour-band{transform:translateY(100%);opacity:0;pointer-events:none}
   .tour-band.is-on{transform:none;opacity:1;pointer-events:auto}
+  /* The band lives inside .tour-map (z-index 0), underneath .tour-track. On a
+     phone each .stop is an empty full-height scroll spacer (its card is hidden),
+     but it still re-enabled pointer events and swallowed every tap meant for
+     the band's links. Let touches pass through the spacers and intro. */
+  .tour-track > .stop,.tour-track > .tour-intro{pointer-events:none}
 
   /* Intro copy sits below the globe at rest, smaller, with a soft dark
      backdrop so it stays legible while it scrolls up past the globe. */
