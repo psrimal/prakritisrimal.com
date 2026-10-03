@@ -283,9 +283,9 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
         const L = GEO.city[id].layers;
         ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
         if (L.water) { ctx.strokeStyle = `rgba(115,207,229,${0.75 * local})`; ctx.lineWidth = 1; ctx.fillStyle = `rgba(115,207,229,${0.10 * local})`; strokeRings(ctx, L.water, P, w, h, true); }
-        /* streets outside the district: same colours, drawn first, at 20% so
+        /* streets outside the district: same colours, drawn first, at 5% so
            the boundary reads without a hard cut at the edge */
-        const OUT = 0.20;
+        const OUT = 0.05;
         if (L.local_out) { ctx.strokeStyle = `rgba(120,160,155,${0.30 * local * OUT})`; ctx.lineWidth = 0.5; strokeRings(ctx, L.local_out, P, w, h); }
         if (L.minor_out) { ctx.strokeStyle = `rgba(150,190,182,${0.55 * local * OUT})`; ctx.lineWidth = 0.7; strokeRings(ctx, L.minor_out, P, w, h); }
         if (L.major_out) { ctx.strokeStyle = `rgba(214,240,228,${0.85 * local * OUT})`; ctx.lineWidth = 1.2; strokeRings(ctx, L.major_out, P, w, h); }
@@ -293,7 +293,12 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
         if (L.local) { ctx.strokeStyle = `rgba(120,160,155,${0.30 * local})`; ctx.lineWidth = 0.5; strokeRings(ctx, L.local, P, w, h); }
         if (L.minor) { ctx.strokeStyle = `rgba(150,190,182,${0.55 * local})`; ctx.lineWidth = 0.7; strokeRings(ctx, L.minor, P, w, h); }
         if (L.major) { ctx.strokeStyle = `rgba(214,240,228,${0.85 * local})`; ctx.lineWidth = 1.2; strokeRings(ctx, L.major, P, w, h); }
-        if (L.boundary) { ctx.setLineDash([4, 4]); ctx.strokeStyle = `rgba(166,248,196,${0.9 * local})`; ctx.lineWidth = 1.3; strokeRings(ctx, L.boundary, P, w, h, true); ctx.setLineDash([]); }
+        if (L.boundary) {
+          /* soft glow underneath, then a bright, heavier dashed line on top */
+          ctx.strokeStyle = `rgba(166,248,196,${0.18 * local})`; ctx.lineWidth = 7; strokeRings(ctx, L.boundary, P, w, h, true);
+          ctx.setLineDash([7, 5]); ctx.strokeStyle = `rgba(200,255,224,${local})`; ctx.lineWidth = 4; strokeRings(ctx, L.boundary, P, w, h, true);
+          ctx.setLineDash([]);
+        }
         ctx.restore();
       }
     }
