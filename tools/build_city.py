@@ -244,8 +244,17 @@ def main():
 
     parser.add_argument(
         "--boundary",
-        required=True,
-        help="Path to administrative boundary shapefile or GeoJSON",
+        help="Path to administrative boundary shapefile or GeoJSON. "
+             "When given, streets outside it are emitted as <cls>_out "
+             "so the site can draw them faint.",
+    )
+
+    parser.add_argument(
+        "--out-share",
+        type=float,
+        default=0.35,
+        help="Fraction of the point budget spent on outside-boundary "
+             "streets (0 to 1). Lower means more detail kept inside.",
     )
 
     parser.add_argument(
@@ -321,7 +330,7 @@ def main():
             f"PBF not found: {args.pbf}"
         )
 
-    if not os.path.exists(args.boundary):
+    if args.boundary and not os.path.exists(args.boundary):
         sys.exit(
             f"Boundary file not found: {args.boundary}"
         )
@@ -423,6 +432,46 @@ def main():
 
 
     # -----------------------------------------------------------------
+    # Read administrative boundary early, so roads can be split by it.
+    # When no boundary is given, boundary_geom stays None and every
+    # street is emitted at full strength.
+    # -----------------------------------------------------------------
+
+    boundary_geom = None
+
+    if args.boundary:
+
+        print()
+        print("Reading administrative boundary...")
+
+        boundary = gpd.read_file(args.boundary)
+
+        if boundary is None or boundary.empty:
+            sys.exit(f"No geometry found in boundary file: {args.boundary}")
+
+        if boundary.crs is None:
+            print("WARNING: boundary has no CRS metadata. Assuming EPSG:4326.")
+            boundary = boundary.set_crs(4326, allow_override=True)
+        elif boundary.crs.to_epsg() != 4326:
+            print(f"  converting boundary CRS {boundary.crs} -> EPSG:4326")
+            boundary = boundary.to_crs(4326)
+
+        boundary = boundary[boundary.geometry.notna()].copy()
+        boundary = boundary[~boundary.geometry.is_empty].copy()
+
+        if boundary.empty:
+            sys.exit("Boundary contains no usable geometry.")
+
+        boundary_geom = unary_union(boundary.geometry).intersection(clip)
+
+        if boundary_geom.is_empty:
+            sys.exit(
+                "Boundary does not intersect the requested bbox. "
+                "Check that --bbox and --boundary refer to the same city."
+            )
+
+
+    # -----------------------------------------------------------------
     # Output document
     # -----------------------------------------------------------------
 
@@ -445,8 +494,9 @@ def main():
 
         "source": (
             "OpenStreetMap contributors; "
-            f"roads: {os.path.basename(args.pbf)}; "
-            f"boundary: {os.path.basename(args.boundary)}"
+            f"roads: {os.path.basename(args.pbf)}"
+            + (f"; boundary: {os.path.basename(args.boundary)}"
+               if args.boundary else "")
         ),
 
         "layers": {},
@@ -459,186 +509,100 @@ def main():
 
     total_road_points = 0
 
-    for cls in [
-        "major",
-        "minor",
-        "local",
-    ]:
+    def emit(name, subset, cap):
+        """Simplify, encode and budget-trim one subset, longest runs first."""
+        nonlocal total_road_points
 
-        subset = roads[
-            roads["cls"] == cls
-        ]
+        if subset is None or subset.empty:
+            return
+
+        runs, points = layer(subset, road_tol, ox, oy, merge=True)
+
+        if points > cap:
+            runs.sort(key=len, reverse=True)
+            kept, used = [], 0
+            for run in runs:
+                n = len(run) // 2
+                if used + n > cap:
+                    break
+                kept.append(run)
+                used += n
+            print(f"  {name:10s} trimmed {points:,} -> {used:,} points")
+            runs, points = kept, used
+
+        doc["layers"][name] = runs
+        total_road_points += points
+        print(f"  {name:10s} {len(runs):6,d} lines {points:8,d} points")
+
+
+    # Budget shares. With a boundary, most of the budget goes to the
+    # inside network and the rest to faint context outside. Without one,
+    # each class simply gets its full share.
+    IN_SHARE  = {"major": 0.34, "minor": 0.30, "local": 0.22}
+    OUT_SHARE = {"major": 0.16, "minor": 0.12, "local": 0.06}
+    ALL_SHARE = {"major": 0.42, "minor": 0.34, "local": 0.24}
+
+    for cls in ["major", "minor", "local"]:
+
+        subset = roads[roads["cls"] == cls]
 
         if subset.empty:
             continue
 
-        runs, points = layer(
-            subset,
-            road_tol,
+        if boundary_geom is not None:
+
+            inside = subset.set_geometry(
+                subset.geometry.intersection(boundary_geom)
+            )
+            inside = inside[~inside.geometry.is_empty]
+
+            outside = subset.set_geometry(
+                subset.geometry.difference(boundary_geom)
+            )
+            outside = outside[~outside.geometry.is_empty]
+
+            emit(cls, inside, int(args.budget * IN_SHARE[cls]))
+            emit(cls + "_out", outside,
+                 int(args.budget * OUT_SHARE[cls] * (args.out_share / 0.35)))
+
+        else:
+            emit(cls, subset, int(args.budget * ALL_SHARE[cls]))
+
+
+    # -----------------------------------------------------------------
+    # Encode the boundary ring (geometry already loaded above)
+    # -----------------------------------------------------------------
+
+    boundary_points = 0
+
+    if boundary_geom is not None:
+
+        boundary_gdf = gpd.GeoDataFrame(
+            geometry=[boundary_geom],
+            crs="EPSG:4326",
+        )
+
+        boundary_tol = road_tol * 0.35
+
+        boundary_runs, boundary_points = layer(
+            boundary_gdf,
+            boundary_tol,
             ox,
             oy,
-            merge=True,
+            merge=False,
         )
 
-
-        # Keep longest road runs first if budget is exceeded.
-        if total_road_points + points > args.budget:
-
-            runs.sort(
-                key=len,
-                reverse=True,
-            )
-
-            kept = []
-            used = 0
-
-            for run in runs:
-
-                n = len(run) // 2
-
-                if (
-                    total_road_points
-                    + used
-                    + n
-                    > args.budget
-                ):
-                    break
-
-                kept.append(run)
-                used += n
-
+        if boundary_runs:
+            doc["layers"]["boundary"] = boundary_runs
+            print()
             print(
-                f"  {cls:8s} "
-                f"trimmed {points:,} -> {used:,} points "
-                f"to stay inside budget"
+                f"  boundary "
+                f"{len(boundary_runs):6,d} rings "
+                f"{boundary_points:8,d} points"
             )
-
-            runs = kept
-            points = used
-
-
-        doc["layers"][cls] = runs
-
-        total_road_points += points
-
-        print(
-            f"  {cls:8s} "
-            f"{len(runs):6,d} lines "
-            f"{points:8,d} points"
-        )
-
-
-    # -----------------------------------------------------------------
-    # Read administrative boundary
-    # -----------------------------------------------------------------
-
-    print()
-    print("Reading administrative boundary...")
-
-    boundary = gpd.read_file(
-        args.boundary
-    )
-
-    if boundary is None or boundary.empty:
-        sys.exit(
-            f"No geometry found in boundary file: {args.boundary}"
-        )
-
-
-    # Convert boundary to WGS84 so it shares the same coordinate system
-    # as the road network and atlas.js.
-    if boundary.crs is None:
-
-        print(
-            "WARNING: boundary has no CRS metadata. "
-            "Assuming EPSG:4326."
-        )
-
-        boundary = boundary.set_crs(
-            4326,
-            allow_override=True,
-        )
-
-    elif boundary.crs.to_epsg() != 4326:
-
-        print(
-            f"  converting boundary CRS "
-            f"{boundary.crs} -> EPSG:4326"
-        )
-
-        boundary = boundary.to_crs(
-            4326
-        )
-
-
-    # Remove invalid/null geometries.
-    boundary = boundary[
-        boundary.geometry.notna()
-    ].copy()
-
-    boundary = boundary[
-        ~boundary.geometry.is_empty
-    ].copy()
-
-    if boundary.empty:
-        sys.exit(
-            "Boundary contains no usable geometry."
-        )
-
-
-    # Dissolve all features into a single administrative geometry.
-    #
-    # This is useful when, for example, the shapefile contains multiple
-    # Bengaluru district pieces or several polygon records.
-    boundary_geom = unary_union(
-        boundary.geometry
-    )
-
-
-    # Clip boundary to requested city bbox.
-    boundary_geom = boundary_geom.intersection(
-        clip
-    )
-
-    if boundary_geom.is_empty:
-        sys.exit(
-            "Boundary does not intersect the requested bbox. "
-            "Check that --bbox and --boundary refer to the same city."
-        )
-
-
-    boundary_gdf = gpd.GeoDataFrame(
-        geometry=[boundary_geom],
-        crs="EPSG:4326",
-    )
-
-
-    # Keep boundary slightly more detailed than roads.
-    boundary_tol = road_tol * 0.35
-
-    boundary_runs, boundary_points = layer(
-        boundary_gdf,
-        boundary_tol,
-        ox,
-        oy,
-        merge=False,
-    )
-
-
-    if not boundary_runs:
-        sys.exit(
-            "Boundary was read successfully but produced no drawable lines."
-        )
-
-
-    doc["layers"]["boundary"] = boundary_runs
-
-
-    print(
-        f"  boundary "
-        f"{len(boundary_runs):6,d} rings "
-        f"{boundary_points:8,d} points"
-    )
+        else:
+            print()
+            print("  boundary produced no drawable lines; skipped")
 
 
     # -----------------------------------------------------------------
