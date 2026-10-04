@@ -482,7 +482,7 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .tb-status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;border:1px solid currentColor;padding:2px 5px}
   .tb-hero:not(.is-dim) .tb-status{color:var(--active)}
   .tb-q{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:-.01em;line-height:1.22;margin:9px 0 7px}
-  .tb-desc{color:var(--text-2);font-size:13.5px;line-height:1.56;margin:0}
+  .tb-desc{display:none}
   .tb-link{display:inline-flex;margin-top:12px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--active);text-decoration:none;border-bottom:1px solid var(--active);padding-bottom:3px}
   .tb-rows{list-style:none;margin:0;padding:0}
   .tb-rows li{border-top:1px solid var(--rule)}
