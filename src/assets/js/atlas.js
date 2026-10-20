@@ -471,17 +471,17 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
      update unconditionally rather than branching on viewport width. Content
      comes straight from the same TOUR data the desktop cards render from. */
   let lastBandIndex = -1;
-  function rowHTML(a, n) {
-    const num = String(n).padStart(2, '0');
-    const body = `<span class="row-meta"><span>${num}</span><span class="status">${esc(a.label)}</span></span><b>${esc(a.q)}</b>`;
-    return `<li class="${a.status === 'live' ? '' : 'is-dim'}">${a.href ? `<a href="${a.href}">${body}</a>` : `<div>${body}</div>`}</li>`;
+  function rowHTML(a) {
+    if (a.href) {
+      return `<li class="is-feature"><span class="tb-meta"><span>${esc(a.title.toUpperCase())}</span><span class="tb-status">${esc(a.label)}</span></span><h3 class="tb-q">${esc(a.q)}</h3><a class="tb-link" href="${a.href}">Open the project</a></li>`;
+    }
+    return `<li class="${a.status === 'live' ? '' : 'is-dim'}"><div><span class="row-meta"><span class="status">${esc(a.label)}</span></span><b>${esc(a.q)}</b></div></li>`;
   }
   function updateBand(i) {
     if (i === lastBandIndex) return;
     lastBandIndex = i;
     const band = $('#tourBand'); if (!band) return;
     const c = TOUR[i]; const h = c.hero;
-    band.querySelector('.tb-kicker').textContent = c.kicker;
     band.querySelector('.tb-name').textContent = c.name;
     const heroEl = band.querySelector('.tb-hero');
     heroEl.classList.toggle('is-dim', h.status !== 'live');
@@ -494,7 +494,7 @@ if ($('#closeCanvas')) globeField($('#closeCanvas'), { count: 4000, seed: 29, sp
       if (!link) { link = document.createElement('a'); link.className = 'tb-link'; heroEl.appendChild(link); }
       link.href = h.href; link.textContent = 'Open the project';
     } else if (link) link.remove();
-    band.querySelector('.tb-rows').innerHTML = (c.analyses || []).map((a, n) => rowHTML(a, n + 1)).join('');
+    band.querySelector('.tb-rows').innerHTML = (c.analyses || []).map(rowHTML).join('');
     band.scrollTop = 0;
   }
 

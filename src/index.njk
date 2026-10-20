@@ -52,7 +52,6 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <div class="tour-band" id="tourBand" aria-live="polite">
       {%- set c = cities[0] %}
       <div class="tb-head">
-        <span class="tb-kicker">{{ c.kicker }}</span>
         <h2 class="tb-name">{{ c.name }}</h2>
       </div>
       <div class="tb-hero">
@@ -73,7 +72,6 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
     <article class="stop" id="stop-{{ c.id }}">
       <div class="stop-pin">
       <header class="stop-head">
-        <span class="stop-kicker">{{ c.kicker }}</span>
         <h2>{{ c.name }}</h2>
       </header>
 
@@ -88,19 +86,27 @@ description: Spatial data science, geospatial intelligence and urban sensing. An
       {%- if c.analyses.length %}
       <ol class="stop-list">
         {%- for an in c.analyses %}
+        {%- if an.href %}
+        <li class="stop-feature">
+          <div class="row-meta"><span>{{ an.title | upper }}</span><span class="status">{{ an.label }}</span></div>
+          <h3>{{ an.q }}</h3>
+          <p>{{ an.text }}</p>
+          <a class="open-link" href="{{ an.href }}">Open the project</a>
+        </li>
+        {%- else %}
         <li class="{% if an.status != 'live' %}is-dim{% endif %}">
-          {%- if an.href %}<a href="{{ an.href }}">{% else %}<div>{% endif %}
-            <span class="row-meta"><span>{{ '0' if loop.index < 10 }}{{ loop.index }}</span><span class="status">{{ an.label }}</span></span>
+          <div>
+            <span class="row-meta"><span class="status">{{ an.label }}</span></span>
             <b>{{ an.q }}</b>
             <span class="d">{{ an.text }}</span>
-          {%- if an.href %}</a>{% else %}</div>{% endif %}
+          </div>
         </li>
+        {%- endif %}
         {%- endfor %}
       </ol>
       {%- endif %}
 
       <footer class="stop-foot">
-        {%- if h.href %}<a href="{{ h.href }}">{{ h.title }}<span aria-hidden="true"> &#8599;</span></a>{% else %}<span>{{ h.title }}</span>{% endif %}
         <span class="stop-count">{{ '0' if loop.index < 10 }}{{ loop.index }} / {{ '0' if loop.length < 10 }}{{ loop.length }}</span>
       </footer>
       </div>

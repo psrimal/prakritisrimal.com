@@ -46,7 +46,11 @@ export default [
       text: 'MArch thesis at the Bartlett. Spatial signatures, urban decay across 2010, 2015 and 2019, amenity grading and angular step depth, feeding a generative loop that proposes void, mobile and elevated street segments. Team of four.',
       href: '/work/isochronic-city/'
     },
-    analyses: []
+    analyses: [
+      { q: 'Why did London feel warmer than Dubai?', title: 'The Speed of a City', status: 'live', label: 'WRITING',
+        text: 'Why one city felt warmer than another, and why it might have less to do with people than with speed.',
+        href: '/work/speed-of-a-city/' }
+    ]
   },
   {
     id: 'india',

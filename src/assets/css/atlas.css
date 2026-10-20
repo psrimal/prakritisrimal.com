@@ -401,14 +401,15 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
 .stop-head{padding:16px 22px 12px}
 .stop-kicker{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--active)}
 .stop-head h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,2.6vw,40px);letter-spacing:-.03em;line-height:1.05;margin:8px 0 0}
-.stop-hero{padding:18px 22px}
-.stop-hero h3{font-family:var(--display);font-weight:600;font-size:clamp(18px,1.5vw,22px);letter-spacing:-.01em;line-height:1.2;margin:10px 0 8px}
-.stop-hero p{color:var(--text-2);font-size:14.5px;line-height:1.58;margin:0}
-.stop-hero .open-link{margin-top:var(--s4)}
+.stop-hero, .stop-feature{padding:18px 22px}
+.stop-hero h3, .stop-feature h3{font-family:var(--display);font-weight:600;font-size:clamp(18px,1.5vw,22px);letter-spacing:-.01em;line-height:1.2;margin:10px 0 8px}
+.stop-hero p, .stop-feature p{color:var(--text-2);font-size:14.5px;line-height:1.58;margin:0}
+.stop-hero .open-link, .stop-feature .open-link{margin-top:var(--s4)}
+.stop-feature .status{color:var(--active)}
+.stop .row-meta .status:only-child{margin-left:auto}
 .stop-list{list-style:none;margin:0;padding:0}
 .stop-list li{border-top:1px solid var(--rule)}
-.stop-list li > a, .stop-list li > div{display:block;padding:11px 22px;text-decoration:none;color:inherit}
-.stop-list li > a:hover{background:var(--raised)}
+.stop-list li:not(.stop-feature) > div{display:block;padding:11px 22px;text-decoration:none;color:inherit}
 .stop-list b{display:block;font-family:var(--mono);font-weight:600;font-size:14.5px;margin:4px 0 3px;color:var(--text)}
 .stop-list .d{display:block;color:var(--text-2);font-size:13px;line-height:1.5}
 .is-dim{opacity:.46}
@@ -454,7 +455,7 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .tour-dots{display:none}
   .stop-head{padding:16px 16px 12px}
   .stop-hero{padding:16px}
-  .stop-list li > a,.stop-list li > div{padding:13px 16px}
+  .stop-list li:not(.stop-feature) > div{padding:13px 16px}
   .stop-foot{padding:12px 16px}
 }
 
@@ -488,6 +489,10 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .tb-rows li{border-top:1px solid var(--rule)}
   .tb-rows li.is-dim{opacity:.46}
   .tb-rows a,.tb-rows div{display:block;padding:10px 16px;text-decoration:none;color:inherit}
+  .tb-rows li.is-feature{padding:4px 16px 14px}
+  .tb-rows li.is-feature .tb-meta{display:flex}
+  .tb-rows .tb-status{color:var(--active)}
+  .tb-rows .row-meta .status:only-child{margin-left:auto}
   .tb-rows .row-meta{display:flex;justify-content:space-between;gap:10px;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;color:var(--text-3)}
   .tb-rows b{display:block;font-family:var(--mono);font-weight:600;font-size:13px;margin:4px 0 0;color:var(--text)}
   .tb-rows .status{font-family:var(--mono);font-size:9px;letter-spacing:.12em;border:1px solid currentColor;padding:2px 5px}
