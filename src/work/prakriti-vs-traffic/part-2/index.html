@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prakriti vs Traffic: The Metro Race</title>
+<meta name="description" content="How long would it actually take me to get to work by metro? I built a race to find out.">
+<meta property="og:title" content="Prakriti vs Traffic: The Metro Race">
+<meta property="og:description" content="How long would it actually take me to get to work by metro? I built a race to find out.">
+<meta property="og:type" content="article">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/series.css">
+</head>
+<body class="tight">
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#question">The question</a></li>
+    <li><a href="#race">The race</a></li>
+    <li><a href="#counted">What I counted</a></li>
+    <li><a href="#stations">The stations</a></li>
+    <li><a href="#found">What it showed</a></li>
+    <li><a href="#gaps">What it can&#8217;t tell you</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Prakriti vs Traffic: Part 2</h1>
+    <p class="standfirst">How long would it actually take me to get to work by metro?</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>28th October, 2026.</span></p>
+  </div>
+</header>
+
+<section id="question">
+  <div class="wrap">
+    <p class="lead">Google Maps says 1 hr 34. But that isn&#8217;t the time from my front door to my desk.</p>
+
+    <p>In <a href="/work/prakriti-vs-traffic/part-1/">Part 1</a> I put what Maps promised next to what a stopwatch said. The metro barely moved, from 1 hr 29 to 1 hr 34, which is why I like it. But one number per route hides everything I actually fiddle with before leaving: how I get to the station, how long I wait for a train, and how I get from the last station to my desk.</p>
+
+    <blockquote class="pull">
+      <p>The metro isn&#8217;t the journey. It&#8217;s the middle of the journey.</p>
+    </blockquote>
+
+    <p>So I turned the routes into a race. Five stations I could start from, six I could finish at, and every combination run from my door to the office, for any time I might leave.</p>
+  </div>
+</section>
+
+<section id="race">
+  <div class="wrap">
+    <h2>The race</h2>
+
+    <p>Pick morning or evening, a day (or the Mon&#8211;Fri typical) and a departure time. Each dot is one route. It travels to a station, waits, rides, and finishes the last stretch. The first ones in light up.</p>
+
+    <div class="embed">
+      <iframe src="/assets/prakriti-vs-traffic/part-2/metro-race.html" title="Interactive metro race from Jayanagar to Whitefield" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <p class="tnote">Works best on a laptop. <a href="/assets/prakriti-vs-traffic/part-2/metro-race.html" target="_blank" rel="noopener">Open it full screen.</a> The animation is sped up (400&#215;), so it does not run at real-world speed. The times on the board are the calculated ones.</p>
+  </div>
+</section>
+
+<section id="counted">
+  <div class="wrap">
+    <h2>What I counted</h2>
+
+    <p>Every route is the same chain, door to desk:</p>
+
+    <ul>
+      <li><b class="tag">Get there</b> The road time from my door to a starting station, for the minute I leave. Five options: Banashankari, Jayanagar, JP Nagar, RV Road and South End Circle.</li>
+      <li><b class="tag">Gates</b> A flat 3 minutes from the road to the platform: gates, stairs, the walk down.</li>
+      <li><b class="tag">Wait</b> However long until the next train actually leaves, from the metro timetable. This is why two stations can finish in the very same minute: they catch the same train.</li>
+      <li><b class="tag">Ride</b> The ride itself, including any change of line, with the platform transfer times taken from the timetable.</li>
+      <li><b class="tag">Out</b> A flat 2 minutes to get out of the station, then the road time to the office. Six options at the Whitefield end, including Sri Sathya Sai Hospital, the closest to my desk.</li>
+    </ul>
+
+    <p>That is 5 starts &#215; 6 finishes = 30 routes for every departure time. The race covers one working week, Monday 12 to Friday 16 October, across a morning window (7:00 to 11:30 AM) and an evening one (5:00 to 8:30 PM), and simply asks which of the 30 gets in first.</p>
+  </div>
+</section>
+
+<section id="stations">
+  <div class="wrap">
+    <h2>The stations</h2>
+
+    <p>Before the race ranks anything, this is the piece it turns on: how long it takes to reach each starting station, and to get from each finishing station to the office. The quickest station to reach is not always the one that gets me in first. Drag the slider for a time of day. Hover for the numbers.</p>
+
+    <iframe class="figembed" data-fig="f7" src="/assets/prakriti-vs-traffic/part-2/feeder-chart.html?fig=f7" title="Chart: time to reach each metro station, by time of day" loading="lazy" scrolling="no"></iframe>
+
+    <p class="tnote">Same week as the race, 12 to 16 October.</p>
+  </div>
+</section>
+
+<section id="found">
+  <div class="wrap">
+    <h2>What it showed</h2>
+
+    <p><strong>The best route is not always the one I&#8217;d have picked.</strong> In the mornings, Jayanagar to Sri Sathya Sai Hospital came first in 83 of the 140 departure slots. South End Circle was next with 39.</p>
+
+    <p><strong>The metro is flat.</strong> Door to desk, the best route sat between 68 and 90 minutes in the morning and 76 and 90 in the evening, whenever I left. That predictability is the whole appeal: the number barely moves no matter when I walk out the door.</p>
+
+    <p><strong>A few minutes of waiting decides it.</strong> Two stations often catch the same train, so they arrive in the very same minute. What separates the winners is usually the wait for the next train and the climb at an interchange, not the ride itself.</p>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <h2>What it can&#8217;t tell you</h2>
+
+    <p>This is a first attempt, and the gaps matter.</p>
+
+    <ul>
+      <li><b class="tag">Old timetable</b> The metro schedule is an unofficial BMRCL GTFS feed dated 17 August 2026. I downloaded it on 3 October and never refreshed it. If BMRCL has changed timings since, the race doesn&#8217;t know.</li>
+      <li><b class="tag">Modelled stops</b> Nearly every station-to-station time in that feed is interpolated, not measured. The metro times are modelled. When two routes land within a few minutes of each other, their order is inside the noise.</li>
+      <li><b class="tag">Worked out up front</b> Each journey, including the time to the office, is calculated once, in advance, for its departure time and then replayed. Nothing updates if a train is late or the road changes while you&#8217;re on it.</li>
+      <li><b class="tag">One week</b> Five weekdays, 12 to 16 October. &#8220;Typical Mon&#8211;Fri&#8221; is the average of those five days. A rainy day or a festival isn&#8217;t in it.</li>
+      <li><b class="tag">No crowds</b> The train always comes on time and I always fit. Part 1 promised a crowding estimate. This race doesn&#8217;t have one yet.</li>
+      <li><b class="tag">Car, not auto</b> The first and last stretches use Google&#8217;s traffic-aware driving times as a stand-in for an auto. There is no walking leg in the calculation, which matters at the stations I&#8217;d actually walk from.</li>
+      <li><b class="tag">Fixed buffers</b> The 3 minutes at the gate and 2 at the exit are the same everywhere. A busy interchange isn&#8217;t 3 minutes.</li>
+    </ul>
+
+    <p>If the metro looks better here than it feels on a real morning, the buffers and the timetable are the first places I&#8217;d look.</p>
+
+    <p>Next up: how crowded each route gets, and why my auto always takes longer than the map says.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Metro data: unofficial <a href="https://github.com/Vonter/bmrcl-gtfs" target="_blank" rel="noopener">BMRCL GTFS</a> by Vonter, ODbL-1.0. Feed dated 17 August 2026.</li>
+      <li>Metro routing is an earliest-arrival search over the timetable, with transfer times from the feed.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('message', function(e){
+  if (!e.data || !e.data.fig || !e.data.h) { return; }
+  var fr = document.querySelector('iframe.figembed[data-fig="' + e.data.fig + '"]');
+  if (fr && e.source === fr.contentWindow) { fr.style.height = e.data.h + 'px'; }
+});
+</script>
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+</body>
+</html>
