@@ -1,0 +1,77 @@
+/* series.css - every Prakriti vs Traffic part. A straight lift of the
+   Social Geometry of Indian Cities page: same type, colour, measure and rail. */
+:root{
+  --bg:#000000; --ink:#f0ede4; --muted:#7f8c83; --line:#1a241d; --accent:#2db354;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;scroll-padding-top:5rem}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:1.0625rem;line-height:1.8;-webkit-font-smoothing:antialiased}
+
+.wrap{width:75%;max-width:1080px;margin:0 auto}
+@media (max-width:900px){ .wrap{width:88%} }
+@media (max-width:600px){ .wrap{width:100%;padding:0 1.25rem} }
+
+.top{position:sticky;top:0;z-index:60;background:var(--bg)}
+.top .bar{width:75%;max-width:1080px;margin:0 auto;display:flex;align-items:center;height:3.25rem}
+.top a{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);text-decoration:none}
+.top a:hover{color:var(--accent)}
+@media (max-width:900px){ .top .bar{width:88%} }
+@media (max-width:600px){ .top .bar{width:100%;padding:0 1.25rem} }
+
+#toc{position:fixed;right:2rem;top:50%;transform:translateY(-50%);z-index:40}
+#toc ol{list-style:none;margin:0;padding:0;text-align:right}
+#toc a{display:block;white-space:nowrap;font-family:var(--mono);font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;color:#46514a;text-decoration:none;padding:.4rem 0;line-height:1;transition:color .2s ease}
+#toc a:hover{color:var(--ink)}
+#toc a.on{color:var(--accent)}
+@media (max-width:1300px){ #toc{display:none} }
+
+.hero{padding:4rem 0 1rem}
+h1{font-family:var(--mono);font-weight:700;font-size:clamp(2rem,5.2vw,3.5rem);line-height:1.08;letter-spacing:-.03em;margin:0 0 1.5rem}
+.standfirst{font-size:1.2rem;line-height:1.6;color:var(--muted);font-weight:300;margin:0 0 2rem;max-width:none}
+.byline{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:1.5rem;border-top:1px solid var(--line)}
+.byline span{color:var(--ink)}
+
+section{padding:2rem 0}
+h2{font-family:var(--mono);font-weight:500;color:var(--ink);font-size:clamp(1.55rem,3.4vw,2.15rem);line-height:1.15;letter-spacing:-.022em;margin:4.5rem 0 1.75rem}
+section:first-of-type{padding-top:0}
+section:first-of-type h2{margin-top:2.5rem}
+h3{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:clamp(1.15rem,2.3vw,1.4rem);line-height:1.3;letter-spacing:-.01em;margin:3.5rem 0 1.4rem}
+h3 small{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-left:.9rem;font-weight:400}
+p{margin:0 0 1.4rem}
+a{color:var(--accent)}
+strong{font-weight:600;color:#fff}
+.lead{font-size:1.15rem}
+em{font-style:italic}
+
+.pull{font-family:var(--mono);font-style:italic;font-weight:300;font-size:1.05rem;line-height:1.8;color:var(--ink);margin:2.5rem 0;padding-left:1.5rem;border-left:2px solid var(--accent)}
+.pull p{margin:0}
+
+ul{padding-left:1.1rem;margin:0 0 1.4rem}
+li{margin-bottom:.9rem}
+li::marker{color:var(--accent)}
+.tag{font-family:var(--mono);font-weight:500;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--accent);margin-right:.6rem}
+
+figure{margin:0}
+figure img{display:block;width:100%;height:auto;background:transparent}
+figcaption{font-family:var(--mono);font-size:.72rem;line-height:1.65;color:var(--muted);margin-top:.9rem}
+.shots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.25rem;margin:1.6rem 0 3rem}
+@media (max-width:640px){
+  .shots{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:1rem;padding-bottom:.5rem}
+  .shots figure{flex:0 0 68%;scroll-snap-align:start}
+}
+
+.tablewrap{overflow-x:auto;margin:2.5rem 0;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:30rem;font-family:var(--mono);font-size:.78rem}
+th,td{padding:.6rem .7rem;text-align:right;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:400;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid var(--muted)}
+td:first-child,th:first-child{text-align:left;padding-left:0}
+td:last-child,th:last-child{padding-right:0}
+.tnote{font-family:var(--mono);font-size:.7rem;color:var(--muted);margin-top:.75rem}
+
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:2.5rem 0 5rem;font-family:var(--mono);font-size:.72rem;line-height:1.9;color:var(--muted)}
+footer ul{padding-left:1rem}
+footer a{color:var(--muted);text-decoration:underline;text-decoration-color:var(--line)}
+footer a:hover{color:var(--accent)}
+@media (max-width:640px){ .hero{padding:2.5rem 0 .5rem} body{font-size:1rem} }

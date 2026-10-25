@@ -11,10 +11,10 @@ const ATTR = /(?:src|href|data-src|data-logo|data-poster|content)="(\/assets\/[^
 
 const wanted = new Map(); // asset path -> set of pages that ask for it
 
-for (const slug of fs.readdirSync(WORK)) {
-  const file = path.join(WORK, slug, 'index.html');
-  if (!fs.existsSync(file)) continue;
-  const html = fs.readFileSync(file, 'utf8');
+const pages = fs.readdirSync(WORK, { recursive: true }).filter((f) => f.endsWith('index.html'));
+for (const rel of pages) {
+  const slug = path.dirname(rel).replace(/\\/g, '/');
+  const html = fs.readFileSync(path.join(WORK, rel), 'utf8');
   for (const m of html.matchAll(ATTR)) {
     if (!wanted.has(m[1])) wanted.set(m[1], new Set());
     wanted.get(m[1]).add(slug);

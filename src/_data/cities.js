@@ -14,22 +14,17 @@ export default [
     lat: 12.9716, lon: 77.5946,
     camera: { km: 70 },
     hero: {
-      q: 'What does the city sound like?',
-      title: 'Real Time Sensing',
+      q: 'Can I beat Bangalore traffic?',
+      title: 'Prakriti vs Traffic',
       status: 'live',
       label: 'IN BUILD',
-      text: 'An edge instrument on a Jetson Orin Nano that records sound, air quality, temperature, humidity and video against one GPS coordinate and one clock. Diagnosis before design. SEED Chairman Award.',
-      href: '/work/real-time-sensing/'
+      text: 'A one week experiment, written up as it happens. Jayanagar to Whitefield is 20 km on a map and a lot longer in my morning, so I am timing it against Google Maps and building a tool on BMRCL metro GTFS data to predict it.',
+      href: '/work/prakriti-vs-traffic/part-1/'
     },
     analyses: [
-      { q: 'What can you reach in fifteen minutes?', status: 'planned', label: 'NOT YET',
-        text: 'Walking reach on the real network, merged with transit access, and where new transit would close the largest gaps.' },
-      { q: 'Where did the water go?', status: 'planned', label: 'NOT YET',
-        text: 'Surface water change across the lake chain, and flooding read against the water bodies that were lost.' },
-      { q: 'Which way is the city growing?', status: 'planned', label: 'NOT YET',
-        text: 'Land cover change over time, sliced into growth direction and loss of green.' },
-      { q: 'What changes if the network changes?', status: 'planned', label: 'NOMINATED',
-        text: 'Scenario Simulator. Nominated for the Sidara Endeavour Program, 2026.' }
+      { q: 'What does the city sound like?', title: 'Real Time Sensing', status: 'live', label: 'IN BUILD',
+        text: 'An edge instrument on a Jetson Orin Nano that records sound, air quality, temperature, humidity and video against one GPS coordinate and one clock. SEED Chairman Award.',
+        href: '/work/real-time-sensing/' }
     ]
   },
   {

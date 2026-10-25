@@ -1,5 +1,5 @@
 :root{
-  --void:#060A0B; --instrument:#0B1112; --raised:#101819;
+  --void:#000000; --instrument:#0B1112; --raised:#101819;
   --rule:#263535; --rule-strong:#456063;
   --text:#EEF1EA; --text-2:#A5B4B1; --text-3:#81918E;
   --active:var(--brand); --water:#73CFE5; --form:#F9AC75; --sensing:#E69BC9; --network:#BF9AFF;
@@ -30,7 +30,7 @@ a{color:inherit}
 /* ---------- nav ---------- */
 header.chrome{
   position:fixed;inset:0 0 auto 0;z-index:100;
-  background:linear-gradient(to bottom, rgba(6,10,11,.94), rgba(6,10,11,.6) 70%, transparent);
+  background:linear-gradient(to bottom, rgba(0,0,0,.94), rgba(0,0,0,.6) 70%, transparent);
   backdrop-filter:blur(6px);
 }
 .chrome-in{display:flex;align-items:center;gap:var(--s6);height:64px}
@@ -79,7 +79,7 @@ h1.display .dim{color:var(--text-3)}
 .descent-copy{position:relative;z-index:2;padding-inline:4.5vw;grid-column:2}
 .descent-copy::before{
   content:'';position:absolute;inset:-6vh -4.5vw;z-index:-1;
-  background:radial-gradient(120% 90% at 65% 50%, rgba(6,10,11,.92) 38%, rgba(6,10,11,0) 78%);
+  background:radial-gradient(120% 90% at 65% 50%, rgba(0,0,0,.92) 38%, rgba(0,0,0,0) 78%);
   pointer-events:none
 }
 .descent-copy h2{font-family:var(--mono);font-weight:700;font-size:clamp(30px,3.6vw,58px);line-height:1.04;letter-spacing:-.03em;margin:0}
@@ -92,7 +92,7 @@ h1.display .dim{color:var(--text-3)}
   .descent-copy{grid-column:1;padding:0 var(--s5) 22vh;align-self:end}
   .descent-copy h2{font-size:clamp(26px,7.4vw,40px)}
   .descent-copy p{font-size:15px;max-width:none;
-    background:linear-gradient(to bottom, rgba(6,10,11,0), rgba(6,10,11,.86) 14%, rgba(6,10,11,.86));
+    background:linear-gradient(to bottom, rgba(0,0,0,0), rgba(0,0,0,.86) 14%, rgba(0,0,0,.86));
     padding:10px 0 0}
   .scale-readout{left:var(--s5);bottom:4vh;font-size:10px;line-height:1.9}
 }
@@ -517,7 +517,7 @@ dialog.cmd::backdrop{background:rgba(3,6,7,.82)}
   .tour-intro{position:relative;padding-bottom:7vh}
   .tour-intro::before{
     content:'';position:absolute;z-index:-1;left:-16px;right:-16px;bottom:0;top:-22vh;
-    background:linear-gradient(to bottom,rgba(6,10,11,0),rgba(6,10,11,.92) 30%)
+    background:linear-gradient(to bottom,rgba(0,0,0,0),rgba(0,0,0,.92) 30%)
   }
   .tour-intro h2{font-size:clamp(24px,7.2vw,32px);line-height:1.1}
   .tour-intro p:last-child{font-size:15px;line-height:1.55;max-width:none}
