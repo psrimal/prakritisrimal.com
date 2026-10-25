@@ -3,3 +3,8 @@ _site
 .DS_Store
 .vercel
 /data/
+
+HOW-TO-PREVIEW-AND-COMMIT.txt
+
+# READMEs stay local
+README*
