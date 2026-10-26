@@ -126,6 +126,8 @@
   .play,.ghost{height:36px;padding:0 16px;font-size:11px;order:4}
   .play{margin-left:auto} .spacer{display:none}
   .maplibregl-ctrl-attrib{margin-bottom:0}
+  #frame{box-shadow:inset 0 0 70px 10px rgba(6,10,11,.75);
+    background:radial-gradient(170% 120% at 50% 42%, transparent 70%, rgba(6,10,11,.4) 100%)}
 }
 
 /* readability bump */
@@ -228,6 +230,7 @@ const Q = new URLSearchParams(location.search);
 if(Q.has('clean')) document.body.classList.add('clean');
 const S = {dir:"morning", typ:true, day:2, dep:6, speed:400, t:0, total:0, playing:false, built:false, done:false};
 const PAL = ["#3987e5","#d95926","#199e70","#eda100","#d55181","#9085e9"];
+const DOTSCALE = innerWidth<=820 ? 0.6 : 1;
 
 function fmtClock(sec){sec=Math.round(sec);const h=Math.floor(sec/3600)%24,m=Math.floor(sec%3600/60);return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");}
 const perDay = () => D[S.dir].ticks.length/5;
@@ -395,10 +398,10 @@ function frameWork(now){
   const feats=[], lit=[], litF=[];
   RC.forEach(r=>{
     const done=S.t>=r.total, p=posOf(r,S.t);
-    let rad=3.4,g=7,o=1,go=0.16;
+    let rad=3.4*DOTSCALE,g=7*DOTSCALE,o=1,go=0.16;
     if(done){
-      if(r.win){const pu=0.5+0.5*Math.sin(now/300);rad=5;g=11+3*pu;go=0.28;}
-      else {rad=2.2;g=0;o=0.35;go=0;}
+      if(r.win){const pu=0.5+0.5*Math.sin(now/300);rad=5*DOTSCALE;g=(11+3*pu)*DOTSCALE;go=0.28;}
+      else {rad=2.2*DOTSCALE;g=0;o=0.35;go=0;}
     }
     feats.push(ptF(p,{c:r.color,r:rad,g:g,o:o,go:go}));
     // traveled path lights up behind the agent
