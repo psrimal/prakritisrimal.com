@@ -108,6 +108,9 @@
     .title{left:16px;top:16px} .clock{right:16px;top:16px}
     .legend{display:none}
     .bar{padding:12px 16px;gap:14px} input[type=range]{width:130px}
+    .mk .pin{width:6px;height:6px}
+    .mk.endpoint .pin{width:9px;height:9px}
+    .mk:not(.endpoint) .tx{display:none}
   }
 .chip{margin-left:10px;background:transparent;color:var(--text-2);border:1px solid var(--rule-strong);border-radius:999px;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:3px 10px;cursor:pointer} .chip:hover{color:var(--text)} .chip.on{background:var(--brand);color:var(--void);border-color:var(--brand);font-weight:500} input[type=range]:disabled{opacity:.3}.stack{left:34px;right:auto;bottom:auto;top:28px} body.clean .stack{bottom:auto;top:28px} .legend{left:34px;right:auto;text-align:left} .legend .sw,.legend .d{margin-left:0;margin-right:0;margin-left:10px}.bar{align-items:flex-end;gap:26px} .ctl{justify-content:flex-end} .seg button{height:38px;padding:0 16px;display:inline-flex;align-items:center} input[type=range]{height:40px;margin:0;display:block} .play,.ghost{height:40px;padding:0 24px;display:inline-flex;align-items:center} .ghost{padding:0 18px}@media(max-width:820px){
   html,body{height:100%;overflow:hidden}
@@ -230,7 +233,8 @@ const Q = new URLSearchParams(location.search);
 if(Q.has('clean')) document.body.classList.add('clean');
 const S = {dir:"morning", typ:true, day:2, dep:6, speed:400, t:0, total:0, playing:false, built:false, done:false};
 const PAL = ["#3987e5","#d95926","#199e70","#eda100","#d55181","#9085e9"];
-const DOTSCALE = innerWidth<=820 ? 0.6 : 1;
+const MOBILE = innerWidth<=820;
+const DOTSCALE = MOBILE ? 0.4 : 1;
 
 function fmtClock(sec){sec=Math.round(sec);const h=Math.floor(sec/3600)%24,m=Math.floor(sec%3600/60);return String(h).padStart(2,"0")+":"+String(m).padStart(2,"0");}
 const perDay = () => D[S.dir].ticks.length/5;
@@ -307,7 +311,7 @@ map.on("load", ()=>{
   map.addLayer({id:"lit",type:"line",source:"lit",paint:{"line-color":["get","c"],"line-width":2.6,"line-opacity":["get","o"],"line-blur":0.3}});
   map.addLayer({id:"winTracks",type:"line",source:"winTracks",paint:{"line-color":"#EEF1EA","line-width":3.2,"line-opacity":0.9,"line-blur":0.4}});
   map.addLayer({id:"winFeeders",type:"line",source:"winFeeders",paint:{"line-color":["get","c"],"line-width":2.6,"line-opacity":0.95,"line-dasharray":[2,2]}});
-  map.addLayer({id:"stations",type:"circle",source:"stations",paint:{"circle-radius":4,"circle-color":["get","c"],"circle-opacity":0.95}});
+  map.addLayer({id:"stations",type:"circle",source:"stations",paint:{"circle-radius":MOBILE?2.4:4,"circle-color":["get","c"],"circle-opacity":0.95}});
   map.addLayer({id:"glow",type:"circle",source:"dots",paint:{"circle-radius":["get","g"],"circle-color":["get","c"],"circle-blur":1,"circle-opacity":["get","go"]}});
   map.addLayer({id:"core",type:"circle",source:"dots",paint:{"circle-radius":["get","r"],"circle-color":["get","c"],"circle-opacity":["get","o"]}});
   S.built=true;
