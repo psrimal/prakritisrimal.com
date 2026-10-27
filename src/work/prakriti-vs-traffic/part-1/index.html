@@ -78,7 +78,7 @@
   <div class="wrap">
     <h2>One week, six trips</h2>
 
-    <p>I started with the simplest data I could collect. Each trip, I screenshotted what Google Maps promised before I left and, when I remembered, ran a stopwatch for what actually happened. That's 14 screenshots from six trips. These are the two trips where I got all three screens.</p>
+    <p>I started with the simplest data I could collect. Each trip, I screenshotted what Google Maps promised before I left and, when I remembered, ran a stopwatch for what actually happened.</p>
 
     <h3>Morning <small>Jayanagar &#8594; Whitefield &#183; 7:36 AM</small></h3>
     <div class="shots">
@@ -139,18 +139,16 @@
   <div class="wrap">
     <h2>What I'm building</h2>
 
-    <p>Google gives me one number per mode. I want to know which choice is best <em>today</em>. So for one week, as an experiment, I'm building a small tool on the Google Maps API and BMRCL's GTFS data. It does four things:</p>
+    <p>Google gives me one number per mode, and at this point I don't fully trust either of them. So here's the experiment: for one week, I'm going to poke at the Google Maps API and BMRCL's GTFS data and see what comes out. Not a finished tool, just a few questions I'm curious about.</p>
 
     <ul>
-      <li><b class="tag">Metro</b> Finds the best metro-only route to office and estimates how crowded the train will be.</li>
-      <li><b class="tag">Auto</b> Estimates the auto time for the same trip.</li>
-      <li><b class="tag">Segments</b> Splits the road into segments. A direct auto estimate is always shorter than what really happens, so I treat each segment as its own origin and add them up.</li>
-      <li><b class="tag">Compare</b> Puts them all side by side so I can decide before the coffee.</li>
+      <li><b class="tag">Metro</b> Is there a better metro-only route than the one Maps hands me, and can I even guess how crowded it'll be?</li>
+      <li><b class="tag">Auto</b> Can I get closer to the real auto time than the map's optimistic one?</li>
+      <li><b class="tag">Segments</b> A direct auto estimate is always shorter than what really happens. If I chop the road into pieces and treat each one as its own starting point, does that get any closer?</li>
+      <li><b class="tag">Compare</b> And can I get all of it on one screen before my coffee's cold?</li>
     </ul>
 
-    <p>I'll write down the experiments and the rabbit holes as I go, and see whether a week is enough to find a smarter way across Bengaluru.</p>
-
-    <p>Next up: the metro race, how crowded each route gets, and why my auto always takes longer than the map says.</p>
+    <p>I have no idea yet if any of this will actually work. I'll write down the rabbit holes as I go.</p>
 
     <p style="text-align:right"><a href="/work/prakriti-vs-traffic/part-2/"><b class="tag" style="margin-right:0">Part 2 &#8594;</b></a></p>
   </div>
