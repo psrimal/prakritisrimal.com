@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prakriti vs Traffic: The Metro Race, Again</title>
+<meta name="description" content="I ran the metro race again, this time letting the stations change every day.">
+<meta property="og:title" content="Prakriti vs Traffic: The Metro Race, Again">
+<meta property="og:description" content="I ran the metro race again, this time letting the stations change every day.">
+<meta property="og:type" content="article">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/series.css">
+</head>
+<body class="tight">
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#question">The Question</a></li>
+    <li><a href="#changed">The Method</a></li>
+    <li><a href="#race">The Experiment</a></li>
+    <li><a href="#found">Findings</a></li>
+    <li><a href="#gaps">Limitations</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Prakriti vs Traffic: Part 3</h1>
+    <p class="standfirst">What if I could go a little further by auto?</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>3rd November, 2026.</span></p>
+  </div>
+</header>
+
+<section id="question">
+  <div class="wrap">
+    <p class="lead">In Part 2, I picked a set of metro stations near home and near the office, and raced every possible combination to find the quickest way from door to desk. But what if I was limiting my options by choosing the stations myself?</p>
+
+    <p>The closest station isn&#8217;t necessarily the fastest one. What if travelling a little further by auto gets me onto a faster metro route? And what if the best combination changes every day?</p>
+
+    <p>In <a href="/work/prakriti-vs-traffic/part-2/">Part 2</a>, the stations were selected once and remained fixed throughout the week. This time, I wanted to give the algorithm a little more freedom.</p>
+
+    <blockquote class="pull">
+      <p>The best route isn&#8217;t necessarily a fixed one. It depends on the day, and the hour.</p>
+    </blockquote>
+  </div>
+</section>
+
+<section id="changed">
+  <div class="wrap">
+    <h2>The Method</h2>
+
+    <p>The basic idea remains the same: find the quickest way to get from my doorstep in Jayanagar to my desk in Whitefield. But this time, I let the stations change every day.</p>
+
+    <p>Every route is a chain of smaller journeys, from door to desk. I broke it down into six stages:</p>
+
+    <ul>
+      <li><b class="tag">Find a station</b> Instead of fixing the stations for the entire week, I ran a station search separately for each day. The morning and evening searches each returned 9 possible starting stations and 7 finishing stations. For any given day, 8 starting stations and all 7 finishing stations make it into the race.</li>
+      <li><b class="tag">Get there</b> The road travel time from my door to a starting station, based on the minute I leave. This time, the algorithm gets to choose from the stations it found for that day.</li>
+      <li><b class="tag">Gates</b> The time to enter the station and reach the platform.</li>
+      <li><b class="tag">Wait</b> However long until the next train actually leaves, based on the metro timetable.</li>
+      <li><b class="tag">Ride</b> The metro journey itself, including any change of line, with a minimum four-minute transfer time.</li>
+      <li><b class="tag">Out</b> The time to exit the finishing station, followed by the road journey to the office. Again, the algorithm gets to choose which finishing station works best.</li>
+    </ul>
+
+    <p>That gives me 8 starting stations &#215; 7 finishing stations = 56 possible routes for every departure time, up from 30 in Part 2.</p>
+
+    <p>I ran the experiment across two windows: mornings from 7:00 to 11:30 AM and evenings from 5:00 to 8:30 PM. Every route is calculated from the same departure time, and the one that gets me to the office first wins.</p>
+  </div>
+</section>
+
+<section id="race">
+  <div class="wrap">
+    <h2>Experiment</h2>
+
+    <p>Now for the fun part. Same starting point, same destination, but more routes competing to get me there.</p>
+
+    <p>Choose a morning or evening commute, pick a day (or look at a typical Monday to Friday), and set a departure time. Each dot represents a route making its way from home to the office. Watch them travel to their starting stations, wait for trains, make their metro journeys and complete the final stretch. The first ones to arrive light up.</p>
+
+    <div class="embed">
+      <iframe src="/assets/prakriti-vs-traffic/part-3/metro-race.html" title="Interactive metro race from Jayanagar to Whitefield, week 3" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <p class="tnote">The animation is sped up (400&#215;), so it doesn&#8217;t run at real-world speed. The times on the board are the calculated journey times.</p>
+
+    <p>Getting to a metro station is a drive of its own. These are road-only times, so they bound the feeder part of a multimodal trip but say nothing about the ride itself.</p>
+
+    <h3>Which station is quickest to reach?</h3>
+    <iframe class="figembed" data-fig="f7" src="/assets/prakriti-vs-traffic/part-3/station-charts.html?fig=f7" title="Chart: time to reach each metro station, by time of day" loading="lazy" scrolling="no"></iframe>
+
+    <p>Stations are averaged over the days they were actually timed, so one that was only chosen on some days rests on fewer readings.</p>
+
+    <h3>Which station is the pick at each departure time?</h3>
+    <p>Each day, the station search shortlists the candidates: who was <em>allowed</em> into the day. This grid is the outcome: for every day and departure time, the entry (or exit) of the quickest whole journey among that day&#8217;s candidates. A station can only be picked on a day it was a candidate. The count beside each station is the number of days it is the pick for at least one departure time.</p>
+    <iframe class="figembed" data-fig="pickgrid" src="/assets/prakriti-vs-traffic/part-3/station-charts.html?fig=pickgrid" title="Chart: the station picked at each departure time" loading="lazy" scrolling="no"></iframe>
+  </div>
+</section>
+
+<section id="found">
+  <div class="wrap">
+    <h2>Findings</h2>
+
+    <p>This is where things got interesting.</p>
+
+    <p>The morning favourite changed completely. In Part 2, Jayanagar to Sri Sathya Sai Hospital was the clear winner, taking 83 out of 140 departure slots. This time, it won just 10.</p>
+
+    <p>Instead, MG Road to Kundalahalli came first in 37 slots, followed by Jayanagar to Kundalahalli in 25 and Central College to Kundalahalli in 23.</p>
+
+    <p>Kundalahalli wasn&#8217;t even part of my previous race. Turns out, letting the algorithm look a little further opened up some options I hadn&#8217;t considered.</p>
+
+    <p>The evenings were a different story. Garudacharpalya to RV Road won 77 out of 110 departure slots, with Hoodi to RV Road coming second with another 30 wins. That&#8217;s 107 out of 110 slots going to routes ending at RV Road. So while the mornings had a few competing favourites, the evenings seemed to have made up their minds.</p>
+
+    <p>And how long does the commute actually take?</p>
+
+    <p>Looking at the quickest route for each departure slot, the door-to-desk journey landed somewhere between 59 and 81 minutes in the morning, typically around 72 minutes. In the evening, it was between 72 and 91 minutes, typically around 80.</p>
+
+    <p>The mornings were a little faster than in Part 2. But with a different set of stations and a different week of road travel times, I wouldn&#8217;t read too much into that difference.</p>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <h2>Limitations</h2>
+    <p>Of course, this is still an experiment. There are a few things worth keeping in mind.</p>
+
+    <ul>
+      <li><b class="tag">Old timetable</b> I&#8217;m still using the unofficial BMRCL GTFS feed dated 17 August 2026. It hasn&#8217;t been refreshed, so any subsequent timetable changes aren&#8217;t reflected.</li>
+      <li><b class="tag">Modelled metro times</b> Nearly all station-to-station journey times in the feed are interpolated. These are modelled timings, not live train observations.</li>
+      <li><b class="tag">Calculated in advance</b> Each journey is calculated once for its departure time and replayed in the animation. It doesn&#8217;t account for delays or changing conditions once the journey begins.</li>
+      <li><b class="tag">Auto estimates</b> The first and last stretches use Google Maps&#8217; traffic-aware driving times as a proxy for an auto journey. There is no separate walking leg in the calculation.</li>
+      <li><b class="tag">Reused road geometry</b> The road lines on the map are carried over from Part 2. This week&#8217;s reference route was within 14 metres of the previous one on every day, so the geometry still fits. The travel times, however, are from this week&#8217;s data.</li>
+      <li><b class="tag">A small sample</b> Five working days are hardly enough to establish a reliable pattern. A station that wins this week might not win next week.</li>
+    </ul>
+
+    <p>For now, the race has given me something useful: a much bigger set of possibilities to consider before deciding which station to head towards.</p>
+
+    <p>Sometimes the fastest route isn&#8217;t the one you already know. It&#8217;s the one you haven&#8217;t tried yet.</p>
+
+    <p style="text-align:left"><a href="/work/prakriti-vs-traffic/part-2/"><b class="tag" style="margin-right:0">&#8592; Back to Part 2</b></a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Metro data: unofficial <a href="https://github.com/Vonter/bmrcl-gtfs" target="_blank" rel="noopener">BMRCL GTFS</a> by Vonter, ODbL-1.0. Feed dated 17 August 2026.</li>
+      <li>Metro routing is an earliest-arrival search over the timetable, with transfer times from the feed.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('message', function(e){
+  if (!e.data || !e.data.fig || !e.data.h) { return; }
+  var fr = document.querySelector('iframe.figembed[data-fig="' + e.data.fig + '"]');
+  if (fr && e.source === fr.contentWindow) { fr.style.height = e.data.h + 'px'; }
+});
+</script>
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+</body>
+</html>

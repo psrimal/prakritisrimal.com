@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,12 +23,11 @@
 
 <nav id="toc" aria-label="Sections">
   <ol>
-    <li><a href="#question">The question</a></li>
-    <li><a href="#race">The race</a></li>
-    <li><a href="#counted">What I counted</a></li>
-    <li><a href="#stations">The stations</a></li>
-    <li><a href="#found">What it showed</a></li>
-    <li><a href="#gaps">What it can&#8217;t tell you</a></li>
+    <li><a href="#question">The Question</a></li>
+    <li><a href="#methodology">The Method</a></li>
+    <li><a href="#race">The Experiment</a></li>
+    <li><a href="#found">Findings</a></li>
+    <li><a href="#gaps">Limitations</a></li>
   </ol>
 </nav>
 
@@ -41,80 +41,85 @@
 
 <section id="question">
   <div class="wrap">
-    <p class="lead">Google Maps says 1 hr 34. But that isn&#8217;t the time from my front door to my desk.</p>
+    <p class="lead">Google Maps says 1 hr 34. But that isn't the time from my front door to my desk.</p>
 
-    <p>In <a href="/work/prakriti-vs-traffic/part-1/">Part 1</a> I put what Maps promised next to what a stopwatch said. The metro barely moved, from 1 hr 29 to 1 hr 34, which is why I like it. But one number per route hides everything I actually fiddle with before leaving: how I get to the station, how long I wait for a train, and how I get from the last station to my desk.</p>
+    <p>In <a href="/work/prakriti-vs-traffic/part-1/">Part 1</a>, I put what Maps promised next to what a stopwatch said. The metro barely moved, from 1 hr 29 to 1 hr 34. But one number per route hides everything I actually fiddle with before leaving: how I get to the station, how long I wait for a train, and how I get from the last station to my desk.</p>
 
     <blockquote class="pull">
-      <p>The metro isn&#8217;t the journey. It&#8217;s the middle of the journey.</p>
+      <p>The metro isn't the journey. It's the middle of the journey.</p>
     </blockquote>
 
     <p>So I turned the routes into a race. Five stations I could start from, six I could finish at, and every combination run from my door to the office, for any time I might leave.</p>
   </div>
 </section>
 
+<section id="methodology">
+  <div class="wrap">
+    <h2> The Method</h2>
+
+    <p>Every route is a chain of smaller journeys, from door to desk. I broke it down into five stages:</p>
+
+    <ul>
+      <li><b class="tag">Get there</b> The road travel time from my door to a starting station, based on the minute I leave. I considered five options: Banashankari, Jayanagar, JP Nagar, RV Road and South End Circle.</li>
+      <li><b class="tag">Gates</b> A flat 3 minutes from the road to the platform: gates, stairs and the walk down.</li>
+      <li><b class="tag">Wait</b> However long until the next train actually leaves, based on the metro timetable. This is why two routes can finish in the very same minute: they catch the same train.</li>
+      <li><b class="tag">Ride</b> The metro journey itself, including any change of line, with platform transfer times taken from the timetable.</li>
+      <li><b class="tag">Out</b> A flat 2 minutes to exit the station, followed by the road journey to the office. I considered six finishing stations at the Whitefield end, including Sri Sathya Sai Hospital, the closest to my desk.</li>
+    </ul>
+
+    <p>That gives me 5 starting stations × 6 finishing stations = 30 possible routes for every departure time.</p>
+
+    <p>I ran the race across one working week, with two departure windows: mornings from 7:00 to 11:30 AM and evenings from 5:00 to 8:30 PM. For every departure time, all 30 routes compete to see which gets me to the office first.</p>
+
+    <iframe class="figembed" data-fig="f7" src="/assets/prakriti-vs-traffic/part-2/feeder-chart.html?fig=f7" title="Chart: time to reach each metro station, by time of day" loading="lazy" scrolling="no"></iframe>
+  </div>
+</section>
+
 <section id="race">
   <div class="wrap">
-    <h2>The race</h2>
+    <h2>The Experiment</h2>
 
-    <p>Pick morning or evening, a day (or the Mon&#8211;Fri typical) and a departure time. Each dot is one route. It travels to a station, waits, rides, and finishes the last stretch. The first ones in light up.</p>
+    <p>Now, let's see them race.</p>
+
+    <p>Pick morning or evening, a day (or the Mon&#8211;Fri typical), and a departure time. Each dot represents a route travelling to a station, waiting for a train, riding the metro, and completing the last stretch to the office. The first ones in light up.</p>
 
     <div class="embed">
       <iframe src="/assets/prakriti-vs-traffic/part-2/metro-race.html" title="Interactive metro race from Jayanagar to Whitefield" loading="lazy" allow="fullscreen"></iframe>
     </div>
-    <p class="tnote">The animation is sped up (400&#215;), so it does not run at real-world speed. The times on the board are the calculated ones.</p>
-  </div>
-</section>
 
-<section id="counted">
-  <div class="wrap">
-    <h2>What I counted</h2>
-
-    <p>Every route is the same chain, door to desk:</p>
-
-    <ul>
-      <li><b class="tag">Get there</b> The road time from my door to a starting station, for the minute I leave. Five options: Banashankari, Jayanagar, JP Nagar, RV Road and South End Circle.</li>
-      <li><b class="tag">Gates</b> A flat 3 minutes from the road to the platform: gates, stairs, the walk down.</li>
-      <li><b class="tag">Wait</b> However long until the next train actually leaves, from the metro timetable. This is why two stations can finish in the very same minute: they catch the same train.</li>
-      <li><b class="tag">Ride</b> The ride itself, including any change of line, with the platform transfer times taken from the timetable.</li>
-      <li><b class="tag">Out</b> A flat 2 minutes to get out of the station, then the road time to the office. Six options at the Whitefield end, including Sri Sathya Sai Hospital, the closest to my desk.</li>
-    </ul>
-
-    <p>That is 5 starts &#215; 6 finishes = 30 routes for every departure time. The race covers one working week, Monday 12 to Friday 16 October, across a morning window (7:00 to 11:30 AM) and an evening one (5:00 to 8:30 PM), and simply asks which of the 30 gets in first.</p>
-  </div>
-</section>
-
-<section id="stations">
-  <div class="wrap">
-    <h2>The stations</h2>
-
-    <p>Before the race ranks anything, this is the piece it turns on: how long it takes to reach each starting station, and to get from each finishing station to the office. The quickest station to reach is not always the one that gets me in first.</p>
-
-    <iframe class="figembed" data-fig="f7" src="/assets/prakriti-vs-traffic/part-2/feeder-chart.html?fig=f7" title="Chart: time to reach each metro station, by time of day" loading="lazy" scrolling="no"></iframe>
-
-    <p class="tnote">Same week as the race, 12 to 16 October.</p>
+    <p class="tnote">The animation is sped up (400×), so it doesn't run at real-world speed. The times on the board are the calculated journey times.</p>
   </div>
 </section>
 
 <section id="found">
   <div class="wrap">
-    <h2>What it showed</h2>
+    <h2>Findings</h2>
 
-    <p>I ran this half expecting my usual station to come out on topp, it didn&#8217;t. In the mornings, Jayanagar to Sri Sathya Sai Hospital came first in 83 of the 140 departure slots I tried, with South End Circle a distant second at 39.</p>
+    <p>I ran this half expecting my usual station to come out on top. It didn't.</p>
 
-    <p>The metro showed expected results: door to desk, the best route landed somewhere between 68 and 90 minutes in the morning and 76 and 90 in the evening, more or less regardless of when I left.</p>
+    <p>In the mornings, Jayanagar to Sri Sathya Sai Hospital came first in 83 of the 140 departure slots I tried, with South End Circle a distant second at 39.</p>
+
+    <p>The quickest door-to-desk journeys landed between 68 and 90 minutes in the morning, and 76 and 90 minutes in the evening, regardless of when I left.</p>
+
+    <p>So, the station I usually head towards wasn't necessarily a bad choice. But there were other combinations worth considering, and the quickest route wasn't always the most obvious one.</p>
   </div>
 </section>
 
 <section id="gaps">
   <div class="wrap">
     <h2>Limitations</h2>
+
     <ul>
-      <li><b class="tag">Old timetable</b> The metro schedule is an unofficial BMRCL GTFS feed dated 17 August 2026. I downloaded it on 3 October and never refreshed it. If BMRCL has changed timings since, the race doesn&#8217;t know.</li>
-      <li><b class="tag">Modelled stops</b> Nearly every station-to-station time in that feed is interpolated and the metro times are modelled.</li>
-      <li><b class="tag">Worked out up front</b> Each journey, including the time to the office, is calculated once, in advance, for its departure time and then replayed. Nothing updates if a train is late or the road changes while you&#8217;re on it.</li>
-      <li><b class="tag">Auto</b> The first and last stretches use Google&#8217;s traffic-aware driving times as a stand-in for an auto. There is no walking leg in the calculation.</li>
+      <li><b class="tag">Old timetable</b> The metro schedule is an unofficial BMRCL GTFS feed dated 17 August 2026. I downloaded it on 3 October and never refreshed it. If BMRCL has changed timings since, the race doesn't know.</li>
+      <li><b class="tag">Modelled stops</b> Nearly every station-to-station time in that feed is interpolated, so the metro journey times are modelled rather than observed.</li>
+      <li><b class="tag">Data is static</b> Each journey, including the time to the office, is calculated once in advance for its departure time and then replayed. Nothing updates if a train is late or the road changes while you're on it.</li>
+      <li><b class="tag">Auto estimates</b> The first and last stretches use Google's traffic-aware driving times as a stand-in for an auto. There is no separate walking leg in the calculation.</li>
     </ul>
+
+    <p style="display:flex;justify-content:space-between;align-items:center">
+      <a href="/work/prakriti-vs-traffic/part-1/"><b class="tag" style="margin-right:0">&#8592; Part 1</b></a>
+      <a href="/work/prakriti-vs-traffic/part-3/"><b class="tag" style="margin-right:0">Part 3 &#8594;</b></a>
+    </p>
   </div>
 </section>
 
@@ -134,6 +139,7 @@ window.addEventListener('message', function(e){
   if (fr && e.source === fr.contentWindow) { fr.style.height = e.data.h + 'px'; }
 });
 </script>
+
 <script>
 (function(){
   var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
@@ -162,3 +168,4 @@ window.addEventListener('message', function(e){
 </script>
 </body>
 </html>
+```
