@@ -171,16 +171,27 @@ footer{
 .sgrid td:first-child{text-align:left;color:var(--ink);white-space:nowrap}
 .sgrid td.on{color:var(--accent)}
 .sgrid td.n{color:var(--muted)}
-.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(24rem,1fr));gap:2rem 2.5rem;margin:1.5rem 0 2rem}
-.pgrid h4{font-family:var(--mono);font-weight:500;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .6rem}
+.pgrid{display:block;margin:1.5rem 0 2rem}
+.pdir{margin-bottom:3.5rem}
+.pdir .pg{margin-bottom:2.5rem}
+.pgrid h4{font-family:var(--mono);font-weight:500;font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .8rem}
 .pgrid h4.m{color:var(--morning)}.pgrid h4.e{color:var(--evening)}
-.prow{display:grid;grid-template-columns:2rem 1fr;gap:.4rem;align-items:center;margin-bottom:3px;font-family:var(--mono);font-size:.65rem;color:var(--muted)}
-.pcells{display:flex;gap:1px}.pcells i{flex:1;height:1.3rem;display:block}
-.pticks{display:grid;grid-template-columns:2rem 1fr;gap:.4rem;font-family:var(--mono);font-size:.6rem;color:var(--muted)}
+.prow{display:grid;grid-template-columns:2.6rem 1fr;gap:.5rem;align-items:center;margin-bottom:4px;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.pcells,.pticks div{width:calc(100% * var(--ns) / var(--nmax))}
+.pcells{display:grid;gap:2px;grid-template-columns:repeat(var(--ns),minmax(0,1fr))}.pcells i{min-width:0;height:2.4rem;display:block;transition:opacity .15s ease}
+.pdir.sel .pcells i{opacity:.28}
+.pdir.sel .pcells i.hit{opacity:1;outline:2px solid var(--ink);outline-offset:1px;position:relative;z-index:1}
+.pticks{display:grid;grid-template-columns:2.6rem 1fr;gap:.5rem;font-family:var(--mono);font-size:.7rem;color:var(--muted)}
 .pticks div{display:flex;justify-content:space-between}
-.pleg{margin-top:.7rem;font-family:var(--mono);font-size:.68rem;line-height:1.7}
-.pleg span{display:flex;align-items:center;gap:.5rem;color:var(--ink)}
-.pleg b{display:inline-block;width:.8rem;height:.8rem;flex:none}
+.pleg{margin-top:1rem;font-family:var(--mono);font-size:.78rem;line-height:1.9}
+.pleg span{display:flex;align-items:center;gap:.6rem;color:var(--ink)}
+.pleg b{display:inline-block;width:.95rem;height:.95rem;flex:none}
+.pslide{position:sticky;bottom:0;z-index:5;background:var(--bg,#000);padding:.9rem 0 1rem;border-top:1px solid var(--line);font-family:var(--mono)}
+.pslide .ptime{display:flex;justify-content:space-between;align-items:baseline;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.pslide .ptime b{font-size:1.1rem;color:var(--accent);font-weight:500;letter-spacing:.04em}
+.pslide input[type="range"]{width:100%;margin:0;accent-color:var(--accent);cursor:grab}
+.pslide .pnow{font-size:.72rem;color:var(--muted);margin-top:.5rem;line-height:1.7}
+.pslide .pnow span{color:var(--ink);margin-right:1rem;white-space:nowrap}
 .pleg em{margin-left:auto;font-style:normal;color:var(--muted)}
 
 #tip{
@@ -974,10 +985,18 @@ makeFigure('f10', binStops, w => Math.round(Math.min(w, 960) / 2.15) + 70, (svg,
   const PAL = ['#4aa8d8','#e0603a','#2db354','#e0b83a','#b07ad8','#d8708f','#7fd8c8','#c8c8c8','#8a9cff'];
   const fmt = m => String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
   const kinds = [['entry', 2], ['exit', 3]];
-  document.getElementById('pickgrid').innerHTML = DIRS.map(dir => kinds.map(([label, ix]) => {
-    const picks = DATA.picks[dir];
+  const MAXSLOTS = 22;
+  const PK = {};
+  DIRS.forEach(d => {
+    const keep = new Set([...new Set(DATA.picks[d].map(r => r[1]))].sort((a,b) => a-b).slice(0, MAXSLOTS));
+    PK[d] = DATA.picks[d].filter(r => keep.has(r[1]));
+  });
+  const nmax = Math.max(...DIRS.map(d => new Set(PK[d].map(r => r[1])).size));
+  document.getElementById('pickgrid').innerHTML = DIRS.map(dir => {
+    const picks = PK[dir];
     if (!picks.length) return '';
     const slots = [...new Set(picks.map(r => r[1]))].sort((a,b) => a-b);
+    const grids = kinds.map(([label, ix]) => {
     const byKey = {}; picks.forEach(r => byKey[r[0] + '|' + r[1]] = r);
     const days = {}, slotsOf = {};
     picks.forEach(r => { (days[r[ix]] = days[r[ix]] || new Set()).add(r[0]); slotsOf[r[ix]] = (slotsOf[r[ix]] || 0) + 1; });
@@ -986,13 +1005,37 @@ makeFigure('f10', binStops, w => Math.round(Math.min(w, 960) / 2.15) + 70, (svg,
     const nm = id => DATA.stations[id] || id;
     const rows = DAYS.map((d, j) => `<div class="prow"><span>${d}</span><div class="pcells">` + slots.map(s => {
       const r = byKey[j + '|' + s];
-      return r ? `<i style="background:${col[r[ix]]}" title="${d} ${fmt(s)} · ${nm(r[ix])} · ${(r[4]/60).toFixed(1)} min door to door"></i>` : '<i></i>';
+      return r ? `<i data-s="${s}" style="background:${col[r[ix]]}" title="${d} ${fmt(s)} · ${nm(r[ix])} · ${(r[4]/60).toFixed(1)} min door to door"></i>` : `<i data-s="${s}"></i>`;
     }).join('') + '</div></div>').join('');
     const step = Math.ceil(slots.length / 6), marks = slots.filter((_, i) => i % step === 0);
     const axis = `<div class="pticks"><span></span><div>${marks.map(s => `<span>${fmt(s)}</span>`).join('')}</div></div>`;
     const leg = ids.map(id => `<span><b style="background:${col[id]}"></b>${nm(id)}<em>${days[id].size} day${days[id].size > 1 ? 's' : ''} · ${slotsOf[id]} of ${picks.length} slots</em></span>`).join('');
-    return `<div><h4 class="${dir[0]}">${dir} · ${label} pick</h4>${rows}${axis}<div class="pleg">${leg}</div></div>`;
-  }).join('')).join('');
+    return `<div class="pg"><h4 class="${dir[0]}">${dir} · ${label} pick</h4>${rows}${axis}<div class="pleg">${leg}</div></div>`;
+    }).join('');
+    const slide = `<div class="pslide"><div class="ptime"><span>${dir} departure time</span><b>${fmt(slots[0])}</b></div>` +
+      `<input type="range" min="0" max="${slots.length - 1}" value="0" step="1" aria-label="${dir} departure time">` +
+      `<div class="pnow"></div></div>`;
+    return `<div class="pdir" data-dir="${dir}" style="--ns:${slots.length};--nmax:${nmax}">${grids}${slide}</div>`;
+  }).join('');
+
+  document.querySelectorAll('.pdir').forEach(box => {
+    const dir = box.dataset.dir, picks = PK[dir];
+    const slots = [...new Set(picks.map(r => r[1]))].sort((a,b) => a-b);
+    const inp = box.querySelector('input'), lbl = box.querySelector('.ptime b'), now = box.querySelector('.pnow');
+    const nm = id => DATA.stations[id] || id;
+    function upd(){
+      const s = slots[+inp.value];
+      box.classList.add('sel');
+      box.querySelectorAll('.pcells i').forEach(i => i.classList.toggle('hit', +i.dataset.s === s));      lbl.textContent = fmt(s);
+      now.innerHTML = DAYS.map((d, j) => {
+        const r = picks.find(p => p[0] === j && p[1] === s);
+        return r ? `<span>${d}: ${nm(r[2])} → ${nm(r[3])}</span>` : '';
+      }).join('');
+      try { parent.postMessage({fig:'pickgrid',h:Math.ceil(document.documentElement.getBoundingClientRect().height)},'*'); } catch(e){}
+    }
+    inp.addEventListener('input', upd);    lbl.textContent = 'All times';
+    now.textContent = 'Drag the slider to highlight a departure time.';
+  });
 })();
 </script>
 <script>
