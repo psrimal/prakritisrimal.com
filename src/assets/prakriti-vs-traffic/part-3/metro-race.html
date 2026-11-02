@@ -262,7 +262,7 @@ function build(){
   $("#sl-dep").value=S.dep;
   const row=rowNow();
   $("#dep-val").textContent=row.t;
-  $("#day-val").textContent=row.day;
+  $("#day-val").textContent=row.day.replace(/ \d+ \w+$/,"");
   $("#daylabel").textContent="";
 
   const O=[dd.origin.lon,dd.origin.lat], DS=[dd.dest.lon,dd.dest.lat];
