@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metro Crowd Part 4: The Pick</title>
+<meta name="description" content="Week 3 (26-30 October): how crowded the quickest metro journey is at every day and departure time, and what a few extra minutes buy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>if(new URLSearchParams(location.search).get('fig'))document.documentElement.classList.add('emb');</script>
+<style>
+:root{--bg:#000;--ink:#f0ede4;--muted:#7f8c83;--line:#1a241d;--accent:#2db354;--morning:#4aa8d8;--evening:#e0603a;
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,monospace;--sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:1.0625rem;line-height:1.8;-webkit-font-smoothing:antialiased}
+.wrap{width:75%;max-width:1080px;margin:0 auto}
+@media (max-width:900px){.wrap{width:88%}}
+@media (max-width:600px){.wrap{width:100%;padding:0 1.25rem}}
+.hero{padding:5rem 0 2rem}
+h1{font-family:var(--mono);font-weight:700;font-size:clamp(2rem,5.2vw,3.5rem);line-height:1.08;letter-spacing:-.03em;margin:0 0 1.5rem}
+.standfirst{font-size:1.2rem;line-height:1.6;color:var(--muted);margin:0 0 2.5rem;max-width:42rem}
+.byline{font-family:var(--mono);font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding-top:1.5rem;border-top:1px solid var(--line)}
+h3{font-family:var(--mono);font-weight:500;color:var(--accent);font-size:clamp(1.15rem,2.3vw,1.4rem);line-height:1.3;margin:3.5rem 0 1.2rem}
+p{margin:0 0 1.4rem}
+b{font-weight:600;color:#fff}
+.grids{display:grid;grid-template-columns:repeat(auto-fit,minmax(24rem,1fr));gap:2rem 2.5rem;margin:1.5rem 0 1rem}
+h4{font-family:var(--mono);font-weight:500;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;margin:0 0 .6rem}
+h4.m{color:var(--morning)}h4.e{color:var(--evening)}
+.prow{display:grid;grid-template-columns:2rem 1fr;gap:.4rem;align-items:center;margin-bottom:3px;font-family:var(--mono);font-size:.65rem;color:var(--muted)}
+.pcells{display:flex;gap:1px}.pcells i{flex:1;height:1.3rem;display:block;background:#10160f}
+.pticks{display:grid;grid-template-columns:2rem 1fr;gap:.4rem;font-family:var(--mono);font-size:.6rem;color:var(--muted)}
+.pticks div{display:flex;justify-content:space-between}
+.legend{display:flex;flex-wrap:wrap;gap:.4rem 1.2rem;font-family:var(--mono);font-size:.68rem;margin:1rem 0 0}
+.legend span{display:flex;align-items:center;gap:.4rem}.legend b{display:inline-block;width:.8rem;height:.8rem}
+figcaption{font-family:var(--mono);font-size:.72rem;line-height:1.65;color:var(--muted);margin-top:.9rem}
+figcaption b{color:var(--accent);font-weight:500;letter-spacing:.18em;text-transform:uppercase;font-size:.68rem;margin-right:.75rem}
+figure{margin:2.5rem 0}
+#tip{position:absolute;z-index:9;pointer-events:none;display:none;background:#0b1112;border:1px solid #456063;color:#eef1ea;padding:.4rem .6rem;font:.68rem/1.45 var(--mono);white-space:nowrap}
+.bar{display:flex;height:1.3rem;margin:.2rem 0 .9rem}.bar i{display:block}
+.lab{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:.7rem;line-height:1.5;margin:.5rem 0 1rem}
+th{font-weight:400;color:var(--muted);text-align:right;padding:.2rem .4rem;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left}
+td{padding:.25rem .4rem;border-bottom:1px solid var(--line);text-align:right;color:var(--muted)}
+td:first-child{color:var(--ink);white-space:nowrap}
+.tbls{display:grid;grid-template-columns:repeat(auto-fit,minmax(22rem,1fr));gap:1.5rem 2.5rem}
+footer{border-top:1px solid var(--line);margin-top:4rem;padding:2.5rem 0 5rem;font-family:var(--mono);font-size:.72rem;line-height:1.9;color:var(--muted)}
+html.emb .hero,html.emb footer{display:none}
+html.emb body{overflow:hidden}
+html.emb .wrap{width:100%;max-width:none;padding:0}
+html.emb .emb-hide{display:none!important}
+html.emb figure{margin:.5rem 0}
+html.emb .grids{margin-top:.5rem}
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap">
+  <h1>Metro Crowd, Part 4: The Pick</h1>
+  <p class="standfirst">The quickest journey is not always the one with a seat. For every day and departure time of week 3, this page scores how crowded the pick is, and what a few extra minutes would buy.</p>
+  <div class="byline">Week 3 &middot; <span>26&ndash;30 October 2026</span> &middot; Tilak Nagar &harr; Whitefield</div>
+</div></header>
+
+<section><div class="wrap">
+  <h3>How crowded is the quickest journey?</h3>
+  <p>At each day and departure time, the <b>pick</b> is the entry and exit pair with the shortest door-to-door time. Its crowding is the seat index of the train on every stretch of the ride, weighted by ride time: 100 is an empty train, 50 is every seat taken, 0 is seats and standing room both full. The loads are typical weekday ridership, so they vary by time of day, not by the individual day.</p>
+  <figure>
+    <div class="grids" id="heat"></div>
+    <div class="legend" id="tiers"></div>
+    <figcaption><b>Fig 1</b>Seat tier of the quickest journey, by day and departure time. Hover a cell for the stations and minutes.</figcaption>
+  </figure>
+
+  <h3>Where the picks land</h3>
+  <p>The share of departure times in each tier, for the quickest journey and for the most comfortable journey that costs at most <span id="altmin"></span> more minutes.</p>
+  <figure><div class="grids" id="bars"></div>
+    <figcaption><b>Fig 2</b>Share of departure slots by tier. Top bar: quickest pick. Bottom bar: most comfortable option within the extra-minutes allowance.</figcaption>
+  </figure>
+
+  <h3>What a few minutes buy</h3>
+  <p>For every departure time, I also looked for a calmer journey that gets me to the office no more than <span id="altmin2"></span> minutes later than the quickest. Each table shows how often such a journey exists, how much time it costs, and how much more comfortable it is. Comfort is the seat score from 0 to 100, where higher is calmer (50 means every seat is taken). The day-by-day rows show the average journey time and the seat score of the quickest journey, then of the calmer one.</p>
+  <div class="tbls" id="trade"></div>
+
+  <h3>Which stations carry the picks</h3>
+  <div class="tbls" id="stations"></div>
+</div></section>
+
+<footer><div class="wrap">
+  Loads: median passengers per train on each stretch (ridership August 2025) with the week 3 timetable and road times. Capacity: <span id="capnote"></span>.<br>
+  Built from metro_race_seats_week3.html by build_metro_crowd_part4_week3.py.
+</div></footer>
+
+<script>
+const P = {"cap":{"seats":293,"standMult":2.5,"cars":6,"seatFull":0.8,"seatNone":1.2},"alt_min":5,"days":["Mon","Tue","Wed","Thu","Fri"],"morning":[[0,420,"Vidhana Soudha","Kundalahalli",68.9,35.4,0,"MG Road","Seetharampalya",71.1,38.5,30.5,451],[0,430,"MG Road","Kundalahalli",58.9,36.2,0,"MG Road","Seetharampalya",61.1,38.5,30.5,455],[0,440,"MG Road","Garudacharpalya",66.9,29.8,17.5,"Jayanagar","Hoodi",70.8,41.9,0,470],[0,450,"MG Road","Garudacharpalya",67.8,25.5,17.5,"MG Road","Garudacharpalya",67.8,25.5,17.5,479],[0,460,"Vidhana Soudha","Garudacharpalya",78.4,22.8,13.0,"RV Road","Garudacharpalya",78.4,39.5,13.0,489],[0,470,"MG Road","Garudacharpalya",68.4,23.8,17.5,"MG Road","Garudacharpalya",68.4,23.8,17.5,499],[0,480,"MG Road","Garudacharpalya",69.3,23.8,17.5,"MG Road","Sri Sathya Sai Hospital",70.0,24.3,0,509],[0,490,"Vidhana Soudha","Kundalahalli",69.7,26.1,13.0,"Vidhana Soudha","Sri Sathya Sai Hospital",70.0,28.8,13.0,521],[0,500,"MG Road","Kundalahalli",67.5,30.4,20.3,"MG Road","Sri Sathya Sai Hospital",67.6,33.0,20.3,529],[0,510,"MG Road","Kundalahalli",66.6,33.4,20.5,"MG Road","Sri Sathya Sai Hospital",66.9,35.6,20.5,539],[0,520,"MG Road","Kundalahalli",66.4,33.4,20.7,"MG Road","Sri Sathya Sai Hospital",66.9,35.6,20.7,552],[0,530,"MG Road","Kundalahalli",66.6,33.4,20.7,"MG Road","Sri Sathya Sai Hospital",66.9,35.6,20.7,562],[0,540,"MG Road","Kundalahalli",69.8,33.8,20.7,"MG Road","Sri Sathya Sai Hospital",70.0,37.6,20.7,575],[0,550,"MG Road","Kundalahalli",69.6,34.3,20.7,"MG Road","Sri Sathya Sai Hospital",69.9,38.1,20.7,585],[0,560,"Jayanagar","Kundalahalli",72.6,22.9,0,"MG Road","Sri Sathya Sai Hospital",72.6,34.3,15.0,573],[0,570,"Jayanagar","Kundalahalli",73.2,20.0,0,"MG Road","Sri Sathya Sai Hospital",73.6,31.7,1.7,583],[0,580,"Jayanagar","Kundalahalli",73.3,20.2,0,"MG Road","Sri Sathya Sai Hospital",73.6,31.7,1.7,593],[0,590,"Jayanagar","Kundalahalli",71.8,20.7,0,"MG Road","Sri Sathya Sai Hospital",71.9,31.7,1.7,603],[0,600,"Jayanagar","Garudacharpalya",77.7,17.9,0,"MG Road","Sri Sathya Sai Hospital",80.0,30.1,1.7,613],[0,610,"Jayanagar","Kundalahalli",72.3,20.4,0,"Lalbagh","Sri Sathya Sai Hospital",72.6,22.8,0,623],[0,620,"Jayanagar","Kundalahalli",73.2,20.6,0,"MG Road","Sri Sathya Sai Hospital",73.6,29.8,1.7,633],[0,630,"Lalbagh","Kundalahalli",73.2,21.8,0,"MG Road","Sri Sathya Sai Hospital",73.6,30.4,9.3,647],[0,640,"MG Road","Kundalahalli",69.5,27.6,9.3,"MG Road","Kundalahalli",69.5,27.6,9.3,675],[1,420,"Vidhana Soudha","Kundalahalli",68.9,41.4,0,"MG Road","Seetharampalya",72.6,44.3,37.4,451],[1,430,"Vidhana Soudha","Kundalahalli",69.1,31.2,0,"Central College","Hoodi",73.3,35.2,0,461],[1,440,"Vidhana Soudha","Kundalahalli",69.3,26.2,0,"MG Road","Garudacharpalya",70.3,34.1,20.9,471],[1,450,"Vidhana Soudha","Garudacharpalya",80.8,26.4,20.9,"RV Road","Garudacharpalya",80.8,45.1,15.8,479],[1,460,"Vidhana Soudha","Kundalahalli",79.4,20.1,0,"RV Road","Garudacharpalya",81.1,41.1,15.8,489],[1,470,"MG Road","Kundalahalli",69.4,20.2,0,"MG Road","Hoodi",72.5,23.1,0,505],[1,480,"MG Road","Kundalahalli",69.3,22.0,0,"MG Road","Sri Sathya Sai Hospital",70.0,24.3,0,515],[1,490,"MG Road","Kundalahalli",69.5,26.4,20.7,"MG Road","Sri Sathya Sai Hospital",70.0,28.3,20.7,525],[1,500,"MG Road","Kundalahalli",66.9,29.0,20.7,"MG Road","Sri Sathya Sai Hospital",67.6,30.6,20.7,532],[1,510,"MG Road","Kundalahalli",66.5,29.2,17.3,"MG Road","Sri Sathya Sai Hospital",66.9,30.7,17.3,542],[1,520,"MG Road","Kundalahalli",69.6,29.2,17.3,"MG Road","Sri Sathya Sai Hospital",70.0,30.7,17.3,555],[1,530,"Jayanagar","Sri Sathya Sai Hospital",71.6,23.1,0,"MG Road","Sri Sathya Sai Hospital",71.6,30.7,17.3,543],[1,540,"Jayanagar","Sri Sathya Sai Hospital",71.6,25.3,0,"Lalbagh","Sri Sathya Sai Hospital",71.6,26.1,0,553],[1,550,"Jayanagar","Kundalahalli",72.4,23.0,0,"MG Road","Sri Sathya Sai Hospital",76.9,33.9,17.3,563],[1,560,"Lalbagh","Sri Sathya Sai Hospital",72.6,24.4,0,"MG Road","Sri Sathya Sai Hospital",76.9,29.5,1.2,577],[1,570,"Jayanagar","Sri Sathya Sai Hospital",73.6,21.7,0,"National College","Sri Sathya Sai Hospital",76.9,22.4,0,583],[1,580,"South End Circle","Sri Sathya Sai Hospital",73.6,22.1,0,"National College","Sri Sathya Sai Hospital",76.9,22.6,0,595],[1,590,"Lalbagh","Kundalahalli",71.8,19.4,0,"Lalbagh","Sri Sathya Sai Hospital",71.9,22.5,0,607],[1,600,"Lalbagh","Garudacharpalya",78.9,16.5,0,"MG Road","Sri Sathya Sai Hospital",80.0,28.5,1.2,617],[1,610,"Jayanagar","Kundalahalli",79.8,19.3,0,"MG Road","Sri Sathya Sai Hospital",80.0,28.0,1.2,629],[1,620,"South End Circle","Sri Sathya Sai Hospital",73.6,22.2,0,"South End Circle","Sri Sathya Sai Hospital",73.6,22.2,0,635],[1,630,"Lalbagh","Sri Sathya Sai Hospital",73.6,23.6,0,"Lalbagh","Sri Sathya Sai Hospital",73.6,23.6,0,647],[1,640,"Lalbagh","Garudacharpalya",79.3,18.8,0,"South End Circle","Garudacharpalya",79.3,18.8,0,657],[2,420,"Vidhana Soudha","Kundalahalli",69.1,44.3,0,"MG Road","Seetharampalya",71.6,47.4,39.4,451],[2,430,"Vidhana Soudha","Kundalahalli",69.3,32.7,0,"South End Circle","Garudacharpalya",73.4,52.6,28.8,461],[2,440,"MG Road","Garudacharpalya",68.4,35.8,21.9,"South End Circle","Hoodi",70.7,45.0,0,470],[2,450,"Vidhana Soudha","Garudacharpalya",78.5,27.6,21.9,"RV Road","Garudacharpalya",78.5,45.3,16.8,479],[2,460,"Vidhana Soudha","Kundalahalli",79.7,21.0,0,"RV Road","Garudacharpalya",80.3,41.9,16.8,489],[2,470,"Vidhana Soudha","Kundalahalli",69.7,21.0,0,"MG Road","Hoodi",72.5,24.1,0,501],[2,480,"Vidhana Soudha","Kundalahalli",69.8,22.7,0,"MG Road","Sri Sathya Sai Hospital",70.0,25.2,0,511],[2,490,"Vidhana Soudha","Kundalahalli",69.7,26.8,16.8,"MG Road","Sri Sathya Sai Hospital",70.0,29.4,21.9,521],[2,500,"MG Road","Kundalahalli",67.5,30.0,22.3,"MG Road","Sri Sathya Sai Hospital",67.6,31.6,22.3,532],[2,510,"MG Road","Kundalahalli",66.5,29.9,18.1,"MG Road","Sri Sathya Sai Hospital",66.9,31.5,18.1,542],[2,520,"Vidhana Soudha","Kundalahalli",76.7,27.5,6.5,"MG Road","Sri Sathya Sai Hospital",76.9,31.5,18.1,555],[2,530,"Jayanagar","Kundalahalli",71.5,22.2,0,"MG Road","Sri Sathya Sai Hospital",71.6,31.5,18.1,543],[2,540,"Jayanagar","Sri Sathya Sai Hospital",71.6,25.5,0,"Lalbagh","Sri Sathya Sai Hospital",71.6,26.4,0,553],[2,550,"Jayanagar","Kundalahalli",72.3,23.0,0,"MG Road","Sri Sathya Sai Hospital",76.9,33.1,18.1,563],[2,560,"Jayanagar","Kundalahalli",72.3,20.3,0,"Vidhana Soudha","Sri Sathya Sai Hospital",76.9,25.8,0,573],[2,570,"Jayanagar","Sri Sathya Sai Hospital",73.6,20.5,0,"Vidhana Soudha","Sri Sathya Sai Hospital",76.9,24.8,0,583],[2,580,"Jayanagar","Sri Sathya Sai Hospital",73.6,20.5,0,"Vidhana Soudha","Sri Sathya Sai Hospital",76.9,24.8,0,593],[2,590,"Jayanagar","Kundalahalli",71.7,17.8,0,"Lalbagh","Sri Sathya Sai Hospital",71.9,21.0,0,603],[2,600,"Jayanagar","Garudacharpalya",78.4,15.2,0,"MG Road","Sri Sathya Sai Hospital",80.0,27.5,0,613],[2,610,"South End Circle","Kundalahalli",72.3,18.4,0,"South End Circle","Sri Sathya Sai Hospital",72.6,20.7,0,625],[2,620,"Lalbagh","Kundalahalli",73.6,19.6,0,"Lalbagh","Sri Sathya Sai Hospital",73.6,22.0,0,637],[2,630,"Lalbagh","Kundalahalli",73.6,20.8,0,"Lalbagh","Sri Sathya Sai Hospital",73.6,23.1,0,647],[2,640,"Jayanagar","Garudacharpalya",79.1,17.6,0,"MG Road","Garudacharpalya",79.1,23.9,9.1,653],[3,420,"MG Road","Kundalahalli",59.1,60.0,45.9,"Trinity","Sri Sathya Sai Hospital",60.0,65.0,45.9,445],[3,430,"Vidhana Soudha","Kundalahalli",69.2,39.5,0,"Vidhana Soudha","Hoodi",70.6,44.1,0,461],[3,440,"Vidhana Soudha","Kundalahalli",69.4,32.8,0,"MG Road","Garudacharpalya",71.2,43.3,29.4,471],[3,450,"Trinity","Garudacharpalya",70.2,34.0,29.4,"Trinity","Garudacharpalya",70.2,34.0,29.4,481],[3,460,"Vidhana Soudha","Garudacharpalya",79.1,32.8,23.7,"RV Road","Garudacharpalya",79.1,46.7,23.7,489],[3,470,"Trinity","Garudacharpalya",69.1,34.0,29.4,"Trinity","Garudacharpalya",69.1,34.0,29.4,501],[3,480,"MG Road","Garudacharpalya",69.5,33.7,29.4,"Trinity","Garudacharpalya",69.5,34.0,29.4,509],[3,490,"MG Road","Garudacharpalya",68.3,33.7,29.4,"Trinity","Sri Sathya Sai Hospital",70.0,36.4,29.4,519],[3,500,"MG Road","Kundalahalli",67.5,36.8,31.1,"Trinity","Sri Sathya Sai Hospital",67.6,39.2,31.1,529],[3,510,"MG Road","Kundalahalli",66.6,37.4,25.6,"Trinity","Sri Sathya Sai Hospital",66.9,40.2,31.8,542],[3,520,"MG Road","Kundalahalli",69.9,37.4,25.6,"Trinity","Sri Sathya Sai Hospital",70.0,40.2,31.8,555],[3,530,"MG Road","Kundalahalli",69.5,37.4,25.6,"Trinity","Sri Sathya Sai Hospital",70.0,40.2,31.8,565],[3,540,"Jayanagar","Kundalahalli",71.3,29.2,0,"Lalbagh","Sri Sathya Sai Hospital",71.6,33.4,0,553],[3,550,"Jayanagar","Kundalahalli",72.4,29.1,0,"Trinity","Sri Sathya Sai Hospital",77.1,42.4,33.6,563],[3,560,"Jayanagar","Sri Sathya Sai Hospital",72.6,30.1,0,"Trinity","Sri Sathya Sai Hospital",76.9,38.6,17.3,573],[3,570,"Lalbagh","Kundalahalli",73.5,23.8,0,"Trinity","Sri Sathya Sai Hospital",76.9,38.6,17.3,587],[3,580,"Jayanagar","Kundalahalli",73.4,23.4,0,"Trinity","Sri Sathya Sai Hospital",76.9,38.6,17.3,593],[3,590,"Jayanagar","Kundalahalli",71.8,23.8,0,"Lalbagh","Sri Sathya Sai Hospital",71.9,27.7,0,603],[3,600,"Lalbagh","Garudacharpalya",79.5,20.9,0,"Trinity","Sri Sathya Sai Hospital",80.0,37.1,17.3,617],[3,610,"Lalbagh","Kundalahalli",72.2,23.9,0,"Lalbagh","Sri Sathya Sai Hospital",72.6,26.6,0,627],[3,620,"Lalbagh","Kundalahalli",73.2,24.2,0,"Lalbagh","Sri Sathya Sai Hospital",73.6,26.9,0,637],[3,630,"Lalbagh","Kundalahalli",73.2,26.4,1.7,"Trinity","Sri Sathya Sai Hospital",73.6,37.4,25.7,647],[3,640,"Lalbagh","Garudacharpalya",77.8,23.3,1.7,"Trinity","Garudacharpalya",77.8,31.5,25.7,657],[4,420,"MG Road","Kundalahalli",58.9,89.8,71.2,"Trinity","Sri Sathya Sai Hospital",60.0,90.9,71.2,445],[4,430,"Trinity","Kundalahalli",59.2,85.0,27.0,"Trinity","Seetharampalya",61.5,89.1,71.2,457],[4,440,"MG Road","Garudacharpalya",67.3,67.1,44.6,"MG Road","Garudacharpalya",67.3,67.1,44.6,470],[4,450,"Trinity","Garudacharpalya",68.7,47.9,44.6,"Trinity","Garudacharpalya",68.7,47.9,44.6,481],[4,460,"Vidhana Soudha","Garudacharpalya",77.2,47.1,40.6,"Jayanagar","Garudacharpalya",77.2,57.8,40.0,489],[4,470,"Vidhana Soudha","Kundalahalli",69.6,41.4,14.7,"Trinity","Garudacharpalya",73.7,47.9,44.6,501],[4,480,"Trinity","Garudacharpalya",68.2,47.9,44.6,"Trinity","Sri Sathya Sai Hospital",70.0,49.1,14.7,511],[4,490,"MG Road","Garudacharpalya",68.6,47.7,44.6,"Vidhana Soudha","Sri Sathya Sai Hospital",70.0,55.9,40.6,519],[4,500,"MG Road","Kundalahalli",67.0,58.4,46.4,"Trinity","Sri Sathya Sai Hospital",67.6,63.5,46.8,529],[4,510,"MG Road","Kundalahalli",66.5,63.3,46.4,"Trinity","Garudacharpalya",67.8,68.7,49.6,539],[4,520,"MG Road","Kundalahalli",69.5,63.1,43.8,"Trinity","Garudacharpalya",73.7,68.7,49.6,555],[4,530,"MG Road","Kundalahalli",66.4,63.1,43.8,"Trinity","Garudacharpalya",70.7,68.7,49.6,562],[4,540,"MG Road","Kundalahalli",69.6,65.2,43.8,"Trinity","Sri Sathya Sai Hospital",70.0,70.7,47.7,575],[4,550,"MG Road","Kundalahalli",69.7,73.8,43.8,"Trinity","Sri Sathya Sai Hospital",70.0,79.0,49.6,585],[4,560,"Trinity","Kundalahalli",69.5,72.5,49.6,"Trinity","Sri Sathya Sai Hospital",70.0,75.6,49.6,597],[4,570,"Trinity","Kundalahalli",69.5,71.7,44.0,"Trinity","Sri Sathya Sai Hospital",70.0,74.9,44.0,607],[4,580,"Lalbagh","Kundalahalli",73.5,55.9,12.8,"Trinity","Sri Sathya Sai Hospital",73.6,74.9,44.0,597],[4,590,"Jayanagar","Kundalahalli",71.5,55.1,12.8,"Trinity","Sri Sathya Sai Hospital",74.6,74.9,44.0,603],[4,600,"Jayanagar","Garudacharpalya",77.4,49.6,12.8,"Trinity","Sri Sathya Sai Hospital",80.0,74.8,44.0,613],[4,610,"Jayanagar","Kundalahalli",72.2,52.9,12.8,"Trinity","Sri Sathya Sai Hospital",72.6,71.3,44.0,623],[4,620,"Lalbagh","Kundalahalli",73.1,50.7,12.8,"Trinity","Sri Sathya Sai Hospital",73.6,67.0,43.7,637],[4,630,"Lalbagh","Kundalahalli",73.1,52.7,27.6,"Trinity","Sri Sathya Sai Hospital",73.6,67.0,43.7,647],[4,640,"Jayanagar","Garudacharpalya",77.5,45.3,27.6,"Trinity","Garudacharpalya",77.5,54.1,43.7,653]],"evening":[[0,1020,"Hoodi","RV Road",79.8,19.6,0,"Hoodi","RV Road",79.8,19.6,0,1037],[0,1030,"Hoodi","RV Road",79.8,18.7,0,"Hoodi","RV Road",79.8,18.7,0,1047],[0,1040,"Hoodi","RV Road",79.7,18.2,0,"Pattandur Agrahara","RV Road",84.7,25.1,0,1057],[0,1050,"Hoodi","RV Road",79.7,17.9,0,"Hoodi","RV Road",79.7,17.9,0,1067],[0,1060,"Hoodi","RV Road",80.5,18.2,0,"Hoodi","RV Road",80.5,18.2,0,1077],[0,1070,"Hoodi","RV Road",80.8,18.2,0,"Pattandur Agrahara","RV Road",84.2,25.2,0,1087],[0,1080,"Hoodi","RV Road",79.2,17.1,0,"Hoodi","RV Road",79.2,17.1,0,1097],[0,1090,"Hoodi","RV Road",79.5,16.7,0,"Pattandur Agrahara","RV Road",84.3,24.5,0,1107],[0,1100,"Garudacharpalya","RV Road",84.2,13.3,0,"Pattandur Agrahara","Lalbagh",87.9,23.1,0,1126],[0,1110,"Garudacharpalya","RV Road",84.1,11.3,0,"Pattandur Agrahara","Lalbagh",88.1,21.4,0,1136],[0,1120,"Hoodi","RV Road",79.0,12.5,0,"Seetharampalya","RV Road",83.4,13.4,0,1137],[0,1130,"Garudacharpalya","RV Road",78.4,11.3,0,"Pattandur Agrahara","RV Road",83.3,20.7,0,1149],[0,1140,"Garudacharpalya","RV Road",77.5,11.8,0,"Hoodi","RV Road",77.5,13.0,0,1159],[0,1150,"Garudacharpalya","RV Road",83.6,11.7,0,"Pattandur Agrahara","RV Road",83.6,20.5,0,1169],[0,1160,"Garudacharpalya","RV Road",76.6,11.7,0,"Hoodi","RV Road",76.6,12.9,0,1179],[0,1170,"Garudacharpalya","RV Road",74.6,12.4,0,"Hoodi","RV Road",74.6,13.5,0,1186],[0,1180,"Garudacharpalya","RV Road",72.6,11.7,0,"Hoodi","RV Road",72.6,12.8,0,1196],[1,1020,"Hoodi","RV Road",79.5,15.9,0,"Hoodi","RV Road",79.5,15.9,0,1037],[1,1030,"Hoodi","RV Road",79.8,14.8,0,"Hoodi","RV Road",79.8,14.8,0,1047],[1,1040,"Hoodi","RV Road",80.6,14.6,0,"Hoodi","RV Road",80.6,14.6,0,1057],[1,1050,"Hoodi","RV Road",80.4,14.1,0,"Hoodi","RV Road",80.4,14.1,0,1067],[1,1060,"Hoodi","RV Road",81.0,14.4,0,"Seetharampalya","RV Road",85.9,15.0,0,1077],[1,1070,"Garudacharpalya","RV Road",84.4,13.3,0,"Seetharampalya","RV Road",89.4,14.3,0,1096],[1,1080,"Hoodi","RV Road",79.4,13.8,0,"Hoodi","RV Road",79.4,13.8,0,1097],[1,1090,"Garudacharpalya","RV Road",84.0,12.8,0,"Pattandur Agrahara","RV Road",89.0,20.8,0,1116],[1,1100,"Garudacharpalya","RV Road",83.8,11.5,0,"Pattandur Agrahara","RV Road",83.8,19.8,0,1126],[1,1110,"Garudacharpalya","RV Road",83.6,9.5,0,"Pattandur Agrahara","RV Road",83.6,18.3,0,1136],[1,1120,"Garudacharpalya","RV Road",83.5,9.4,0,"Pattandur Agrahara","RV Road",83.5,18.1,0,1146],[1,1130,"Garudacharpalya","RV Road",83.4,9.8,0,"Pattandur Agrahara","RV Road",87.6,16.8,0,1156],[1,1140,"Garudacharpalya","RV Road",83.5,9.2,0,"Pattandur Agrahara","RV Road",83.5,16.5,0,1166],[1,1150,"Garudacharpalya","RV Road",83.4,9.2,0,"Pattandur Agrahara","RV Road",83.4,16.5,0,1176],[1,1160,"Garudacharpalya","RV Road",84.4,9.2,0,"Pattandur Agrahara","RV Road",84.4,16.5,0,1186],[1,1170,"Garudacharpalya","RV Road",82.4,7.8,0,"Pattandur Agrahara","RV Road",82.4,15.5,0,1196],[2,1020,"Hoodi","RV Road",75.6,13.3,0,"Hoodi","RV Road",75.6,13.3,0,1033],[2,1030,"Hoodi","RV Road",80.3,11.2,0,"Hoodi","RV Road",80.3,11.2,0,1047],[2,1040,"Hoodi","RV Road",80.2,11.2,0,"Hoodi","RV Road",80.2,11.2,0,1057],[2,1050,"Hoodi","RV Road",80.8,11.2,0,"Pattandur Agrahara","RV Road",84.8,17.9,0,1067],[2,1060,"Hoodi","RV Road",79.8,11.9,0,"Pattandur Agrahara","RV Road",84.3,18.7,0,1077],[2,1070,"Hoodi","RV Road",79.3,12.3,0,"Hoodi","RV Road",79.3,12.3,0,1087],[2,1080,"Hoodi","RV Road",79.5,11.1,0,"Pattandur Agrahara","RV Road",84.5,18.0,0,1097],[2,1090,"Garudacharpalya","RV Road",84.2,9.8,0,"Pattandur Agrahara","RV Road",89.2,18.0,0,1116],[2,1100,"Garudacharpalya","RV Road",83.9,9.2,0,"Pattandur Agrahara","RV Road",88.9,16.8,0,1126],[2,1110,"Garudacharpalya","RV Road",83.8,8.0,0,"Pattandur Agrahara","RV Road",88.8,16.6,0,1136],[2,1120,"Garudacharpalya","RV Road",85.1,8.0,0,"Pattandur Agrahara","RV Road",85.1,16.6,0,1146],[2,1130,"Garudacharpalya","Jayanagar",84.9,7.6,0,"Pattandur Agrahara","RV Road",85.0,15.6,0,1156],[2,1140,"Garudacharpalya","RV Road",83.8,6.9,0,"Pattandur Agrahara","RV Road",83.8,14.7,0,1166],[2,1150,"Garudacharpalya","RV Road",83.7,6.9,0,"Pattandur Agrahara","RV Road",83.7,14.7,0,1176],[2,1160,"Garudacharpalya","RV Road",76.7,6.9,0,"Hoodi","RV Road",76.7,7.9,0,1179],[2,1170,"Garudacharpalya","RV Road",74.7,6.9,0,"Hoodi","RV Road",74.7,7.9,0,1186],[2,1180,"Garudacharpalya","RV Road",72.7,5.2,0,"Hoodi","RV Road",72.7,6.3,0,1196],[3,1020,"Garudacharpalya","RV Road",79.8,12.9,0,"Hoodi","RV Road",79.8,13.4,0,1039],[3,1030,"Garudacharpalya","Jayanagar",81.8,11.2,0,"Hoodi","RV Road",82.2,12.4,0,1049],[3,1040,"Hoodi","RV Road",80.6,12.4,0,"Pattandur Agrahara","RV Road",85.0,18.8,0,1057],[3,1050,"Hoodi","RV Road",80.0,12.4,0,"Hoodi","RV Road",80.0,12.4,0,1067],[3,1060,"Garudacharpalya","RV Road",81.1,12.2,0,"Pattandur Agrahara","RV Road",86.1,19.5,0,1079],[3,1070,"Hoodi","Jayanagar",81.1,12.5,0,"Pattandur Agrahara","RV Road",85.1,19.9,0,1087],[3,1080,"Garudacharpalya","RV Road",80.1,11.9,0,"Pattandur Agrahara","RV Road",84.6,19.6,0,1099],[3,1090,"Garudacharpalya","RV Road",74.6,11.8,0,"Hoodi","RV Road",74.6,12.5,0,1106],[3,1100,"Garudacharpalya","RV Road",79.2,11.8,0,"Pattandur Agrahara","RV Road",83.9,19.1,0,1119],[3,1110,"Hoodi","RV Road",78.8,10.9,0,"Hoodi","RV Road",78.8,10.9,0,1127],[3,1120,"Garudacharpalya","RV Road",84.2,8.8,0,"Pattandur Agrahara","RV Road",84.2,17.4,0,1146],[3,1130,"Hoodi","RV Road",79.1,9.8,0,"Pattandur Agrahara","RV Road",83.5,16.2,0,1147],[3,1140,"Hoodi","RV Road",77.7,9.4,0,"Hoodi","RV Road",77.7,9.4,0,1157],[3,1150,"Hoodi","RV Road",73.2,8.4,0,"Hoodi","RV Road",73.2,8.4,0,1163],[3,1160,"Hoodi","RV Road",73.3,8.4,0,"Hoodi","RV Road",73.3,8.4,0,1173],[3,1170,"Hoodi","RV Road",74.3,8.4,0,"Hoodi","RV Road",74.3,8.4,0,1183],[3,1180,"Garudacharpalya","RV Road",72.3,6.4,0,"Hoodi","RV Road",72.3,7.5,0,1196],[4,1020,"Garudacharpalya","RV Road",90.8,28.2,3.7,"Pattandur Agrahara","RV Road",90.8,35.7,3.7,1049],[4,1030,"Garudacharpalya","RV Road",80.8,28.2,3.7,"Hoodi","RV Road",80.8,28.8,3.7,1049],[4,1040,"Garudacharpalya","RV Road",85.7,27.8,1.4,"Pattandur Agrahara","RV Road",90.7,35.5,1.4,1066],[4,1050,"Garudacharpalya","RV Road",80.7,28.0,1.4,"Pattandur Agrahara","RV Road",84.8,35.8,1.4,1069],[4,1060,"Garudacharpalya","RV Road",85.1,28.6,1.4,"Pattandur Agrahara","RV Road",85.1,36.2,1.4,1086],[4,1070,"Garudacharpalya","RV Road",84.7,28.5,1.4,"Pattandur Agrahara","RV Road",84.7,36.7,1.4,1096],[4,1080,"Garudacharpalya","RV Road",84.7,28.8,1.4,"Pattandur Agrahara","RV Road",84.7,36.9,1.4,1106],[4,1090,"Garudacharpalya","RV Road",84.5,29.2,5.6,"Pattandur Agrahara","RV Road",89.5,37.2,5.6,1116],[4,1100,"Garudacharpalya","RV Road",85.1,27.5,5.6,"Pattandur Agrahara","RV Road",90.1,35.5,5.6,1126],[4,1110,"Garudacharpalya","RV Road",84.6,26.7,5.6,"Pattandur Agrahara","RV Road",84.6,35.3,5.6,1136],[4,1120,"Garudacharpalya","RV Road",84.0,27.1,5.6,"Pattandur Agrahara","RV Road",89.0,35.8,5.6,1146],[4,1130,"Garudacharpalya","RV Road",84.0,27.3,5.6,"Pattandur Agrahara","RV Road",84.0,35.9,5.6,1156],[4,1140,"Garudacharpalya","RV Road",78.2,27.2,5.6,"Hoodi","RV Road",78.2,28.2,5.6,1159],[4,1150,"Garudacharpalya","RV Road",83.7,26.9,5.6,"Pattandur Agrahara","RV Road",83.7,35.9,9.2,1169],[4,1160,"Garudacharpalya","RV Road",73.7,27.4,9.2,"Hoodi","RV Road",73.7,28.3,9.2,1176],[4,1170,"Garudacharpalya","RV Road",74.7,27.4,9.2,"Hoodi","RV Road",74.7,28.4,9.2,1186],[4,1180,"Garudacharpalya","RV Road",72.7,26.2,9.2,"Hoodi","RV Road",72.7,27.2,9.2,1196]]};
+const DIRS = ['morning','evening'];
+const TIERS = [{min:75,name:'Seat likely',c:'#A6F8C4'},{min:50,name:'Seat possible',c:'#D2EE8A'},{min:25,name:'Decent standing',c:'#F2D26B'},
+  {min:0.5,name:'Crowded standing',c:'#F9AC75'},{min:-1,name:'Over capacity',c:'#E34948'}];
+const tierOf = i => TIERS.find(t => i >= t.min);
+const fmt = m => String(Math.floor(m/60)).padStart(2,'0') + ':' + String(m%60).padStart(2,'0');
+// row: [day, slot, pE, pX, pMin, pAvg, pWorst, aE, aX, aMin, aAvg, aWorst, pBoard]  pBoard = clock minute you board the train (depart + road + gate + wait)
+document.getElementById('altmin').textContent = P.alt_min; document.getElementById('altmin2').textContent = P.alt_min;
+document.getElementById('capnote').textContent = `${P.cap.seats} seats per train, standing room ${P.cap.standMult} x seats`;
+document.getElementById('tiers').innerHTML = TIERS.map(t => `<span><b style="background:${t.c}"></b>${t.name}</span>`).join('');
+
+document.getElementById('heat').innerHTML = DIRS.map(dir => {
+  const rows = P[dir], slots = [...new Set(rows.map(r => r[1]))].sort((a,b) => a-b), by = {};
+  rows.forEach(r => by[r[0] + '|' + r[1]] = r);
+  const body = P.days.map((d, j) => `<div class="prow"><span>${d}</span><div class="pcells">` + slots.map(s => {
+    const r = by[j + '|' + s];
+    return r ? `<i style="background:${tierOf(r[5]).c}" data-tip="<b>${d}</b><br>Leave home ${fmt(s)}<br>Board ${r[2]} ~${fmt(r[12])}<br>Get off at ${r[3]}<br>${r[4]} min door to desk<br>${tierOf(r[5]).name} · seat score ${Math.round(r[5])}"></i>` : '<i></i>';
+  }).join('') + '</div></div>').join('');
+  const step = Math.ceil(slots.length / 6), marks = slots.filter((_, i) => i % step === 0);
+  return `<div><h4 class="${dir[0]}">${dir} · quickest pick</h4>${body}<div class="pticks"><span></span><div>${marks.map(s => `<span>${fmt(s)}</span>`).join('')}</div></div></div>`;
+}).join('');
+
+const share = (rows, ix) => TIERS.map(t => rows.filter(r => tierOf(r[ix]).name === t.name).length / rows.length);
+const barHtml = sh => '<div class="bar">' + sh.map((v, i) => `<i style="width:${v*100}%;background:${TIERS[i].c}" data-tip="${TIERS[i].name}: ${(v*100).toFixed(0)}% of departure times"></i>`).join('') + '</div>';
+const pct = sh => '<div class="lab">' + sh.map((v, i) => v ? `${TIERS[i].name} ${(v*100).toFixed(0)}%` : '').filter(Boolean).join(' · ') + '</div>';
+document.getElementById('bars').innerHTML = DIRS.map(dir => {
+  const a = share(P[dir], 5), b = share(P[dir], 10);
+  return `<div><h4 class="${dir[0]}">${dir}</h4>${barHtml(a)}${pct(a)}<div style="height:.8rem"></div>${barHtml(b)}${pct(b)}</div>`;
+}).join('');
+
+const avg = a => a.reduce((x, y) => x + y, 0) / (a.length || 1);
+document.getElementById('trade').innerHTML = DIRS.map(dir => {
+  const rows = P[dir], better = rows.filter(r => r[10] > r[5] + 0.5);
+  const line = (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`;
+  const byDay = P.days.map((d, j) => { const rr = rows.filter(r => r[0] === j); return line(d, `${avg(rr.map(r => r[4])).toFixed(1)} min · seat score ${avg(rr.map(r => r[5])).toFixed(0)} → ${avg(rr.map(r => r[10])).toFixed(0)}`); }).join('');
+  return `<div><h4 class="${dir[0]}">${dir}</h4><table>` +
+    line('Departure times with a calmer option', `${better.length} of ${rows.length}`) +
+    line('Extra minutes it costs, on average', better.length ? avg(better.map(r => r[9] - r[4])).toFixed(1) : '–') +
+    line('Seat score gained, on average', better.length ? '+' + avg(better.map(r => r[10] - r[5])).toFixed(0) : '–') +
+    `<tr><th>Day</th><th>quickest journey · seat score, quickest → calmer</th></tr>${byDay}</table></div>`;
+}).join('');
+
+document.getElementById('stations').innerHTML = DIRS.map(dir => {
+  const rows = P[dir], ent = {}, ext = {}, total = rows.length;
+  rows.forEach(r => { (ent[r[2]] = ent[r[2]] || []).push(r); (ext[r[3]] = ext[r[3]] || []).push(r); });
+  const tbl = (label, m) => `<table><tr><th>${label}</th><th>days</th><th>slots</th><th>avg seat score</th></tr>` +
+    Object.entries(m).sort((a, b) => b[1].length - a[1].length).map(([n, rr]) =>
+      `<tr><td>${n}</td><td>${new Set(rr.map(r => r[0])).size}/5</td><td>${rr.length}/${total}</td><td>${avg(rr.map(r => r[5])).toFixed(0)}</td></tr>`).join('') + '</table>';
+  return `<div><h4 class="${dir[0]}">${dir}</h4>${tbl('Boarding station', ent)}${tbl('Exit station', ext)}</div>`;
+}).join('');
+
+(function(){
+  var tip=document.createElement('div'); tip.id='tip'; document.body.appendChild(tip);
+  document.addEventListener('mouseover',function(e){
+    var t=e.target.closest('[data-tip]'); if(!t){ tip.style.display='none'; return; }
+    tip.innerHTML=t.getAttribute('data-tip'); tip.style.display='block';
+    var r=t.getBoundingClientRect(), w=tip.offsetWidth, h=tip.offsetHeight, y=window.scrollY;
+    var below=r.top+r.height/2<window.innerHeight/2;
+    tip.style.left=Math.max(0,Math.min(window.innerWidth-w,r.left+r.width/2-w/2))+'px';
+    tip.style.top=(below?r.bottom+y+6:r.top+y-h-6)+'px';
+  });
+  document.addEventListener('mouseleave',function(){ tip.style.display='none'; });
+})();
+</script>
+<script>
+(function(){
+  var id=new URLSearchParams(location.search).get('fig');
+  if(!id) return;
+  var t=document.getElementById(id); if(!t) return;
+  var f=t.closest('figure')||t;
+  document.querySelectorAll('.wrap > *').forEach(function(el){ if(el!==f) el.classList.add('emb-hide'); });
+  document.querySelectorAll('section').forEach(function(sec){ if(!sec.contains(f)) sec.classList.add('emb-hide'); });
+  function send(){
+    var h=Math.ceil(document.documentElement.getBoundingClientRect().height);
+    parent.postMessage({fig:id,h:h},'*');
+  }
+  window.addEventListener('load',function(){ send(); setTimeout(send,400); });
+  if('ResizeObserver' in window) new ResizeObserver(send).observe(f);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prakriti vs Traffic: The Pick</title>
+<meta name="description" content="How crowded is the quickest metro journey, and what do a few extra minutes buy?">
+<meta property="og:title" content="Prakriti vs Traffic: The Pick">
+<meta property="og:description" content="How crowded is the quickest metro journey, and what do a few extra minutes buy?">
+<meta property="og:type" content="article">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/series.css">
+</head>
+<body class="tight">
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#question">The Question</a></li>
+    <li><a href="#changed">The Method</a></li>
+    <li><a href="#race">The Experiment</a></li>
+    <li><a href="#found">Findings</a></li>
+    <li><a href="#gaps">Limitations</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Prakriti vs Traffic: Part 4</h1>
+    <p class="standfirst">What if the quickest metro journey isn&#8217;t the one with a seat?</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span> 7TH NOVEMBER, 2026.</span></p>
+  </div>
+</header>
+
+<section id="question">
+  <div class="wrap">
+    <p class="lead">In <a href="/work/prakriti-vs-traffic/part-3/">Part 3</a>, I let the algorithm pick the quickest route every day. But quickest isn&#8217;t the same as comfortable. What if the fastest train is also the most crowded one?</p>
+
+    <p>The metro doesn&#8217;t feel the same at every hour, or on every stretch of the line. So this time, I asked a different question of the same race: how crowded is the winning journey, and what would a few extra minutes buy me?</p>
+
+    <blockquote class="pull">
+      <p>The quickest journey and the most comfortable one aren&#8217;t always the same journey.</p>
+    </blockquote>
+  </div>
+</section>
+
+<section id="changed">
+  <div class="wrap">
+    <h2>The Method</h2>
+
+    <p>The race itself is unchanged: the same stations, the same 56 routes for every departure time. What&#8217;s new is that every train on every route now carries a crowding score.</p>
+
+    <ul>
+      <li><b class="tag">The pick</b> At each day and departure time, the pick is the entry and exit pair with the shortest door-to-desk time.</li>
+      <li><b class="tag">The load</b> Typical weekday ridership: the median number of passengers on each train, on each stretch of the line, from August 2025 data. So the load changes with the time of day, not with the individual day.</li>
+      <li><b class="tag">The capacity</b> 293 seats per train, with standing room for 2.5 times as many.</li>
+      <li><b class="tag">The seat index</b> The crowding of every stretch of the ride, weighted by ride time. 100 is an empty train, 50 is every seat taken, and 0 is seats and standing room both full.</li>
+      <li><b class="tag">The alternative</b> For each departure time, I also found the most comfortable route that costs at most 5 more minutes than the pick.</li>
+    </ul>
+
+    <p>I grouped the seat index into five tiers, from &#8220;Seat likely&#8221; to &#8220;Over capacity&#8221;.</p>
+  </div>
+</section>
+
+<section id="race">
+  <div class="wrap">
+    <h2>The Experiment</h2>
+
+    <p>Same race as before, but now every dot carries the odds of getting a seat. Choose a morning or evening commute, pick a day, and set a departure time. Watch the routes make their way from home to the office, and see how crowded each one is along the way.</p>
+
+    <div class="embed">
+      <iframe src="/assets/prakriti-vs-traffic/part-4/metro-trains-grow.html" title="Interactive: metro trains and who gets a seat, week 3" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <p class="tnote">The animation is sped up, so it doesn&#8217;t run at real-world speed. The times on the board are the calculated journey times.</p>
+
+    <h3>How crowded is the quickest journey?</h3>
+    <p>Each square is one departure time, coloured by how crowded the quickest journey is. Hover a square to see that journey: when I leave home, which station I board at and roughly when I actually step onto the train (my leaving time plus the road, gate and wait), where I get off, and how long the whole trip takes.</p>
+    <iframe class="figembed" data-fig="heat" src="/assets/prakriti-vs-traffic/part-4/crowd-charts.html?fig=heat" title="Chart: seat tier of the quickest journey, by day and departure time" loading="lazy" scrolling="no"></iframe>
+
+    <h3>Where the picks land</h3>
+    <p><b>If I just turn up and take the fastest train, how crowded is it usually?</b> The heatmap above shows every single trip; this boils it down to one picture per commute. Each bar is 100% of the departure times, split by how crowded the train was, so a wider orange band means more crowded trips.</p>
+    <p>There are two bars. The <b>top</b> bar is what you get by always taking the quickest train. The <b>bottom</b> bar is what you&#8217;d get by taking the calmest train that still reaches the office within 5 minutes of the quickest. The gap between the two bars is what a little patience buys you: in the morning the orange shrinks a lot, in the evening it barely moves.</p>
+    <iframe class="figembed" data-fig="bars" src="/assets/prakriti-vs-traffic/part-4/crowd-charts.html?fig=bars" title="Chart: share of departure slots by crowding tier" loading="lazy" scrolling="no"></iframe>
+
+    <h3>What a few minutes buy</h3>
+    <p><b>Is it worth waiting a little for a comfier train?</b> That&#8217;s all this table answers. The fastest train is often the most packed, so for each departure I checked: if I&#8217;m willing to reach the office up to 5 minutes later, can I get a calmer ride instead?</p>
+    <p>The top rows say how often the answer is yes, how many extra minutes that patience costs, and how much calmer the train gets. &#8220;Seat score&#8221; is just a 0&#8211;100 comfort number: higher is calmer, and 50 means every seat is taken. The day-by-day rows show that day&#8217;s typical trip length, then its comfort for the quickest train and for the calmer one, side by side.</p>
+    <p class="tnote">In short: in the morning a couple of minutes buys a real upgrade; in the evening the trains are full either way.</p>
+    <iframe class="figembed" data-fig="trade" src="/assets/prakriti-vs-traffic/part-4/crowd-charts.html?fig=trade" title="Table: what a few extra minutes buy" loading="lazy" scrolling="no"></iframe>
+
+    <h3>Which stations carry the picks</h3>
+    <p><b>The practical takeaway: which handful of stations are actually worth using.</b> Nobody wants to re-run a model every morning. Out of all the stations near home and the office, only a few keep winning, and this is that shortlist, so you can just remember them. In the morning, head for MG Road or Jayanagar and aim for Kundalahalli; in the evening, it&#8217;s almost always Garudacharpalya to RV Road.</p>
+    <p>How to read it: &#8220;Boarding station&#8221; is where I get on the metro, &#8220;Exit station&#8221; is where I get off. <b>Days</b> is how many of the five days that station was the best choice (out of 5), <b>slots</b> is how many departure times it won out of all of them that week (so 37/115 means it was the pick at 37 of the 115 morning departures), and <b>avg seat score</b> is how calm those trips tended to be (0&#8211;100, higher is calmer). One catch worth noticing: the busiest-winning station isn&#8217;t the comfiest. MG Road wins the most mornings but scores only 40, while Trinity rarely wins yet scores 56 when it does.</p>
+    <iframe class="figembed" data-fig="stations" src="/assets/prakriti-vs-traffic/part-4/crowd-charts.html?fig=stations" title="Table: stations carrying the picks" loading="lazy" scrolling="no"></iframe>
+  </div>
+</section>
+
+<section id="found">
+  <div class="wrap">
+    <h2>Findings</h2>
+
+    <p>The mornings and the evenings couldn&#8217;t be more different.</p>
+
+    <p>In the morning, the quickest journey was a mixed bag. Around 15% of picks offered a decent shot at a seat, 45% meant decent standing room, and 40% meant crowded standing. Only 2% were likely to get me a seat.</p>
+
+    <p>A few extra minutes helped. For 102 of the 115 morning departure slots, there was a more comfortable option, costing on average just 1.3 minutes more. Allow up to 5 minutes, and decent standing room rises from 45% to 64% of picks, while crowded standing falls from 40% to 17%.</p>
+
+    <p>The evenings were a different story. Not one evening pick was likely to get me a seat. 80% of them meant crowded standing, and the other 20% decent standing. Extra minutes barely moved the needle: crowded standing only fell from 80% to 77%, even though a more comfortable option existed for 63 of the 84 slots, at an average of about 2 extra minutes.</p>
+
+    <p>So in the mornings, a couple of minutes can buy a noticeably better ride. In the evenings, the trains are simply full.</p>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <h2>Limitations</h2>
+    <p>Of course, this is still an experiment. There are a few things worth keeping in mind.</p>
+
+    <ul>
+      <li><b class="tag">Typical loads</b> The crowding comes from median weekday ridership from August 2025, not from what actually happened on these days. A match day or a rainy evening isn&#8217;t reflected.</li>
+      <li><b class="tag">Assumed capacity</b> The seat index depends on assumptions about seats per train and how many people can stand. Change them, and the tiers shift.</li>
+      <li><b class="tag">Even spread assumed</b> The crowd is spread evenly across all six coaches. In reality some coaches are far busier than others, often the ones near the station entrances and exits, so even a &#8220;seat possible&#8221; train can feel packed right where you&#8217;re standing.</li>
+      <li><b class="tag">Old timetable</b> I&#8217;m still using the unofficial BMRCL GTFS feed dated 17 August 2026, with modelled station-to-station times.</li>
+      <li><b class="tag">Calculated in advance</b> Each journey is calculated once for its departure time. It doesn&#8217;t account for delays or full trains you can&#8217;t board.</li>
+      <li><b class="tag">A small sample</b> Five working days are hardly enough to establish a reliable pattern.</li>
+    </ul>
+
+    <p>For now, the answer is a little more nuanced than &#8220;take the fastest train&#8221;. In the morning, a couple of minutes of patience can mean a more comfortable ride.</p>
+
+    <p style="text-align:left"><a href="/work/prakriti-vs-traffic/part-3/"><b class="tag" style="margin-right:0">&#8592; Back to Part 3</b></a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Loads: median passengers per train on each stretch (ridership August 2025) with the week 3 timetable and road times. Capacity: 293 seats per train, standing room 2.5 x seats.</li>
+      <li>Metro data: unofficial <a href="https://github.com/Vonter/bmrcl-gtfs" target="_blank" rel="noopener">BMRCL GTFS</a> by Vonter, ODbL-1.0. Feed dated 17 August 2026.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('message', function(e){
+  if (!e.data || !e.data.fig || !e.data.h) { return; }
+  var fr = document.querySelector('iframe.figembed[data-fig="' + e.data.fig + '"]');
+  if (fr && e.source === fr.contentWindow) { fr.style.height = e.data.h + 'px'; }
+});
+</script>
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+</body>
+</html>
