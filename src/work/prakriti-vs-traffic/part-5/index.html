@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prakriti vs Traffic: Metro or Auto?</title>
+<meta name="description" content="After four parts of tuning the metro commute, I raced it head to head against just taking an auto the whole way, over two full weeks.">
+<meta property="og:title" content="Prakriti vs Traffic: Metro or Auto?">
+<meta property="og:description" content="After four parts of tuning the metro commute, I raced it head to head against just taking an auto the whole way, over two full weeks.">
+<meta property="og:type" content="article">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/series.css">
+</head>
+<body class="tight">
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#question">The Question</a></li>
+    <li><a href="#changed">The Method</a></li>
+    <li><a href="#race">The Experiment</a></li>
+    <li><a href="#road">The Auto&#8217;s Problem</a></li>
+    <li><a href="#found">Findings</a></li>
+    <li><a href="#gaps">Limitations</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Prakriti vs Traffic: Part 5</h1>
+    <p class="standfirst">After all that, is the metro even worth it &#8212; or should I just take an auto the whole way?</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>16TH NOVEMBER, 2026.</span></p>
+  </div>
+</header>
+
+<section id="question">
+  <div class="wrap">
+    <p class="lead">Four parts in, I&#8217;ve been tuning the metro commute: picking stations, letting the algorithm choose them fresh, scoring how crowded the winning train is. But the whole time, there was an obvious rival I&#8217;d been ignoring &#8212; the thing most people in Bangalore actually do. Skip the metro. Just take an auto, door to door.</p>
+
+    <p>So this time the question is blunt. For the same trip, from my doorstep in <a href="/work/prakriti-vs-traffic/part-2/">Jayanagar</a> to my desk in Whitefield, which one gets me there first: the metro, with all its stations and waits and transfers, or one unbroken drive through traffic?</p>
+
+    <blockquote class="pull">
+      <p>The metro is never just the metro. The auto is never just the distance. The winner is whichever survives the traffic.</p>
+    </blockquote>
+  </div>
+</section>
+
+<section id="changed">
+  <div class="wrap">
+    <h2>The Method</h2>
+
+    <p>Two things change from the earlier parts. First, the metro now has a direct rival on the same map. Second, I stopped trusting a single week.</p>
+
+    <ul>
+      <li><b class="tag">Metro, door to desk</b> The quickest metro chain for each departure, exactly as in Parts 2&#8211;4: the road to a station, the gate, the wait for a train, the ride with any transfer, and the last stretch to the office.</li>
+      <li><b class="tag">Auto, direct</b> One unbroken drive from my door to my desk, no trains at all. It uses the same live, traffic-aware road times from the Google Routes API that the feeder legs use, so the two sides are measured the same way.</li>
+      <li><b class="tag">Two weeks, averaged</b> Instead of one week, this combines week 2 (12&#8211;16 October) and week 3 (26&#8211;30 October): ten working days in all. &#8220;Mon&#8211;Fri&#8221; averages all ten; each weekday button averages that weekday across both weeks. Stations are matched by their code, so the two weeks line up even where a station&#8217;s name differs.</li>
+      <li><b class="tag">The winner</b> For every departure time, whichever option reaches the desk first. That&#8217;s the verdict on the board.</li>
+    </ul>
+
+    <p>The road was sampled every ten minutes, in a morning window (07:00&#8211;11:30) and an evening window (17:00&#8211;20:30), across both weeks. Averaging ten weekdays means one unusually bad jam, or one empty-road morning, can&#8217;t decide the whole contest on its own.</p>
+  </div>
+</section>
+
+<section id="race">
+  <div class="wrap">
+    <h2>The Experiment</h2>
+
+    <p>Here it is, head to head. The <b style="color:#F9AC75;font-weight:500">orange</b> dot is the auto taking the direct drive; the <b style="color:#A6F8C4;font-weight:500">mint</b> dots are the metro routes, each via a different pair of stations. Choose a morning or evening commute, pick a day, set a departure time, and race. The board on the left tracks who arrives, and the verdict declares the winner and by how much.</p>
+
+    <div class="embed">
+      <iframe src="/assets/prakriti-vs-traffic/part-5/metro-vs-auto.html" title="Interactive race: metro versus a direct auto, Jayanagar to Whitefield, weeks 2 and 3" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <p class="tnote">The animation is sped up, so it doesn&#8217;t run at real-world speed. The times on the board are the calculated door-to-desk times, averaged over the ten weekdays.</p>
+  </div>
+</section>
+
+<section id="road">
+  <div class="wrap">
+    <h2>The Auto&#8217;s Problem</h2>
+
+    <p>The auto has one real weakness, and it isn&#8217;t the average. It&#8217;s the spread. A direct drive is at the mercy of whatever the road is doing that minute, while the metro&#8217;s core &#8212; the ride itself &#8212; runs to a timetable and barely moves. These diagrams zoom in on one of the two weeks, week 3 (26&#8211;30 October), to show how the road behaves across a working week.</p>
+
+    <h3>How long is the direct drive, really?</h3>
+    <p>The solid line is the drive with live traffic; the dotted line is the same route with no traffic at all. The shaded gap between them is the delay the road adds. Slide to a single day, or back to the whole week.</p>
+    <iframe class="figembed" data-fig="f1" src="/assets/prakriti-vs-traffic/part-5/commute-sliders.html?fig=f1" title="Chart: direct drive time, live versus free-flow" loading="lazy" scrolling="no"></iframe>
+
+    <h3>When is traffic worst?</h3>
+    <p>The congestion ratio is the live time divided by the free-flow time, so 2.0 means the drive takes twice as long as an empty road would. This is when a direct auto hurts most &#8212; and when the metro&#8217;s fixed ride looks best.</p>
+    <iframe class="figembed" data-fig="f2" src="/assets/prakriti-vs-traffic/part-5/commute-sliders.html?fig=f2" title="Chart: direct-route congestion ratio by time of day" loading="lazy" scrolling="no"></iframe>
+
+    <h3>How much buffer does the drive need?</h3>
+    <p>The Buffer Time Index asks how much extra time you&#8217;d have to leave, beyond the average, to still arrive on time on a bad day. A higher bar means a less predictable leg: more padding, more guessing. It&#8217;s the hidden cost of a journey that lives entirely on the road.</p>
+    <iframe class="figembed" data-fig="f9" src="/assets/prakriti-vs-traffic/part-5/commute-sliders.html?fig=f9" title="Chart: buffer time index per leg" loading="lazy" scrolling="no"></iframe>
+
+    <p>There&#8217;s a <a href="/assets/prakriti-vs-traffic/part-5/commute-sliders.html" target="_blank" rel="noopener">fuller set of road diagrams</a> &#8212; per-segment delay, the spread by time of day, the metro feeder times &#8212; if you want to dig in.</p>
+  </div>
+</section>
+
+<section id="found">
+  <div class="wrap">
+    <h2>Findings</h2>
+
+    <p>It depends on the hour &#8212; but the evening has a clear winner. Across the ten working days and every departure time, the metro reached my desk first in <b>77% of evening departures</b>, typically about twelve minutes ahead. The morning was a much closer contest: the metro won roughly <b>58% of the time</b>, and by a slimmer five-minute margin.</p>
+
+    <p>The metro&#8217;s real advantage is consistency. Most of its journey is the ride, and the ride runs to a timetable, so from day to day it barely changes. What varies is only the edges: how long the road to the station takes, and how long you wait for a train. The direct auto has no such anchor &#8212; the whole trip is road, so the whole trip swells and shrinks with the traffic.</p>
+
+    <p>That gap is really a gap in reliability. The metro&#8217;s door-to-desk time stayed in a fairly tight band &#8212; roughly 59 to 100 minutes in the morning, 72 to 95 in the evening. The direct auto swung much wider: from 46 minutes on a clear road to 112 in the morning, and as far as 125 in the evening rush. On its best day the auto beats the metro outright. The trouble is you can&#8217;t know in advance which day that will be.</p>
+
+    <p>So the auto&#8217;s weakness isn&#8217;t its average, it&#8217;s the buffer you need for a bad day. The metro asks for a fixed tax of feeders and waiting, and hands back a time you can actually plan your morning around.</p>
+
+    <p class="tnote">I&#8217;m still measuring only time here. Fare, comfort, and the simple relief of not driving through it all are a separate question &#8212; and Part 4 already showed the metro&#8217;s &#8220;quickest&#8221; isn&#8217;t always its most comfortable.</p>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <h2>Limitations</h2>
+    <p>As always, this is an experiment, not a verdict for everyone. A few things to keep in mind.</p>
+
+    <ul>
+      <li><b class="tag">Averaged, not lived</b> Every number is an average over ten weekdays across two weeks. A single real day &#8212; your day &#8212; can land well off the average, in either direction.</li>
+      <li><b class="tag">Just one trip</b> This is my doorstep to my desk, Jayanagar to Whitefield. A different origin or destination could flip the result entirely.</li>
+      <li><b class="tag">Time only</b> The race is purely about minutes. It says nothing about fare, crowding, the weather, or how tiring each option is.</li>
+      <li><b class="tag">Modelled metro times</b> Still the unofficial BMRCL GTFS feed dated 17 August 2026, with mostly interpolated station-to-station times, not live train observations.</li>
+      <li><b class="tag">Calculated in advance</b> Each journey is worked out once for its departure time and replayed. It doesn&#8217;t model delays, a train you can&#8217;t board, or a road that changes mid-trip.</li>
+      <li><b class="tag">Auto as driving time</b> The direct auto uses traffic-aware driving times as a proxy. A real auto adds hailing, haggling and pickup time that isn&#8217;t here, and there&#8217;s no separate walking leg.</li>
+    </ul>
+
+    <p style="display:flex;justify-content:space-between;align-items:center">
+      <a href="/work/prakriti-vs-traffic/part-4/"><b class="tag" style="margin-right:0">&#8592; Part 4</b></a>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Road: Google Routes API, traffic-aware driving times sampled every ten minutes, weeks 2 (12&#8211;16 Oct) and 3 (26&#8211;30 Oct 2026).</li>
+      <li>Metro data: unofficial <a href="https://github.com/Vonter/bmrcl-gtfs" target="_blank" rel="noopener">BMRCL GTFS</a> by Vonter, ODbL-1.0. Feed dated 17 August 2026.</li>
+      <li>Metro routing is an earliest-arrival search over the timetable, with a four-minute minimum interchange.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('message', function(e){
+  if (!e.data || !e.data.fig || !e.data.h) { return; }
+  var fr = document.querySelector('iframe.figembed[data-fig="' + e.data.fig + '"]');
+  if (fr && e.source === fr.contentWindow) { fr.style.height = e.data.h + 'px'; }
+});
+</script>
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+</body>
+</html>
