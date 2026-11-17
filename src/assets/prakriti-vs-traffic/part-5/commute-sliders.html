@@ -467,7 +467,7 @@ function weekPanel(svg, o){
 
 /* ---------- Fig 01: drive time across the week ---------- */
 const f1Max = Math.ceil(d3.max(direct, r => r.dur/60) / 10) * 10;
-makeFigure('f1', dayStops, w => w < 700 ? 520 : 470, (svg, w, h, i) => {
+makeFigure('f1', dayStops, w => w < 480 ? 400 : w < 700 ? 520 : 470, (svg, w, h, i) => {
   const ml = 40, mr = 8, slot = h/2, top = 22, bot = 28;
   const y = d3.scaleLinear([0, f1Max], [slot - top - bot - 12, 0]);
   const out = [];
@@ -507,7 +507,7 @@ makeFigure('f1', dayStops, w => w < 700 ? 520 : 470, (svg, w, h, i) => {
 /* ---------- Fig 02: congestion ratio by time of day ---------- */
 const f2Min = Math.min(1, d3.min(direct, r => r.ratio));
 const f2Max = Math.ceil(d3.max(direct, r => r.ratio) * 5) / 5;
-makeFigure('f2', binStops, w => w < 700 ? 560 : 400, (svg, w, h, i) => {
+makeFigure('f2', binStops, w => w < 480 ? 440 : w < 700 ? 560 : 400, (svg, w, h, i) => {
   const P = twoPanels(w, h, 40, 8, 30);
   const out = [];
   DIRS.forEach((dir, di) => {
@@ -554,7 +554,7 @@ makeFigure('f2', binStops, w => w < 700 ? 560 : 400, (svg, w, h, i) => {
 /* ---------- Fig 03: weekday average ---------- */
 const dayAvg = DIRS.map(dir => DAYS.map((_, d) => mean(direct.filter(r => r.dir === dir && r.day === d).map(r => r.dur/60))));
 const weekAvg = dayAvg.map(a => mean(a));
-makeFigure('f3', weekdayStops, w => w < 700 ? 340 : 400, (svg, w, h, i) => {
+makeFigure('f3', weekdayStops, w => w < 480 ? 300 : w < 700 ? 340 : 400, (svg, w, h, i) => {
   const ml = 40, mr = 8, top = 16, bot = 30, pw = w - ml - mr, ph = h - top - bot;
   const g = svg.append('g').attr('transform', `translate(${ml},${top})`);
   const y = d3.scaleLinear([0, Math.ceil(d3.max(dayAvg.flat())/10)*10], [ph, 0]);
@@ -754,7 +754,7 @@ const binStat = (leg, di, b, key) => pctStats(legRows(leg, di).filter(r => b < 0
 const bti = s => s ? (s.p95 - s.avg) / s.avg : NaN;
 const legStops = d3.range(0, 10).map(l => ({a: l === 0 ? 'Direct' : String(l)}));
 
-makeFigure('f8', legStops, w => w < 700 ? 380 : 420, (svg, w, h, i, tg) => {
+makeFigure('f8', legStops, w => w < 480 ? 320 : w < 700 ? 380 : 420, (svg, w, h, i, tg) => {
   const dir = DIRS[tg], di = tg, col = COL[dir], WL = WLEN[di];
   const ml = 40, mr = 8, top = 22, bot = 28, pw = w - ml - mr, ph = h - top - bot;
   const g = svg.append('g').attr('transform', `translate(${ml},${top})`);
