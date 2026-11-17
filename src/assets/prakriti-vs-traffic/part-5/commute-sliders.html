@@ -449,7 +449,7 @@ function weekPanel(svg, o){
   X.seps.forEach(x => g.append('line').attr('x1',x).attr('x2',x).attr('y1',0).attr('y2',o.ph).attr('stroke',GRID));
   X.ticks.forEach(t => g.append('text').attr('class','cat').attr('x',t.x).attr('y',o.ph+16).attr('text-anchor','middle').text(t.t));
   g.append('text').attr('class','ptitle').attr('x',0).attr('y',-9).text(o.title);
-  if (o.note) g.append('text').attr('class','pnote').attr('x',o.pw).attr('y',-9).attr('text-anchor','end').text(o.note);
+  if (o.note && o.pw > 420) g.append('text').attr('class','pnote').attr('x',o.pw).attr('y',-9).attr('text-anchor','end').text(o.note);
   o.paint(g, X);
   const pts = o.pts;
   const rule = g.append('line').attr('y1',0).attr('y2',o.ph).attr('stroke',INK).attr('stroke-opacity',.5).style('display','none');
@@ -467,7 +467,12 @@ function weekPanel(svg, o){
 
 /* ---------- Fig 01: drive time across the week ---------- */
 const f1Max = Math.ceil(d3.max(direct, r => r.dur/60) / 10) * 10;
-makeFigure('f1', dayStops, w => w < 480 ? 400 : w < 700 ? 520 : 470, (svg, w, h, i) => {
+makeFigure('f1', dayStops, w => {
+  if (w >= 700) return 470;
+  if (w >= 480) return 520;
+  const pw = w - 48, cw = pw * 0.17, ph = Math.max(50, cw * 1.2), slot = ph + 62;
+  return Math.round(2 * slot);
+}, (svg, w, h, i) => {
   const ml = 40, mr = 8, slot = h/2, top = 22, bot = 28;
   const y = d3.scaleLinear([0, f1Max], [slot - top - bot - 12, 0]);
   const out = [];

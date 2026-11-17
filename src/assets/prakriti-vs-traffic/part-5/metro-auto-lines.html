@@ -92,70 +92,83 @@ const hideTip = () => { tip.style.display = "none"; };
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 
 function panel(week, d, host){
-  const days = week.days, W = Math.max(280, host.clientWidth), H = W < 640 ? 200 : 250;
-  const m = {l:34, r:6, t:8, b:20}, pw = W - m.l - m.r, ph = H - m.t - m.b, cw = pw / days.length, YM = ymax[d.key];
-  const y = v => m.t + ph - v / YM * ph;
-  const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":`${d.name} door-to-door time, metro against auto`}, host);
-  for (let v = 0; v <= YM; v += 20){
-    el("line", {x1:m.l, x2:W - m.r, y1:y(v), y2:y(v), stroke:"var(--grid)"}, svg);
-    el("text", {x:m.l - 6, y:y(v) + 3.5, "text-anchor":"end"}, svg).textContent = v;
-  }
-  const dayGroups = [];
-  days.forEach((day, di) => {
-    const g = el("g", {}, svg);
-    dayGroups.push(g);
-    const x0 = m.l + di * cw, x = s => x0 + 3 + (s - d.start) / (d.end - d.start) * (cw - 6);
-    if (di) el("line", {x1:x0, x2:x0, y1:m.t, y2:m.t + ph, stroke:"var(--grid)"}, g);
-    el("text", {x:x0 + cw / 2, y:H - 6, "text-anchor":"middle", class:"day"}, g).textContent = day.name.split(" ")[0];
-    const pts = day[d.key];
-    // shaded gap, split where the two lines cross
-    for (let i = 1; i < pts.length; i++){
-      const a = pts[i-1], b = pts[i]; if (a[2] == null || b[2] == null) continue;
-      const d0 = a[1] - a[2], d1 = b[1] - b[2];                       // > 0: metro quicker
-      const seg = (xa, xb, ya1, yb1, ya2, yb2, metroQuick) => el("path", {d:`M${xa},${y(ya1)}L${xb},${y(yb1)}L${xb},${y(yb2)}L${xa},${y(ya2)}Z`, fill:metroQuick ? "var(--metro)" : "var(--auto)", "fill-opacity":.22}, g);
-      if (d0 * d1 >= 0) seg(x(a[0]), x(b[0]), a[1], b[1], a[2], b[2], d0 + d1 >= 0);
-      else {
-        const u = d0 / (d0 - d1), xc = x(a[0]) + u * (x(b[0]) - x(a[0])), yc = a[1] + u * (b[1] - a[1]);
-        seg(x(a[0]), xc, a[1], yc, a[2], yc, d0 > 0); seg(xc, x(b[0]), yc, b[1], yc, b[2], d1 > 0);
-      }
-    }
-    const path = (idx, color) => {
-      let dstr = "", pen = false;
-      pts.forEach(p => { if (p[idx] == null){ pen = false; return; } dstr += (pen ? "L" : "M") + x(p[0]).toFixed(1) + "," + y(p[idx]).toFixed(1); pen = true; });
-      el("path", {d:dstr, fill:"none", stroke:color, "stroke-width":1.3, "stroke-linejoin":"round", "stroke-linecap":"round"}, g);
-    };
-    path(1, "var(--auto)"); path(2, "var(--metro)");
-  });
-  el("line", {x1:m.l, x2:W - m.r, y1:m.t + ph, y2:m.t + ph, stroke:"var(--axis)"}, svg);
-  // hover: crosshair snaps to the nearest reading of the day under the pointer
-  const cross = el("line", {y1:m.t, y2:m.t + ph, stroke:"var(--ink-2)", "stroke-width":1, visibility:"hidden"}, svg);
-  const dotA = el("circle", {r:3.5, fill:"var(--auto)", stroke:"var(--bg)", "stroke-width":2, visibility:"hidden"}, svg);
-  const dotM = el("circle", {r:3.5, fill:"var(--metro)", stroke:"var(--bg)", "stroke-width":2, visibility:"hidden"}, svg);
-  const hit = el("rect", {x:m.l, y:m.t, width:pw, height:ph, fill:"transparent"}, svg);
-  hit.addEventListener("pointermove", ev => {
-    const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width, di = Math.max(0, Math.min(days.length - 1, Math.floor((px - m.l) / cw)));
-    const x0 = m.l + di * cw, pts = days[di][d.key]; let best = 0, bd = 1e9;
-    pts.forEach((p, i) => { const dx = Math.abs(x0 + 3 + (p[0] - d.start) / (d.end - d.start) * (cw - 6) - px); if (dx < bd){ bd = dx; best = i; } });
-    const p = pts[best], cx = x0 + 3 + (p[0] - d.start) / (d.end - d.start) * (cw - 6);
-    cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("visibility", "visible");
-    dotA.setAttribute("cx", cx); dotA.setAttribute("cy", y(p[1])); dotA.setAttribute("visibility", "visible");
-    if (p[2] != null){ dotM.setAttribute("cx", cx); dotM.setAttribute("cy", y(p[2])); dotM.setAttribute("visibility", "visible"); } else dotM.setAttribute("visibility", "hidden");
-    const diff = p[2] == null ? "" : (p[1] - p[2] >= 0 ? `<br>metro quicker by <b class="v" style="font-size:12px">${(p[1] - p[2]).toFixed(0)} min</b>` : `<br>auto quicker by <b class="v" style="font-size:12px">${(p[2] - p[1]).toFixed(0)} min</b>`);
-    showTip(ev, `<div>${esc(days[di].name.split(" ")[0])} &#183; leaves ${fmt(p[0])}</div>` +
-      `<div><span class="k" style="color:var(--metro)"></span><span class="v">${p[2] == null ? "–" : p[2].toFixed(0) + " min"}</span> metro${p[3] ? "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + esc(p[3]) + " &#8594; " + esc(p[4]) : ""}</div>` +
-      `<div><span class="k" style="color:var(--auto)"></span><span class="v">${p[1].toFixed(0)} min</span> auto, direct</div>${diff}`);
-  });
-  hit.addEventListener("pointerleave", () => { hideTip(); [cross, dotA, dotM].forEach(n => n.setAttribute("visibility", "hidden")); });
+  const days = week.days, YM = ymax[d.key];
 
-  return function setDim(selected){
-    dayGroups.forEach((g, di) => g.setAttribute("opacity", selected == null || selected === di ? 1 : .22));
-  };
+  function draw(selected){
+    host.innerHTML = "";
+    const W = Math.max(280, host.clientWidth);
+    const zoomed = selected != null;
+    const m = {l:34, r:6, t:8, b:20}, pw = W - m.l - m.r;
+    const cw = zoomed ? pw : pw / days.length;
+    const H = zoomed
+      ? Math.max(140, Math.min(260, Math.round(pw * 0.42))) + m.t + m.b
+      : (W < 480 ? Math.max(90, Math.round(cw * 1.15)) + m.t + m.b : (W < 640 ? 200 : 250));
+    const ph = H - m.t - m.b;
+    const y = v => m.t + ph - v / YM * ph;
+    const svg = el("svg", {viewBox:`0 0 ${W} ${H}`, role:"img", "aria-label":`${d.name} door-to-door time, metro against auto`}, host);
+    for (let v = 0; v <= YM; v += 20){
+      el("line", {x1:m.l, x2:W - m.r, y1:y(v), y2:y(v), stroke:"var(--grid)"}, svg);
+      el("text", {x:m.l - 6, y:y(v) + 3.5, "text-anchor":"end"}, svg).textContent = v;
+    }
+    const shown = zoomed ? [selected] : days.map((_, k) => k);
+    shown.forEach(di => {
+      const day = days[di];
+      const g = el("g", {}, svg);
+      const x0 = zoomed ? m.l : m.l + di * cw, x = s => x0 + 3 + (s - d.start) / (d.end - d.start) * (cw - 6);
+      if (!zoomed){
+        if (di) el("line", {x1:x0, x2:x0, y1:m.t, y2:m.t + ph, stroke:"var(--grid)"}, g);
+        el("text", {x:x0 + cw / 2, y:H - 6, "text-anchor":"middle", class:"day"}, g).textContent = day.name.split(" ")[0];
+      }
+      const pts = day[d.key];
+      // shaded gap, split where the two lines cross
+      for (let i = 1; i < pts.length; i++){
+        const a = pts[i-1], b = pts[i]; if (a[2] == null || b[2] == null) continue;
+        const d0 = a[1] - a[2], d1 = b[1] - b[2];                       // > 0: metro quicker
+        const seg = (xa, xb, ya1, yb1, ya2, yb2, metroQuick) => el("path", {d:`M${xa},${y(ya1)}L${xb},${y(yb1)}L${xb},${y(yb2)}L${xa},${y(ya2)}Z`, fill:metroQuick ? "var(--metro)" : "var(--auto)", "fill-opacity":.22}, g);
+        if (d0 * d1 >= 0) seg(x(a[0]), x(b[0]), a[1], b[1], a[2], b[2], d0 + d1 >= 0);
+        else {
+          const u = d0 / (d0 - d1), xc = x(a[0]) + u * (x(b[0]) - x(a[0])), yc = a[1] + u * (b[1] - a[1]);
+          seg(x(a[0]), xc, a[1], yc, a[2], yc, d0 > 0); seg(xc, x(b[0]), yc, b[1], yc, b[2], d1 > 0);
+        }
+      }
+      const path = (idx, color) => {
+        let dstr = "", pen = false;
+        pts.forEach(p => { if (p[idx] == null){ pen = false; return; } dstr += (pen ? "L" : "M") + x(p[0]).toFixed(1) + "," + y(p[idx]).toFixed(1); pen = true; });
+        el("path", {d:dstr, fill:"none", stroke:color, "stroke-width":1.3, "stroke-linejoin":"round", "stroke-linecap":"round"}, g);
+      };
+      path(1, "var(--auto)"); path(2, "var(--metro)");
+    });
+    if (zoomed) el("text", {x:m.l, y:H - 6, "text-anchor":"start", class:"day"}, svg).textContent = days[selected].name.split(" ")[0];
+    el("line", {x1:m.l, x2:W - m.r, y1:m.t + ph, y2:m.t + ph, stroke:"var(--axis)"}, svg);
+    // hover: crosshair snaps to the nearest reading of the day under the pointer
+    const cross = el("line", {y1:m.t, y2:m.t + ph, stroke:"var(--ink-2)", "stroke-width":1, visibility:"hidden"}, svg);
+    const dotA = el("circle", {r:3.5, fill:"var(--auto)", stroke:"var(--bg)", "stroke-width":2, visibility:"hidden"}, svg);
+    const dotM = el("circle", {r:3.5, fill:"var(--metro)", stroke:"var(--bg)", "stroke-width":2, visibility:"hidden"}, svg);
+    const hit = el("rect", {x:m.l, y:m.t, width:pw, height:ph, fill:"transparent"}, svg);
+    hit.addEventListener("pointermove", ev => {
+      const r = svg.getBoundingClientRect(), px = (ev.clientX - r.left) * W / r.width;
+      const di = zoomed ? selected : Math.max(0, Math.min(days.length - 1, Math.floor((px - m.l) / cw)));
+      const x0 = zoomed ? m.l : m.l + di * cw, pts = days[di][d.key]; let best = 0, bd = 1e9;
+      pts.forEach((p, i) => { const dx = Math.abs(x0 + 3 + (p[0] - d.start) / (d.end - d.start) * (cw - 6) - px); if (dx < bd){ bd = dx; best = i; } });
+      const p = pts[best], cx = x0 + 3 + (p[0] - d.start) / (d.end - d.start) * (cw - 6);
+      cross.setAttribute("x1", cx); cross.setAttribute("x2", cx); cross.setAttribute("visibility", "visible");
+      dotA.setAttribute("cx", cx); dotA.setAttribute("cy", y(p[1])); dotA.setAttribute("visibility", "visible");
+      if (p[2] != null){ dotM.setAttribute("cx", cx); dotM.setAttribute("cy", y(p[2])); dotM.setAttribute("visibility", "visible"); } else dotM.setAttribute("visibility", "hidden");
+      const diff = p[2] == null ? "" : (p[1] - p[2] >= 0 ? `<br>metro quicker by <b class="v" style="font-size:12px">${(p[1] - p[2]).toFixed(0)} min</b>` : `<br>auto quicker by <b class="v" style="font-size:12px">${(p[2] - p[1]).toFixed(0)} min</b>`);
+      showTip(ev, `<div>${esc(days[di].name.split(" ")[0])} &#183; leaves ${fmt(p[0])}</div>` +
+        `<div><span class="k" style="color:var(--metro)"></span><span class="v">${p[2] == null ? "–" : p[2].toFixed(0) + " min"}</span> metro${p[3] ? "<br>&nbsp;&nbsp;&nbsp;&nbsp;" + esc(p[3]) + " &#8594; " + esc(p[4]) : ""}</div>` +
+        `<div><span class="k" style="color:var(--auto)"></span><span class="v">${p[1].toFixed(0)} min</span> auto, direct</div>${diff}`);
+    });
+    hit.addEventListener("pointerleave", () => { hideTip(); [cross, dotA, dotM].forEach(n => n.setAttribute("visibility", "hidden")); });
+  }
+
+  return draw;
 }
 
-const setters = [];
+const renderers = [];
 
 function render(){
-  const root = $("#root"); root.innerHTML = ""; setters.length = 0;
+  const root = $("#root"); root.innerHTML = ""; renderers.length = 0;
   DATA.weeks.forEach(week => {
     DIRS.forEach(d => {
       const box = document.createElement("div"); box.className = "panel"; root.appendChild(box);
@@ -163,7 +176,7 @@ function render(){
       t.innerHTML = `<span>${d.name} &#183; ${d.sub}</span><span class="key"><span style="color:var(--metro)"><i></i>metro, quickest option</span><span style="color:var(--auto)"><i></i>auto, direct drive</span></span>`;
       box.appendChild(t);
       const host = document.createElement("div"); box.appendChild(host);
-      setters.push(panel(week, d, host));
+      renderers.push(panel(week, d, host));
       let n = 0, mq = 0;
       week.days.forEach(day => day[d.key].forEach(p => { if (p[2] == null) return; n++; if (p[2] < p[1]) mq++; }));
       const r = document.createElement("p"); r.className = "read";
@@ -171,12 +184,11 @@ function render(){
       box.appendChild(r);
     });
   });
-  applyDim(current);
+  renderers.forEach(fn => fn(current));
 }
 
 const dayStops = ["All", ...DATA.weeks[0].days.map(d => d.name.split(" ")[0])];
 let current = null;
-function applyDim(sel){ setters.forEach(fn => fn(sel)); }
 
 (function initSlider(){
   const range = document.querySelector(".dayrange");
@@ -193,7 +205,7 @@ function applyDim(sel){ setters.forEach(fn => fn(sel)); }
     current = k === 0 ? null : k - 1;
     range.value = k;
     [...labels.children].forEach((b, j) => b.setAttribute("aria-current", j === k));
-    hideTip(); applyDim(current); send();
+    hideTip(); renderers.forEach(fn => fn(current)); send();
   }
   range.addEventListener("input", () => set(+range.value));
 })();
