@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prakriti vs Traffic: The Uncertain Commute</title>
+<meta name="description" content="Why does the ETA on a map rarely feel certain? A ten-segment thought experiment exploring how traffic conditions change along a journey and how uncertainty builds up.">
+<meta property="og:title" content="Prakriti vs Traffic: The Uncertain Commute">
+<meta property="og:description" content="A ten-segment thought experiment exploring how traffic conditions change along a journey, and why an ETA is not always the time you arrive.">
+<meta property="og:type" content="article">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/series.css">
+<style>.figembed.fig-heat{height:620px}.figembed.fig-rel{height:580px}</style>
+</head>
+<body class="tight">
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#question">The Question</a></li>
+    <li><a href="#changed">The Method</a></li>
+    <li><a href="#race">The Experiment</a></li>
+    <li><a href="#found">Findings</a></li>
+    <li><a href="#gaps">Limitations</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Prakriti vs Traffic: Part 6</h1>
+    <p class="standfirst">If the map says I’ll reach by 9:00, why don’t I?</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>19TH NOVEMBER, 2026.</span></p>
+  </div>
+</header>
+
+<section id="question">
+  <div class="wrap">
+    <!-- <p class="lead">If the map says I’ll reach by 9:00, why don’t I?</p> -->
+
+    <p>Part 5 compared the metro with a direct auto ride, using the travel time shown by Google Maps. But that estimate is just one number for an entire journey. It doesn't tell me how traffic might change along the way, or how conditions on one stretch could affect the time I reach the next.</p>
+
+    <p>So I wanted to look inside that estimate. What if I followed the journey as it unfolded, checking the traffic conditions at each point along the route rather than treating the entire drive as one continuous trip?</p>
+
+    <p>The route is the same as before: from my doorstep near Tilak Nagar to the office at Earth Centre in Whitefield. I split it into ten segments and built a thought experiment around how a real journey might progress through them. The idea was to understand how changing conditions along the way could make an arrival time less predictable than the initial ETA suggests.</p>
+
+    <blockquote class="pull">
+      <p>An ETA is a snapshot. A commute is a sequence of changing conditions.</p>
+    </blockquote>
+  </div>
+</section>
+
+<section id="changed">
+  <div class="wrap">
+    <h2>The Method</h2>
+
+    <p>Instead of asking how long the entire route would take at the moment I leave, I modelled one hypothetical trip moving through ten consecutive segments. Each segment is checked at the time the trip would be expected to reach it.</p>
+
+    <ul>
+      <li><b class="tag">Ten segments</b> The route is divided into ten parts, in travel order, from Tilak Nagar to Earth Centre. Most run along the Outer Ring Road, passing through Silk Board, HSR Layout, Bellandur and Marathahalli.</li>
+
+      <li><b class="tag">Follow the journey</b> The first segment is checked at the departure time. Its estimated duration determines when the hypothetical trip reaches the second segment. That segment is then checked at its expected arrival time, and the process continues along the route. This means the traffic reading for each stretch reflects when the trip would encounter it, rather than the conditions at the original departure time.</li>
+
+      <li><b class="tag">Measure the slowdown</b> Each segment is compared against its own quickest estimated time, defined here as its 10th-percentile travel time across the ten working days. A slowdown of 2&#215; means that segment is estimated to take twice as long as its quicker baseline.</li>
+
+      <li><b class="tag">Three views, one experiment</b> The analysis looks at three things: how conditions vary along the route, how they change across departure times, and how the sum of the segment estimates compares with a single whole-trip estimate.</li>
+    </ul>
+
+    <p>The data comes from the same two working weeks as Part 5: 12&#8211;16 October and 26&#8211;30 October 2026. Traffic-aware driving times were sampled every ten minutes, across a morning window (07:00&#8211;11:30) and an evening window (17:00&#8211;20:30). Each view can be explored by weekday or across all ten days.</p>
+
+    <p>This is not a recording of an actual vehicle travelling the route. It is a way of approximating a journey through sequential traffic readings, to explore how uncertainty might build as conditions change from one segment to the next.</p>
+  </div>
+</section>
+
+<section id="race">
+  <div class="wrap">
+    <h2>The Experiment</h2>
+
+    <h3>Where along the route does the estimate change?</h3>
+    <p>The map shows the route as ten segments, coloured by <b style="color:#F9AC75;font-weight:500">pressure</b>: how much longer each segment is estimated to take compared with its own quicker baseline. The hotter the segment, the greater the slowdown. Choose a commute and a day, then move the departure-time slider or press play to follow how those conditions change across the route and throughout the day.</p>
+
+    <div class="embed">
+      <iframe src="/assets/prakriti-vs-traffic/part-6/commute-map.html" title="Interactive map: traffic pressure across ten segments of the Tilak Nagar to Whitefield journey" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <p class="tnote">These are Google&#8217;s traffic-aware driving-time estimates for each segment, queried at the hypothetical time the trip would reach it. The quickest baseline is the segment&#8217;s 10th-percentile estimate across the ten working days. It is a relative reference, not a measured free-flow travel time.</p>
+
+    <h3>When does the uncertainty build up?</h3>
+    <p>The heatmap puts all ten segments against all departure times. Each row represents one stretch of road, and each column represents a possible departure time. Reading across a row shows how conditions on that stretch change through the day. Reading down a column gives a snapshot of the conditions a hypothetical trip would encounter across the route. The darker and hotter blocks reveal when particular stretches are more likely to slow the journey down. Dark cells indicate departures for which a segment reading is unavailable.</p>
+    <iframe class="figembed fig-heat" data-fig="heat" src="/assets/prakriti-vs-traffic/part-6/commute-heatmap.html" title="Heatmap: traffic pressure across ten road segments and departure times" loading="lazy"></iframe>
+
+    <h3>How different is the journey from the original ETA?</h3>
+    <p>This view checks the segmented thought experiment against the original whole-trip estimate. The solid line is Google's estimate for the entire route, queried in one go. The dashed line is the sum of the ten sequential segment estimates. The shaded gap shows how far apart the two are.</p>
+
+    <p>If the lines track closely, the segmented approach is producing a similar overall travel time to the whole-trip estimate. If they diverge, it shows how much the two ways of estimating the journey differ. Moving through the days also reveals how much the estimates can vary for the same departure time.</p>
+    <iframe class="figembed fig-rel" data-fig="rel" src="/assets/prakriti-vs-traffic/part-6/commute-reliability.html" title="Chart: whole-trip estimate compared with the sum of ten sequential segment estimates" loading="lazy"></iframe>
+  </div>
+</section>
+
+<section id="found">
+  <div class="wrap">
+    <h2>Findings</h2>
+
+    <p>The estimates suggest that the journey does not slow down evenly. A handful of segments account for much of the additional travel time, particularly along the Outer Ring Road through Silk Board, HSR Layout and Bellandur. These stretches can take twice as long as their quicker baseline during peak periods, while the shorter sections near home and the office show less variation.</p>
+
+    <p>That points to something more interesting than distance. The route covers the same kilometres, but the estimated time can change substantially depending on when the journey begins and what conditions it encounters along the way. The uncertainty is concentrated on particular stretches, rather than being spread evenly across the entire drive.</p>
+
+    <p>The heatmap also shows that congestion follows a daily pattern. There are departure windows when several segments are under pressure at once, and quieter periods on either side. On a route with limited alternatives to the Outer Ring Road, shifting the departure time could matter as much as changing the route itself.</p>
+
+    <p>The final comparison checks whether the sequential approach tells a similar overall story to the whole-trip estimate. Where the two track closely, the ten-segment model provides a useful way to unpack the journey. Where they differ, it is a reminder that estimating a trip one stretch at a time is not identical to estimating the entire route in one go.</p>
+
+    <p>And that is the uncertainty I wanted to explore. The ETA on the screen is a single estimate, but the journey it represents is made up of many changing conditions. A small difference in when the trip reaches a particular stretch can change the estimate for the rest of the journey. The result is an arrival time that is harder to pin down than the number on the map makes it seem.</p>
+
+    <p class="tnote">This experiment helps illustrate how travel-time estimates can vary along a route. It does not establish the actual arrival-time error of Google Maps or predict the time of a specific real-world commute.</p>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <h2>Limitations</h2>
+    <p>This is a thought experiment designed to approximate how a journey might unfold. It is useful for exploring patterns in traffic estimates, but it is not a record of an actual commute. A few things to keep in mind.</p>
+
+    <ul>
+      <li><b class="tag">A simulated journey</b> The ten segments are followed sequentially using estimated travel times. No vehicle was tracked along the route, so the analysis cannot tell us exactly when I would arrive in real life.</li>
+
+      <li><b class="tag">Approximate segments</b> The route is divided into ten convenient sections, labelled by nearby landmarks. These are not official road boundaries, and the join points are approximate.</li>
+
+      <li><b class="tag">Quickest is relative</b> The quickest time is the 10th-percentile estimate for each segment across ten working days. It is not a true free-flow speed. If a stretch was never clear during the sample period, its baseline will reflect that.</li>
+
+      <li><b class="tag">Estimates, not observations</b> The travel times come from Google&#8217;s traffic-aware driving estimates. They are not measured vehicle speeds or actual segment travel times. The whole-trip estimate and the sum of the sequential segment estimates are also generated in different ways, so they may not match exactly.</li>
+
+      <li><b class="tag">Driving time only</b> These estimates are used as a proxy for an auto journey. They do not include finding or hailing an auto, negotiating, pickup time or any walking legs.</li>
+
+      <li><b class="tag">A small sample</b> Ten working days across two weeks are enough to explore the shape of the problem, but not to establish reliable traffic patterns for every day, departure time or segment.</li>
+    </ul>
+
+    <p style="display:flex;justify-content:space-between;align-items:center">
+      <a href="/work/prakriti-vs-traffic/part-5/"><b class="tag" style="margin-right:0">&#8592; Part 5</b></a>
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Road: Google Routes API, traffic-aware driving-time estimates sampled every ten minutes, weeks 2 (12&#8211;16 Oct) and 3 (26&#8211;30 Oct 2026).</li>
+      <li>Each segment is queried at the hypothetical time the trip would reach it. A segment&#8217;s quicker baseline is its 10th-percentile estimate across the ten working days.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('message', function(e){
+  var d = e.data;
+  if (!d || !d.fig) { return; }
+  var fr = document.querySelector('iframe.figembed[data-fig="' + d.fig + '"]');
+  if (fr && e.source === fr.contentWindow) { fr.style.height = d.h ? d.h + 'px' : ''; }
+});
+</script>
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+</body>
+</html>
