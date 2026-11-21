@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prakriti vs Traffic: The Signals</title>
+<meta name="description" content="Google Maps says 45 minutes. Does it know I've spent five of them at this signal? Matching Bengaluru Traffic Police signal timing sheets to mapped junctions on the Jayanagar to Whitefield route, and comparing the estimated waits with the delay I observed.">
+<meta property="og:title" content="Prakriti vs Traffic: The Signals">
+<meta property="og:description" content="Eighteen signals, twelve timing matches, and a gap between the wait the signal plans suggest and the delay I observe on the road.">
+<meta property="og:type" content="article">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/assets/css/series.css">
+<style>
+.figembed.fig-funnel{height:900px}.figembed.fig-heat{height:640px}.figembed.fig-cmp{height:1100px}
+.est{color:#A78BFA;font-weight:500}.obs{color:#F9AC75;font-weight:500}
+.eq{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+</style>
+</head>
+<body class="tight">
+
+<nav class="top">
+  <div class="bar"><a href="/">&#8592; Prakriti Srimal</a></div>
+</nav>
+
+<nav id="toc" aria-label="Sections">
+  <ol>
+    <li><a href="#question">The Question</a></li>
+    <li><a href="#changed">The Method</a></li>
+    <li><a href="#race">The Experiment</a></li>
+    <li><a href="#found">Findings</a></li>
+    <li><a href="#gaps">Limitations</a></li>
+    <li><a href="#ahead">Taking It Further</a></li>
+    <li><a href="#appendix">Appendix</a></li>
+  </ol>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <h1>Prakriti vs Traffic: Part 7</h1>
+    <p class="standfirst">Google Maps says 45 minutes. Does it know I&#8217;ve spent five of them at this signal?</p>
+    <p class="byline">Prakriti Srimal &nbsp;&nbsp;&#183;&nbsp;&nbsp; <span>22ND NOVEMBER, 2026.</span></p>
+  </div>
+</header>
+
+<section id="question">
+  <div class="wrap">
+    <p>In Part 6, I broke my commute into ten segments to see how traffic conditions change along the way. It turned out that a few stretches of the Outer Ring Road account for much of the slowdown.</p>
+
+    <p>Looking at those stretches, one thing stood out. They&#8217;re also lined with traffic signals. So I started wondering: how much of the time I&#8217;m losing could actually be spent waiting at red lights?</p>
+
+    <p>Bengaluru Traffic Police publish signal timing sheets as PDFs. They tell you how long each signal phase stays green and how long the full cycle lasts, depending on the time of day. The catch? These PDFs have no coordinates. OpenStreetMap has the signal locations, but no junction names.</p>
+
+    <p>So I had two datasets that described the same junctions in completely different ways, and no obvious way to connect them. The first challenge was figuring out which timing sheet belonged to which signal along my route from Jayanagar to Earth Centre in Whitefield.</p>
+
+    <p>The next challenge was figuring out what those timings could actually tell me. A timing sheet tells me how long a signal is supposed to stay red. It doesn&#8217;t tell me how long I, or anyone else, actually waited there.</p>
+
+    <p>So instead of treating the timings as actual waiting times, I used them to estimate the potential wait at each signal and compared that with the delay I observed on the road.</p>
+
+    <blockquote class="pull">
+      <p>The signal knows how long it stays red. It has no idea how long I&#8217;ve been waiting.</p>
+    </blockquote>
+  </div>
+</section>
+
+<section id="changed">
+  <div class="wrap">
+    <h2>The Method</h2>
+
+    <p>I used the same route as Parts 5 and 6: Jayanagar to Earth Centre, Whitefield, roughly 19.4 km split into nine segments. The morning journey goes towards Whitefield, while the evening journey follows the same route in reverse.</p>
+
+    <p>Here&#8217;s how I put the two datasets together:</p>
+
+    <ul>
+      <li><b class="tag">Finding the signals</b> OpenStreetMap had 1,403 signal nodes across Bengaluru. After removing pedestrian-only crossings, merging nearby signals and filtering for those along my route, I was left with 18.</li>
+
+      <li><b class="tag">Matching the timing sheets</b> The police PDFs had junction names but no coordinates. I matched these names to the OSM signals using nearby roads, places and the approach roads shown in the timing diagrams. Twelve of the 18 signals had a matching timing sheet. Eight matches needed a manual assignment. The remaining six have no timing data, so I&#8217;ve kept them as unknown rather than treating them as zero-delay signals. The full matching process is in Appendix A.</li>
+
+      <li><b class="tag">Estimating the wait</b> Each timing sheet gives me the cycle length (C) and the green time (g) for the approach I&#8217;m interested in. Using these, I calculated two things: the <span class="est">mean delay</span>, <span class="eq">(C &minus; g)&sup2; / 2C</span>, which estimates the average wait for a vehicle arriving at a random point in the cycle with no queue, and the <b>maximum red-phase wait</b>, which is one full red phase, <span class="eq">C &minus; g</span>. These are two different measures, not values to be added together. I&#8217;ve included the calculations by junction and time band in Appendix B.</li>
+
+      <li><b class="tag">Measuring the observed delay</b> I compared these estimates with the drive-time observations from Parts 5 and 6. Observed delay is the difference between the observed drive time and the free-flow time. The data covers weeks 2 and 3, with departures sampled between 07:00 and 10:30 in the morning and 17:00 and 20:30 in the evening. The two weeks are averaged here.</li>
+
+      <li><b class="tag">Putting them side by side</b> Finally, I compared the estimated signal waits with the observed delay, both for individual segments and for the entire route. This helps me see how much of the delay the signal timings could potentially explain. It doesn&#8217;t tell me exactly where every lost minute went.</li>
+    </ul>
+
+    <p>One important distinction: these are estimates based on the signal plans, not measurements of how long a vehicle actually waits at a junction.</p>
+  </div>
+</section>
+
+<section id="race">
+  <div class="wrap">
+    <h2>The Experiment</h2>
+
+    <h3>Where are the signals, and when do they add wait?</h3>
+    <p>I mapped the 18 signals along my route, including the six for which I couldn&#8217;t find timing data.</p>
+
+    <p>You can choose the direction of travel and the departure time, then press play to move through the available time bands. The estimated wait at each signal updates as you go. Click on a signal or segment to see the numbers behind it.</p>
+
+    <div class="embed">
+      <iframe src="/assets/prakriti-vs-traffic/part-7/signal-map.html" title="Interactive map: estimated signal waits along the Jayanagar to Whitefield route, by direction and time" loading="lazy" allow="fullscreen"></iframe>
+    </div>
+    <p class="tnote">The grey rings are signals without a matched timing sheet. Their delay is unknown, not zero. The times in the map are the departure times at which the original drive-time observations were sampled.</p>
+
+    <h3>What I observe versus what the signals explain</h3>
+    <p>Next, I wanted to see how these estimates compare with the delay I actually observe on the road.</p>
+
+    <p>For each segment, I plotted the observed delay alongside the estimated mean signal waits from the signals assigned to it. I also included the maximum red-phase wait, but kept it muted. It&#8217;s the full red phase, not a likely or typical waiting time.</p>
+
+    <p>The chart below the segment comparison looks at the entire route, putting observed journey time, free-flow time and estimated mean signal delay side by side.</p>
+
+    <iframe class="figembed fig-cmp" data-fig="cmp" src="/assets/prakriti-vs-traffic/part-7/signal-vs-observed.html" title="Charts: observed delay against estimated signal delay by segment, and for the whole route" loading="lazy"></iframe>
+  </div>
+</section>
+
+<section id="found">
+  <div class="wrap">
+    <h2>Findings</h2>
+
+    <p>The first thing I noticed was how little the signal estimates explain on some stretches.</p>
+
+    <p>Take the HSR Layout to Bellandur stretch (seg04) in the morning. The signals with available timing data have a combined maximum red-phase wait of about 130 seconds. The observed delay on that segment is about 489 seconds.</p>
+
+    <p>So even if I caught every one of those signals at the worst possible moment, the red lights alone still wouldn&#8217;t explain most of the delay.</p>
+
+    <p>The whole-route comparison was even more interesting. The estimated mean signal delay is about 6.2 minutes in the morning and 4.1 minutes in the evening. But the observed journey is actually longer in the evening: about 93 minutes, compared with 78 minutes in the morning.</p>
+
+    <p>In other words, the signals appear to account for a smaller estimated wait at exactly the time the commute takes longer.</p>
+
+    <p>That doesn&#8217;t mean signals matter less in the evening. The timing sheets only describe fixed signal plans. They don&#8217;t tell me whether a queue takes several green phases to clear, whether neighbouring signals are coordinated, or whether the junction uses adaptive control. There are also fewer signals with usable estimates in the evening, around 7 out of 14 compared with 10 out of 18 in the morning.</p>
+
+    <p>So the interesting part isn&#8217;t that I&#8217;ve found exactly how much time I lose at traffic lights. I haven&#8217;t. It&#8217;s the gap between what the signal timings can explain and what I actually observe on the road.</p>
+
+    <p>I also chose not to turn signal delay into a percentage of the observed delay. The free-flow baseline may already include some time spent at signals, so adding these estimates to it, or treating them as a clean share of the total, would be misleading.</p>
+
+    <p>For now, the timing sheets give me one piece of the puzzle. The queues, coordination and everything happening between signals are still missing.</p>
+  </div>
+</section>
+
+<section id="gaps">
+  <div class="wrap">
+    <h2>Limitations</h2>
+    <p>There are a few things worth keeping in mind before reading too much into these numbers.</p>
+
+    <ul>
+      <li><b class="tag">Not every signal is accounted for</b> Only 12 of the 18 signals have a matched timing sheet. Across the 5,000 weekday observations, 68% have at least one signal estimate. The rest are shown as unknown, not zero.</li>
+
+      <li><b class="tag">The timings are fixed plans</b> The sheets tell me how long each phase stays green and how long the full cycle lasts. They don&#8217;t tell me when a particular cycle starts. Adaptive signals, green waves and police overrides aren&#8217;t captured.</li>
+
+      <li><b class="tag">The mean delay is a model, not an observation</b> It assumes vehicles arrive randomly and that there is no queue. The maximum wait is one full red phase. A vehicle could wait less than the mean if it catches a green wave, or much longer if a queue takes more than one cycle to clear.</li>
+
+      <li><b class="tag">I don&#8217;t always know the exact approach</b> For some junctions, I could identify the road the route uses. For others, I had to use an average across all approaches. Those estimates are marked accordingly.</li>
+
+      <li><b class="tag">Some matches needed a human judgement call</b> Eight of the twelve signal-to-sheet matches were assigned manually, and one automatic match (J D Mara) is still unverified. None have been checked on the ground. The next step would be to visit these junctions or record actual waiting times.</li>
+
+      <li><b class="tag">Some time bands don&#8217;t pass the data checks</b> A few timing sheets contain invalid cycle values, such as a 10-second cycle. These are treated as unavailable rather than zero.</li>
+
+      <li><b class="tag">The numbers don&#8217;t add up neatly</b> The free-flow time may already include some signal stops, so the estimated signal delay isn&#8217;t a separate slice that can simply be added to observed delay.</li>
+
+      <li><b class="tag">The segments are approximate</b> I drew straight lines between route waypoints. A signal near a bend can end up assigned to the neighbouring segment.</li>
+    </ul>
+
+    <p style="display:flex;justify-content:space-between;align-items:center">
+      <a href="/work/prakriti-vs-traffic/part-6/"><b class="tag" style="margin-right:0">&#8592; Part 6</b></a>
+    </p>
+  </div>
+</section>
+
+<section id="ahead">
+  <div class="wrap">
+    <h2>Taking It Further</h2>
+
+    <p>This series started as a thought experiment, and that&#8217;s still what it is. I&#8217;ve been piecing together public datasets, sampled travel times and scheduled services to understand what my commute might look like. Each part has helped me ask a more specific question, but the data has its limits.</p>
+
+    <p>What would it take to move from estimating what happens on the road to actually knowing?</p>
+
+    <ul>
+      <li><b class="tag">Real-time public transport data</b> So far, I&#8217;ve used scheduled metro and bus timings. A live GTFS feed, where available, would show where vehicles actually are and how late they&#8217;re running. That would replace some of the timetable assumptions behind Parts 2 to 5.</li>
+
+      <li><b class="tag">Actual crowding data</b> The crowding in this series is modelled. Anonymised and aggregated travel-card tap-in and tap-out records could show how many people board and alight at each station, and when. That would give me a much better measure of crowding than an estimate.</li>
+
+      <li><b class="tag">Live signal data</b> My signal estimates come from fixed-time plans on paper, and I could only match 12 of the 18 signals. If the traffic authorities make live signal-phase and detector data available, I&#8217;d be able to see actual cycle lengths, red times and coordination between neighbouring junctions. It would also remove much of the manual matching involved here.</li>
+
+      <li><b class="tag">More frequent road observations</b> The drive-time estimates in this series are sampled every ten minutes. Ideally, I&#8217;d refresh each segment every minute, using shorter sections tied to individual junctions. That could help show when a queue starts building up, when a signal failure occurs and how much of a segment&#8217;s delay is concentrated around a junction.</li>
+
+      <li><b class="tag">Modelling how people move</b> Anonymised, aggregated mobile-phone location data and longer historical records could show how movement across the city changes by time and day. With that, a traffic model could start testing what might happen if a signal plan changed, a metro line opened or people shifted their departure times. That would take the analysis from describing delays to exploring what might be causing them.</li>
+    </ul>
+
+    <p>Of course, using travel-card or mobile-phone data would need proper aggregation, anonymisation and privacy safeguards. I&#8217;m interested in how people move across the city, not in tracking individual journeys.</p>
+
+    <p>For now, I&#8217;m working with the data I can get my hands on. The ETA on a map gives me one number, but the journey behind it is made up of a lot of moving parts. The more of those I can observe, the closer I get to understanding where the time actually goes.</p>
+  </div>
+</section>
+
+<section id="appendix">
+  <div class="wrap">
+    <h2>Appendix</h2>
+
+    <h3>A. Matching signals to timing sheets</h3>
+    <p>This was probably the messiest part of the exercise.</p>
+
+    <p>I had two datasets that didn&#8217;t know about each other. OpenStreetMap gave me signal locations, while the Bengaluru Traffic Police PDFs gave me junction names and signal timings.</p>
+
+    <p>The OSM dataset started with 1,403 signal nodes, which I eventually narrowed down to 18 along my route. On the other side, 157 listed PDFs became 1,267 timing rows covering 319 junction names.</p>
+
+    <p>I tried geocoding the junction names, but only 9 of 317 could be placed automatically. So most of the matching came down to comparing the names in the PDFs with nearby roads and places around each OSM signal, and checking the approach roads shown in the timing diagrams.</p>
+
+    <p>Twelve matches survived. Eight were assigned manually and four automatically. I also removed 23 sheet names from the matching process: eight turned out to be the wrong junction, while 15 were replaced by a better match.</p>
+
+    <p>None of these matches have been verified on the ground, so there&#8217;s still some uncertainty in the final set.</p>
+
+    <iframe class="figembed fig-funnel" data-fig="funnel" src="/assets/prakriti-vs-traffic/part-7/signal-funnel.html" title="Two funnels: OpenStreetMap signal nodes and timing-sheet PDFs, and how they were matched" loading="lazy"></iframe>
+
+    <h3>B. Estimated signal delay by junction and time</h3>
+    <p>This heatmap breaks the estimated signal delay down by junction and time band. Each row is a matched junction, ordered along the route, and each column represents a half-hour departure window.</p>
+
+    <p>Hover over a cell to see the full timing record behind it. A hatched cell means the timing band failed a cycle sanity check, so there&#8217;s no usable estimate. It doesn&#8217;t mean the signal has zero delay.</p>
+
+    <p>Mean delay and maximum red-phase wait are kept separate. They&#8217;re different ways of describing the potential wait, not two values to stack together.</p>
+
+    <iframe class="figembed fig-heat" data-fig="heat" src="/assets/prakriti-vs-traffic/part-7/signal-heatmap.html" title="Heatmap: estimated signal delay by junction and time band" loading="lazy"></iframe>
+
+    <p>The estimates aren&#8217;t evenly spread across the route. BTM 16th Main on the Outer Ring Road reaches an estimated mean wait of about 88 seconds in the morning. HSR 14th Main and Devara Beesanahalli also stay relatively high across several time bands, while most other junctions have much lower estimates.</p>
+
+    <p>One more detail: I could identify the route-specific approach for only some junctions. Where that wasn&#8217;t possible, the estimate uses an average across all approaches. Those cells are marked with a small dot.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <ul>
+      <li>Signal timings: Bengaluru City Traffic Police timing sheets, via OpenCity.</li>
+      <li>Signal locations: OpenStreetMap contributors.</li>
+      <li>Map tiles: CARTO.</li>
+      <li>Road travel times: Google Routes API, using traffic-aware driving-time estimates sampled every ten minutes across Week 2 (12&#8211;16 October) and Week 3 (26&#8211;30 October 2026). Observed delay is the observed drive time minus free-flow time.</li>
+    </ul>
+  </div>
+</footer>
+
+<script>
+window.addEventListener('message', function(e){
+  var d = e.data;
+  if (!d || !d.fig) { return; }
+  var fr = document.querySelector('iframe.figembed[data-fig="' + d.fig + '"]');
+  if (fr && e.source === fr.contentWindow) { fr.style.height = d.h ? d.h + 'px' : ''; }
+});
+</script>
+<script>
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var map = {};
+  var targets = links.map(function(a){
+    var el = document.querySelector(a.getAttribute('href'));
+    if (el) { map[el.id] = a; }
+    return el;
+  }).filter(Boolean);
+
+  if (!('IntersectionObserver' in window) || !targets.length) { return; }
+
+  var visible = {};
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){ visible[e.target.id] = e.isIntersecting; });
+    var current = null;
+    for (var i = 0; i < targets.length; i++){
+      if (visible[targets[i].id]) { current = targets[i].id; break; }
+    }
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (current && map[current]) { map[current].classList.add('on'); }
+  }, { rootMargin: '-15% 0px -75% 0px', threshold: 0 });
+
+  targets.forEach(function(t){ obs.observe(t); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signal matching funnel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#000;--panel:#0B1112;--ink:#EEF1EA;--ink-2:#A5B4B1;--ink-3:#81918E;--grid:#1d2626;--axis:#456063;--rule:#263535;
+ --match:#A6F8C4;--est:#A78BFA;--estmute:#6f5fb0;--obs:#F9AC75;--none:#456063;
+ --mono:'Roboto Mono',ui-monospace,Consolas,monospace;--display:'Poppins',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono)}
+body{padding:4px 0 8px}
+html,body{max-width:100%;overflow-x:hidden}
+@media (max-width:640px){
+ .ctl{gap:12px}.g{width:100%}
+ .seg{display:flex;width:100%}.seg button{flex:1 1 0;height:auto;min-height:40px;padding:6px 8px;font-size:10px;letter-spacing:.05em;line-height:1.3;white-space:normal}
+ .legend{font-size:10.5px;gap:6px 16px}.note{font-size:11.5px}
+}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3)}
+.ctl{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-end;margin:0 0 14px}
+.g{display:flex;flex-direction:column;gap:6px}
+.g>label{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);line-height:1}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);background:var(--panel)}
+.seg button{background:none;border:0;color:var(--ink-2);font-family:var(--mono);font-size:11px;letter-spacing:.12em;height:36px;padding:0 13px;cursor:pointer;text-transform:uppercase}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--match);color:#000;font-weight:500}
+button:focus-visible{outline:1px solid var(--match);outline-offset:2px}
+#tip{position:fixed;z-index:30;pointer-events:none;display:none;background:#0B1112f2;border:1px solid var(--axis);padding:9px 11px;font-size:11.5px;line-height:1.55;color:var(--ink-2);max-width:320px}
+#tip b{color:var(--ink);font-weight:500}#tip .k{color:var(--ink-3)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:11px;color:var(--ink-3);margin:12px 0 0;align-items:center}
+.sw{display:inline-block;width:11px;height:11px;vertical-align:-1px;margin-right:6px}
+.note{font-size:12px;line-height:1.7;color:var(--ink-3);margin:12px 0 0}
+.note b{color:var(--ink-2);font-weight:500}
+.eq{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+
+<div id="root"></div>
+
+<script>
+const D={"funnel":{"osm":{"raw_nodes":1403,"pedestrian":47,"vehicle_nodes":1356,"clusters":551,"corridor":24,"after_dedup":18,"dropped_dups":6},"sheets":{"pdfs":157,"downloaded":148,"pdfs_with_rows":145,"timing_rows":1267,"names":319,"geocoded":9,"geocode_attempts":317,"unlocated":276,"kept_near_route":12},"match":{"statuses":{"unique":12},"manual":8,"timed_signals":12,"total_signals":18}}};
+
+const $=(s,r=document)=>r.querySelector(s);
+const NS='http://www.w3.org/2000/svg';
+function el(tag,a,p,t){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;if(p)p.appendChild(e);return e}
+const fmt=(x,d=0)=>x==null||isNaN(x)?'–':Number(x).toFixed(d);
+const hm=s=>{const p=s.split(':');return +p[0]*60+ +p[1]};
+const pad2=n=>String(n).padStart(2,'0');
+const clk=m=>pad2(Math.floor(m/60))+':'+pad2(m%60);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tipEl=$('#tip');
+function showTip(e,h){tipEl.innerHTML=h;tipEl.style.display='block';const w=tipEl.offsetWidth;tipEl.style.left=Math.max(4,Math.min(e.clientX+14,innerWidth-w-8))+'px';tipEl.style.top=(e.clientY+14)+'px'}
+function hideTip(){tipEl.style.display='none'}
+function postH(){try{parent.postMessage({fig:'funnel',h:Math.ceil(document.body.getBoundingClientRect().height)+8},'*')}catch(e){}}
+if(window.ResizeObserver)new ResizeObserver(postH).observe(document.body);addEventListener('load',postH);
+const vw=()=>Math.max(320,Math.min(900,Math.round(document.documentElement.clientWidth)));
+function pressed(g,key){const b=$(g+' button.on');return b?b.dataset[key]:null}
+function tog(g,fn){$(g).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(g).querySelectorAll('button')].forEach(x=>x.classList.toggle('on',x===b));fn()})}
+
+const F=D.funnel,O=F.osm,S=F.sheets,Mt=F.match;
+const osm=[
+ ['Raw OSM signal nodes',O.raw_nodes,'every highway=traffic_signals node in the Bengaluru box'],
+ ['After removing pedestrian-only nodes',O.vehicle_nodes,'&minus;'+O.pedestrian+' pedestrian crossings'],
+ ['Clusters after merging within 50 m',O.clusters,'one point per junction, not per signal head'],
+ ['Within 400 m of the route',O.corridor,'the corridor between Jayanagar and Earth Centre'],
+ ['Final cleaned route signals',O.after_dedup,'&minus;'+O.dropped_dups+' no-timing duplicates within 200 m'],
+ ['With matched timing sheets',Mt.timed_signals,Mt.total_signals-Mt.timed_signals+' signals have no sheet']];
+const max=O.raw_nodes;
+let h='<style>.blk{margin:0 0 34px}.blk h4{font-family:var(--display);font-weight:600;font-size:15px;margin:0 0 4px;color:var(--ink)}.blk .s{font-size:11px;color:var(--ink-3);margin:0 0 14px;letter-spacing:.04em}'
++'.fr{display:grid;grid-template-columns:minmax(150px,290px) 1fr;gap:4px 18px;align-items:center;padding:7px 0;border-bottom:1px solid var(--grid)}'
++'.fr .l{font-size:12px;color:var(--ink-2);line-height:1.4}.fr .l small{display:block;font-size:10.5px;color:var(--ink-3)}'
++'.fr .b{display:flex;align-items:center;gap:12px;min-width:0}.fr .b i{display:block;height:20px;background:var(--axis);flex:none}'
++'.fr.last .b i{background:var(--match)}.fr .v{font-family:var(--display);font-weight:700;font-size:20px;color:var(--ink)}'
++'.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule)}'
++'.tile{background:var(--bg);padding:12px 12px 10px}.tile .v{font-family:var(--display);font-weight:700;font-size:24px;line-height:1.1;color:var(--ink)}.tile .k{font-size:10.5px;color:var(--ink-3);line-height:1.45;margin-top:4px}'
++'.tile.warn .v{color:var(--obs)}'
++'.mt{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}'
++'.stk{display:flex;height:26px;margin:8px 0 8px;gap:2px}.stk i{display:block;height:100%}'
++'@media(max-width:640px){.fr{grid-template-columns:1fr;gap:6px}.tiles{grid-template-columns:repeat(2,1fr)}.mt{grid-template-columns:1fr}.fr .v{font-size:18px}}'
++'.mt .big{font-family:var(--display);font-weight:700;font-size:30px;line-height:1}.mt .cap{font-size:11px;color:var(--ink-3);line-height:1.6}'
++'.mt .cap b{color:var(--ink-2);font-weight:500}.conv{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 14px}</style>';
+h+='<div class="blk"><h4>A &middot; Signal locations (OpenStreetMap)</h4><p class="s">Bar widths are proportional to the initial '+max.toLocaleString()+' nodes.</p>';
+osm.forEach((r,i)=>{const w=Math.max(3,r[1]/max*100);h+='<div class="fr'+(i===osm.length-1?' last':'')+'"><div class="l">'+r[0]+'<small>'+r[2]+'</small></div><div class="b"><i style="width:'+(w*0.7).toFixed(2)+'%;min-width:3px"></i><span class="v">'+r[1].toLocaleString()+'</span></div></div>'});
+h+='</div>';
+h+='<div class="blk"><h4>B &middot; Signal timing sheets (Bengaluru Traffic Police PDFs)</h4><p class="s">A separate source, not a continuation of the funnel above. The PDFs carry no coordinates.</p><div class="tiles">'
++[[S.pdfs,'PDFs listed'],[S.downloaded,'downloaded'],[S.pdfs_with_rows,'with readable rows'],[S.timing_rows.toLocaleString(),'timing rows'],[S.names,'junction names'],[S.geocoded+' of '+S.geocode_attempts,'names geocoded','warn']]
+ .map(t=>'<div class="tile '+(t[2]||'')+'"><div class="v">'+t[0]+'</div><div class="k">'+t[1]+'</div></div>').join('')+'</div></div>';
+h+='<div class="blk"><h4>C &middot; Where the two meet: matching sheets to signals</h4><p class="conv">'+Mt.total_signals+' signals &nbsp;&times;&nbsp; '+S.names+' sheet names &nbsp;&rarr;&nbsp; '+Mt.timed_signals+' matches</p><div class="mt">'
++'<div><div class="big" style="color:var(--match)">'+Mt.timed_signals+'</div><div class="stk"><i style="flex:'+Mt.manual+';background:var(--match)"></i><i style="flex:'+(Mt.timed_signals-Mt.manual)+';background:var(--match);opacity:.4"></i></div><div class="cap"><b>'+Mt.manual+' manual overrides</b> (solid) and <b>'+(Mt.timed_signals-Mt.manual)+' automatic matches</b> (faded): Madiwala, Kadubeesanahalli, Devara Beesanahalli, J D Mara. Manual matches were made from approach roads and nearby places, not checked on the ground.</div></div>'
++'<div><div class="big" style="color:var(--ink-2)">23</div><div class="stk"><i style="flex:8;background:var(--obs)"></i><i style="flex:15;background:var(--axis)"></i></div><div class="cap"><b>23 sheet names removed</b> from signals: <b>8 rejected</b> as the wrong place (amber), <b>15 displaced</b> by a better match (grey).</div></div>'
++'<div><div class="big" style="color:var(--ink-3)">'+(Mt.total_signals-Mt.timed_signals)+'</div><div class="stk"><i style="flex:1;background:var(--none)"></i></div><div class="cap"><b>signals left without timing.</b> They stay on the map as unknowns, never as zero-delay signals.</div></div>'
++'</div></div>';
+$('#root').innerHTML=h;postH();
+
+</script>
+</body>
+</html>

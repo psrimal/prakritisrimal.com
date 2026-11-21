@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Signal estimates versus observed delay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Roboto+Mono:wght@400;500&display=swap">
+<style>
+:root{--bg:#000;--panel:#0B1112;--ink:#EEF1EA;--ink-2:#A5B4B1;--ink-3:#81918E;--grid:#1d2626;--axis:#456063;--rule:#263535;
+ --match:#A6F8C4;--est:#A78BFA;--estmute:#6f5fb0;--obs:#F9AC75;--none:#456063;
+ --mono:'Roboto Mono',ui-monospace,Consolas,monospace;--display:'Poppins',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono)}
+body{padding:4px 0 8px}
+html,body{max-width:100%;overflow-x:hidden}
+@media (max-width:640px){
+ .ctl{gap:12px}.g{width:100%}
+ .seg{display:flex;width:100%}.seg button{flex:1 1 0;height:auto;min-height:40px;padding:6px 8px;font-size:10px;letter-spacing:.05em;line-height:1.3;white-space:normal}
+ .legend{font-size:10.5px;gap:6px 16px}.note{font-size:11.5px}
+}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:var(--mono);font-size:10.5px;fill:var(--ink-3)}
+.ctl{display:flex;flex-wrap:wrap;gap:14px 26px;align-items:flex-end;margin:0 0 14px}
+.g{display:flex;flex-direction:column;gap:6px}
+.g>label{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-3);line-height:1}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--rule);background:var(--panel)}
+.seg button{background:none;border:0;color:var(--ink-2);font-family:var(--mono);font-size:11px;letter-spacing:.12em;height:36px;padding:0 13px;cursor:pointer;text-transform:uppercase}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:var(--match);color:#000;font-weight:500}
+button:focus-visible{outline:1px solid var(--match);outline-offset:2px}
+#tip{position:fixed;z-index:30;pointer-events:none;display:none;background:#0B1112f2;border:1px solid var(--axis);padding:9px 11px;font-size:11.5px;line-height:1.55;color:var(--ink-2);max-width:320px}
+#tip b{color:var(--ink);font-weight:500}#tip .k{color:var(--ink-3)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:11px;color:var(--ink-3);margin:12px 0 0;align-items:center}
+.sw{display:inline-block;width:11px;height:11px;vertical-align:-1px;margin-right:6px}
+.note{font-size:12px;line-height:1.7;color:var(--ink-3);margin:12px 0 0}
+.note b{color:var(--ink-2);font-weight:500}
+.eq{font-family:var(--mono);color:var(--ink);white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="tip"></div>
+
+<div class="ctl">
+ <div class="g"><label>Commute</label><div class="seg" id="perTog">
+  <button data-d="morning" class="on">Morning &middot; to Whitefield</button><button data-d="evening">Evening &middot; to Jayanagar</button></div></div>
+</div>
+<div id="segs"></div>
+<div class="legend" id="segLeg"></div>
+<p class="note">Estimated signal figures are the sum over the signals <b>assigned</b> to each segment that have timing. They are not a breakdown of the observed delay: free-flow time may already include signal stops, and queues are not modelled. Where a segment has signal estimates, its observed delay uses the same observations as those estimates. Segment boundaries are straight lines between waypoints, so a signal near a bend may belong to a neighbouring segment.</p>
+<div style="height:34px"></div>
+<div id="route"></div>
+<div class="legend" id="routeLeg"></div>
+<p class="note" id="routeNote"></p>
+
+<script>
+const D={"allseg":[{"week":"week2","direction":"evening","leg_type":"seg01","n_sig_total":1.0,"n_sig_data":0.0,"observed_delay_s":252.3},{"week":"week2","direction":"evening","leg_type":"seg02","n_sig_total":0.0,"n_sig_data":0.0,"observed_delay_s":142.8},{"week":"week2","direction":"evening","leg_type":"seg03","n_sig_total":0.0,"n_sig_data":0.0,"observed_delay_s":484.0},{"week":"week2","direction":"evening","leg_type":"seg04","n_sig_total":2.0,"n_sig_data":2.0,"observed_delay_s":499.0},{"week":"week2","direction":"evening","leg_type":"seg05","n_sig_total":1.0,"n_sig_data":1.0,"observed_delay_s":428.3},{"week":"week2","direction":"evening","leg_type":"seg06","n_sig_total":1.0,"n_sig_data":0.0,"observed_delay_s":317.7},{"week":"week2","direction":"evening","leg_type":"seg07","n_sig_total":3.0,"n_sig_data":0.0,"observed_delay_s":127.6},{"week":"week2","direction":"evening","leg_type":"seg08","n_sig_total":4.0,"n_sig_data":2.0,"observed_delay_s":83.1},{"week":"week2","direction":"evening","leg_type":"seg09","n_sig_total":2.0,"n_sig_data":2.0,"observed_delay_s":26.4},{"week":"week2","direction":"morning","leg_type":"seg01","n_sig_total":3.0,"n_sig_data":2.4,"observed_delay_s":-46.5},{"week":"week2","direction":"morning","leg_type":"seg02","n_sig_total":4.0,"n_sig_data":2.8,"observed_delay_s":27.0},{"week":"week2","direction":"morning","leg_type":"seg03","n_sig_total":3.0,"n_sig_data":0.8,"observed_delay_s":176.0},{"week":"week2","direction":"morning","leg_type":"seg04","n_sig_total":3.0,"n_sig_data":0.8,"observed_delay_s":348.8},{"week":"week2","direction":"morning","leg_type":"seg05","n_sig_total":1.0,"n_sig_data":0.9,"observed_delay_s":138.6},{"week":"week2","direction":"morning","leg_type":"seg06","n_sig_total":1.0,"n_sig_data":1.0,"observed_delay_s":76.4},{"week":"week2","direction":"morning","leg_type":"seg07","n_sig_total":1.0,"n_sig_data":0.8,"observed_delay_s":106.2},{"week":"week2","direction":"morning","leg_type":"seg08","n_sig_total":1.0,"n_sig_data":1.0,"observed_delay_s":139.3},{"week":"week2","direction":"morning","leg_type":"seg09","n_sig_total":1.0,"n_sig_data":0.0,"observed_delay_s":-20.0},{"week":"week3","direction":"evening","leg_type":"seg01","n_sig_total":1.0,"n_sig_data":0.0,"observed_delay_s":170.1},{"week":"week3","direction":"evening","leg_type":"seg02","n_sig_total":0.0,"n_sig_data":0.0,"observed_delay_s":105.1},{"week":"week3","direction":"evening","leg_type":"seg03","n_sig_total":0.0,"n_sig_data":0.0,"observed_delay_s":482.2},{"week":"week3","direction":"evening","leg_type":"seg04","n_sig_total":2.0,"n_sig_data":2.0,"observed_delay_s":543.7},{"week":"week3","direction":"evening","leg_type":"seg05","n_sig_total":1.0,"n_sig_data":1.0,"observed_delay_s":427.8},{"week":"week3","direction":"evening","leg_type":"seg06","n_sig_total":1.0,"n_sig_data":0.0,"observed_delay_s":355.3},{"week":"week3","direction":"evening","leg_type":"seg07","n_sig_total":3.6,"n_sig_data":0.6,"observed_delay_s":139.8},{"week":"week3","direction":"evening","leg_type":"seg08","n_sig_total":4.0,"n_sig_data":2.0,"observed_delay_s":98.2},{"week":"week3","direction":"evening","leg_type":"seg09","n_sig_total":2.0,"n_sig_data":2.0,"observed_delay_s":38.0},{"week":"week3","direction":"morning","leg_type":"seg01","n_sig_total":3.0,"n_sig_data":2.4,"observed_delay_s":-32.0},{"week":"week3","direction":"morning","leg_type":"seg02","n_sig_total":4.0,"n_sig_data":2.8,"observed_delay_s":82.6},{"week":"week3","direction":"morning","leg_type":"seg03","n_sig_total":3.0,"n_sig_data":0.8,"observed_delay_s":299.0},{"week":"week3","direction":"morning","leg_type":"seg04","n_sig_total":3.0,"n_sig_data":0.8,"observed_delay_s":458.8},{"week":"week3","direction":"morning","leg_type":"seg05","n_sig_total":1.0,"n_sig_data":0.9,"observed_delay_s":162.6},{"week":"week3","direction":"morning","leg_type":"seg06","n_sig_total":1.0,"n_sig_data":1.0,"observed_delay_s":56.5},{"week":"week3","direction":"morning","leg_type":"seg07","n_sig_total":1.0,"n_sig_data":0.8,"observed_delay_s":130.1},{"week":"week3","direction":"morning","leg_type":"seg08","n_sig_total":1.0,"n_sig_data":1.0,"observed_delay_s":154.2},{"week":"week3","direction":"morning","leg_type":"seg09","n_sig_total":1.0,"n_sig_data":0.0,"observed_delay_s":-17.1}],"segs":[{"week":"week2","direction":"evening","leg_type":"seg04","n_sig":2.0,"mean_s":52.0,"max_s":204.0,"observed_delay_s":499.0,"n":110},{"week":"week2","direction":"evening","leg_type":"seg05","n_sig":1.0,"mean_s":74.0,"max_s":176.0,"observed_delay_s":428.0,"n":110},{"week":"week2","direction":"evening","leg_type":"seg08","n_sig":2.0,"mean_s":75.0,"max_s":234.0,"observed_delay_s":83.0,"n":110},{"week":"week2","direction":"evening","leg_type":"seg09","n_sig":2.0,"mean_s":25.0,"max_s":170.0,"observed_delay_s":26.0,"n":110},{"week":"week2","direction":"morning","leg_type":"seg01","n_sig":3.0,"mean_s":89.0,"max_s":326.0,"observed_delay_s":-33.0,"n":110},{"week":"week2","direction":"morning","leg_type":"seg02","n_sig":3.0,"mean_s":117.0,"max_s":343.0,"observed_delay_s":27.0,"n":140},{"week":"week2","direction":"morning","leg_type":"seg03","n_sig":1.0,"mean_s":59.0,"max_s":170.0,"observed_delay_s":213.0,"n":110},{"week":"week2","direction":"morning","leg_type":"seg04","n_sig":1.0,"mean_s":25.0,"max_s":130.0,"observed_delay_s":416.0,"n":110},{"week":"week2","direction":"morning","leg_type":"seg05","n_sig":1.0,"mean_s":46.0,"max_s":169.0,"observed_delay_s":129.0,"n":120},{"week":"week2","direction":"morning","leg_type":"seg06","n_sig":1.0,"mean_s":40.0,"max_s":149.0,"observed_delay_s":76.0,"n":140},{"week":"week2","direction":"morning","leg_type":"seg07","n_sig":1.0,"mean_s":29.0,"max_s":113.0,"observed_delay_s":140.0,"n":110},{"week":"week2","direction":"morning","leg_type":"seg08","n_sig":1.0,"mean_s":13.0,"max_s":66.0,"observed_delay_s":139.0,"n":140},{"week":"week3","direction":"evening","leg_type":"seg04","n_sig":2.0,"mean_s":52.0,"max_s":204.0,"observed_delay_s":544.0,"n":110},{"week":"week3","direction":"evening","leg_type":"seg05","n_sig":1.0,"mean_s":74.0,"max_s":176.0,"observed_delay_s":428.0,"n":110},{"week":"week3","direction":"evening","leg_type":"seg07","n_sig":1.0,"mean_s":75.0,"max_s":220.0,"observed_delay_s":156.0,"n":66},{"week":"week3","direction":"evening","leg_type":"seg08","n_sig":2.0,"mean_s":75.0,"max_s":234.0,"observed_delay_s":98.0,"n":110},{"week":"week3","direction":"evening","leg_type":"seg09","n_sig":2.0,"mean_s":25.0,"max_s":170.0,"observed_delay_s":38.0,"n":110},{"week":"week3","direction":"morning","leg_type":"seg01","n_sig":3.0,"mean_s":89.0,"max_s":326.0,"observed_delay_s":-16.0,"n":110},{"week":"week3","direction":"morning","leg_type":"seg02","n_sig":3.0,"mean_s":117.0,"max_s":343.0,"observed_delay_s":83.0,"n":140},{"week":"week3","direction":"morning","leg_type":"seg03","n_sig":1.0,"mean_s":59.0,"max_s":170.0,"observed_delay_s":372.0,"n":110},{"week":"week3","direction":"morning","leg_type":"seg04","n_sig":1.0,"mean_s":25.0,"max_s":130.0,"observed_delay_s":562.0,"n":110},{"week":"week3","direction":"morning","leg_type":"seg05","n_sig":1.0,"mean_s":46.0,"max_s":169.0,"observed_delay_s":161.0,"n":120},{"week":"week3","direction":"morning","leg_type":"seg06","n_sig":1.0,"mean_s":40.0,"max_s":149.0,"observed_delay_s":56.0,"n":140},{"week":"week3","direction":"morning","leg_type":"seg07","n_sig":1.0,"mean_s":29.0,"max_s":113.0,"observed_delay_s":168.0,"n":110},{"week":"week3","direction":"morning","leg_type":"seg08","n_sig":1.0,"mean_s":13.0,"max_s":66.0,"observed_delay_s":154.0,"n":140}],"direct":[{"week":"week2","direction":"evening","n":110,"observed_min":92.86,"freeflow_min":60.69,"mean_signal_min":3.76,"max_signal_min":13.06,"signals_used":7.0,"signals_on_route":14.0},{"week":"week2","direction":"morning","n":140,"observed_min":74.93,"freeflow_min":63.03,"mean_signal_min":6.15,"max_signal_min":21.4,"signals_used":10.32,"signals_on_route":18.0},{"week":"week3","direction":"evening","n":110,"observed_min":93.4,"freeflow_min":59.17,"mean_signal_min":4.51,"max_signal_min":15.26,"signals_used":7.6,"signals_on_route":14.6},{"week":"week3","direction":"morning","n":140,"observed_min":80.89,"freeflow_min":65.49,"mean_signal_min":6.15,"max_signal_min":21.4,"signals_used":10.32,"signals_on_route":18.0}]};
+
+const $=(s,r=document)=>r.querySelector(s);
+const NS='http://www.w3.org/2000/svg';
+function el(tag,a,p,t){const e=document.createElementNS(NS,tag);for(const k in a)e.setAttribute(k,a[k]);if(t!=null)e.textContent=t;if(p)p.appendChild(e);return e}
+const fmt=(x,d=0)=>x==null||isNaN(x)?'–':Number(x).toFixed(d);
+const hm=s=>{const p=s.split(':');return +p[0]*60+ +p[1]};
+const pad2=n=>String(n).padStart(2,'0');
+const clk=m=>pad2(Math.floor(m/60))+':'+pad2(m%60);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tipEl=$('#tip');
+function showTip(e,h){tipEl.innerHTML=h;tipEl.style.display='block';const w=tipEl.offsetWidth;tipEl.style.left=Math.max(4,Math.min(e.clientX+14,innerWidth-w-8))+'px';tipEl.style.top=(e.clientY+14)+'px'}
+function hideTip(){tipEl.style.display='none'}
+function postH(){try{parent.postMessage({fig:'cmp',h:Math.ceil(document.body.getBoundingClientRect().height)+8},'*')}catch(e){}}
+if(window.ResizeObserver)new ResizeObserver(postH).observe(document.body);addEventListener('load',postH);
+const vw=()=>Math.max(320,Math.min(900,Math.round(document.documentElement.clientWidth)));
+function pressed(g,key){const b=$(g+' button.on');return b?b.dataset[key]:null}
+function tog(g,fn){$(g).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;[...$(g).querySelectorAll('button')].forEach(x=>x.classList.toggle('on',x===b));fn()})}
+
+const SEGMENTS=["Tilak Nagar → JP Nagar","JP Nagar → Silk Board","Silk Board → HSR Layout","HSR Layout → Bellandur","Bellandur","Bellandur → Marathahalli","Marathahalli → Kundalahalli","Kundalahalli → EPIP Zone","EPIP Zone → Earth Centre"];
+const rev=n=>n.includes(' → ')?n.split(' → ').reverse().join(' → '):n;
+const segName=(d,no)=>d==='morning'?SEGMENTS[no-1]:rev(SEGMENTS[9-no]);
+const PER=[['morning','Morning'],['evening','Evening']];
+/* weeks 2 and 3 are averaged (weighted by number of observations where available) */
+function segRow(d,id){const A=D.allseg.filter(r=>r.direction===d&&r.leg_type===id),S=D.segs.filter(r=>r.direction===d&&r.leg_type===id);
+ const a=A.length?{observed_delay_s:A.reduce((x,r)=>x+r.observed_delay_s,0)/A.length,n_sig_total:A[0].n_sig_total,n_sig_data:A.reduce((x,r)=>x+r.n_sig_data,0)/A.length}:null;
+ let s=null;if(S.length){const n=S.reduce((x,r)=>x+r.n,0),w=k=>S.reduce((x,r)=>x+r[k]*r.n,0)/n;s={n_sig:w('n_sig'),mean_s:w('mean_s'),max_s:w('max_s'),observed_delay_s:w('observed_delay_s')}}
+ return {a,s}}
+function routeRow(d){const R=D.direct.filter(r=>r.direction===d),n=R.reduce((x,r)=>x+r.n,0),w=k=>R.reduce((x,r)=>x+r[k]*r.n,0)/n;
+ return {observed_min:w('observed_min'),freeflow_min:w('freeflow_min'),mean_signal_min:w('mean_signal_min'),max_signal_min:w('max_signal_min'),signals_used:w('signals_used'),signals_on_route:w('signals_on_route')}}
+const cnt=x=>x>0?Math.max(1,Math.round(x)):0;
+const C={obs:'#F9AC75',est:'#A78BFA',mute:'#6f5fb0',none:'#456063',ink:'#EEF1EA'};
+function segs(){const d=pressed('#perTog','d');
+ const rows=[];for(let i=1;i<=9;i++){const id='seg0'+i,x=segRow(d,id);rows.push({i,id,a:x.a,s:x.s})}
+ const mx=Math.max(...rows.map(r=>Math.max(r.s?r.s.observed_delay_s:(r.a?r.a.observed_delay_s:0),r.s?r.s.max_s:0)));const xm=Math.ceil(mx/60/2)*2;
+ const W=vw(),sm=W<640,L=sm?2:262,R=sm?58:86,rh=sm?78:62,T=26,H=T+rows.length*rh+8;
+ const O=sm?{lab:14,sub:28,ob:36,ot:47,eb:52,et:61,nd:61}:{lab:17,sub:33,ob:5,ot:16,eb:22,et:31,nd:31};
+ const sx=m=>L+m/xm*(W-L-R);const svg=el('svg',{viewBox:'0 0 '+W+' '+H,role:'img','aria-label':'Observed delay against estimated signal delay for each segment'});
+ for(let v=0;v<=xm;v+=2){el('line',{x1:sx(v),x2:sx(v),y1:T-6,y2:H-8,stroke:'#1d2626'},svg);el('text',{x:sx(v),y:T-12,'text-anchor':'middle'},svg,v)}
+ el('text',{x:W,y:T-12,'text-anchor':'end'},svg,'minutes');
+ rows.forEach((r,k)=>{const y=T+k*rh;
+  el('text',{x:sm?2:0,y:y+O.lab,style:'fill:#EEF1EA'},svg,segName(d,r.i));
+  const nt=r.a?r.a.n_sig_total:0,nd=r.a?r.a.n_sig_data:0;
+  el('text',{x:sm?2:0,y:y+O.sub},svg,nt?nt+(nt>1?' signals, ':' signal, ')+(nd?cnt(nd)+' with timing':'none with timing'):'no signals on this segment');
+  const o=r.s?r.s.observed_delay_s:(r.a?r.a.observed_delay_s:null);
+  if(o!=null){const bar=el('rect',{x:L,y:y+O.ob,width:Math.max(1,sx(Math.max(0,o)/60)-L),height:13,fill:C.obs},svg);
+   bar.addEventListener('mousemove',e=>showTip(e,'<b>'+segName(d,r.i)+'</b> observed delay<br>'+fmt(o/60,1)+' min ('+fmt(o)+' s) = observed drive time minus free-flow'+(o<0?'<br><span class="k">faster than free-flow</span>':'')));bar.addEventListener('mouseleave',hideTip);
+   el('text',{x:sx(Math.max(0,o)/60)+6,y:y+O.ot,style:'fill:#F9AC75'},svg,fmt(o/60,1)+' min')}
+  if(r.s){const mx2=el('rect',{x:L,y:y+O.eb,width:Math.max(1,sx(r.s.max_s/60)-L),height:10,fill:'none',stroke:C.mute,'stroke-dasharray':'3 2'},svg);
+   const mn=el('rect',{x:L,y:y+O.eb,width:Math.max(1,sx(r.s.mean_s/60)-L),height:10,fill:C.est},svg);
+   [mx2,mn].forEach(b=>{b.addEventListener('mousemove',e=>showTip(e,'<b>'+segName(d,r.i)+'</b> assigned signals ('+cnt(r.s.n_sig)+' with timing)<br><span class="k">estimated mean</span> '+fmt(r.s.mean_s/60,1)+' min<br><span class="k">max red-phase wait</span> '+fmt(r.s.max_s/60,1)+' min (a ceiling)'));b.addEventListener('mouseleave',hideTip)});
+   el('text',{x:sx(r.s.mean_s/60)+6,y:y+O.et,style:'fill:#A78BFA'},svg,fmt(r.s.mean_s/60,1));el('text',{x:sx(r.s.max_s/60)+6,y:y+O.et,style:'fill:#6f5fb0'},svg,'max '+fmt(r.s.max_s/60,1))}
+  else{el('text',{x:L+(sm?0:0),y:y+O.nd,style:'fill:#456063'},svg,nt?'no estimate: signals here have no timing sheet':'no signal estimate: no signals assigned')}
+  el('line',{x1:0,x2:W,y1:y+rh-6,y2:y+rh-6,stroke:'#1d2626'},svg)});
+ $('#segs').innerHTML='';$('#segs').appendChild(svg);
+ $('#segLeg').innerHTML='<span><span class="sw" style="background:'+C.obs+'"></span>observed delay (observed minus free-flow)</span><span><span class="sw" style="background:'+C.est+'"></span>estimated signal mean (sum over assigned signals)</span><span><span class="sw" style="border:1px dashed '+C.mute+'"></span>max red-phase wait, a ceiling</span><span><span class="sw" style="background:'+C.none+'"></span>no estimate, not zero</span>';
+ route(d);postH()}
+function route(d){const rows=PER.map(p=>({p,r:routeRow(p[0])}));
+ const W=vw(),sm=W<640,L=sm?2:190,R=sm?60:80,gh=sm?112:96,T=22,H=T+rows.length*gh,xm=100;const sx=m=>L+m/xm*(W-L-R);
+ const svg=el('svg',{viewBox:'0 0 '+W+' '+H,role:'img','aria-label':'Whole-route observed, free-flow and mean signal delay in minutes'});
+ for(let v=0;v<=xm;v+=20){el('line',{x1:sx(v),x2:sx(v),y1:T-6,y2:H,stroke:'#1d2626'},svg);el('text',{x:sx(v),y:T-10,'text-anchor':'middle'},svg,v)}el('text',{x:W,y:T-10,'text-anchor':'end'},svg,'minutes');
+ rows.forEach((o,k)=>{const y=T+k*gh,on=o.p[0]===d,r=o.r;if(on)el('rect',{x:0,y:y-4,width:W,height:gh-8,fill:'#0B1112'},svg);
+  const sig='signals: '+fmt(r.signals_used,1)+' / '+fmt(r.signals_on_route,0);
+  if(sm){el('text',{x:4,y:y+12,style:'fill:#EEF1EA'},svg,o.p[1]);el('text',{x:70,y:y+12},svg,sig)}
+  else{el('text',{x:4,y:y+22,style:'fill:#EEF1EA'},svg,o.p[1]);el('text',{x:4,y:y+38},svg,sig)}
+  const items=[['Observed',r.observed_min,C.obs],['Free-flow',r.freeflow_min,C.none],['Mean signal delay',r.mean_signal_min,C.est]];
+  items.forEach((it,j)=>{const yy=y+(sm?24:4)+j*22;const b=el('rect',{x:L,y:yy,width:Math.max(2,sx(it[1])-L),height:15,fill:it[2]},svg);
+   b.addEventListener('mousemove',e=>showTip(e,'<b>'+o.p[1]+'</b><br>'+it[0]+': '+fmt(it[1],1)+' min'+(it[0]==='Observed'?'<br><span class="k">excess over free-flow</span> '+fmt(r.observed_min-r.freeflow_min,1)+' min':'')+(it[0]==='Mean signal delay'?'<br><span class="k">max red-phase wait (ceiling)</span> '+fmt(r.max_signal_min,1)+' min':'')));b.addEventListener('mouseleave',hideTip);
+   el('text',{x:sx(it[1])+8,y:yy+12,style:'fill:'+it[2]},svg,sm?fmt(it[1],1):it[0]+' '+fmt(it[1],1))})});
+ $('#route').innerHTML='<div style="font-family:var(--display);font-weight:600;font-size:15px;margin:0 0 4px">The whole route, in minutes</div><div class="note" style="margin:0 0 12px">Weekday mean over all departure times, weeks 2 and 3 averaged. The highlighted row follows the commute selected above.</div>';$('#route').appendChild(svg);
+ $('#routeLeg').innerHTML='<span><span class="sw" style="background:'+C.obs+'"></span>observed drive time</span><span><span class="sw" style="background:'+C.none+'"></span>free-flow time</span><span><span class="sw" style="background:'+C.est+'"></span>mean estimated signal delay</span>';
+ const e=routeRow('evening'),m=routeRow('morning');
+ $('#routeNote').innerHTML='<b>The contrast:</b> the mean estimated signal delay is lower in the evening ('+fmt(e.mean_signal_min,1)+' min) than in the morning ('+fmt(m.mean_signal_min,1)+' min), even though observed trips are longer in the evening. That does not show signals are unimportant. It could equally reflect queues, congestion, adaptive control or the limits of the timing data. It is <b>not</b> the share of delay caused by signals: the estimate and the free-flow baseline rest on assumptions that make that reading too strong.'}
+tog('#perTog',segs);segs();addEventListener('resize',segs);
+
+</script>
+</body>
+</html>
