@@ -126,8 +126,13 @@ button:focus-visible{outline:1px solid var(--brand);outline-offset:2px}
   .ctrl{gap:8px 10px}
   .ctl{min-width:0;max-width:100%}
   .seg.times{max-width:calc(100vw - 24px);overflow-x:auto;-webkit-overflow-scrolling:touch}
-  .seg.times button{flex:none}
-  .chip{font-size:9.5px;padding:2px 5px}
+  .seg.times{max-width:calc(100vw - 24px)}
+  .seg.times button{flex:1 1 0;padding:0 2px;letter-spacing:0;font-size:9.5px;min-width:0}
+  .seg button{padding:0 8px}
+  .chip{display:none}
+  .play{height:38px;padding:0 22px}
+  .ctrl{padding-bottom:calc(14px + env(safe-area-inset-bottom))}
+  #side .hint{font-size:12.5px}
 }
 </style>
 </head>
